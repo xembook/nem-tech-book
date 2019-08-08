@@ -3,9 +3,37 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="nem2-sdk-0.13.1.js"></script>
-<script>$(function() {
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <h1>sample</h1>
+        <h3>deposit to</h3>
+        <div id="address"></div>
+        <div class="collapse" id="result1">
+            <button id="button1" class="btn btn-primary" type="button" disabled>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              承認中...
+            </button>
+        </div>
+
+        <div class="collapse" id="result2">
+            <h3>state</h3><div id="items2"><ul></ul></div>
+            <div id="wait1" class="spinner-border text-primary" role="status">
+              <span class="sr-only">承認中...</span>
+            </div>
+        </div>
+        <div class="collapse" id="result3">
+            <h3>confirmed</h3><div id="items3"><ul></ul></div>
+            <h3>account</h3><div id="items1"><ul></ul></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="nem2-sdk-0.13.1.js"></script>
+<script>
 
 //接続情報
 const NODE = 'https://catapult-test.opening-line.jp:3001';
@@ -16,33 +44,17 @@ const rxjs = require("/node_modules/rxjs/operators");
 const sha3_256 = require("/node_modules/js-sha3").sha3_256;
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const bob = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const carol = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const dave = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const ellen = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const frank = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+$('#address').text(alice.address.address);
 
-console.log("alice");
-console.log(alice.address);
-console.log(alice.publicKey);
-
-const txHttp = new nem.TransactionHttp(NODE);
+var isInit = true;
 const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
-
-var hasBuilt = false;
 listener.open().then(() => {
 
     //未承認データ受信トリガー
     listener
     .unconfirmedAdded(alice.address)
-    .subscribe(
-        function(_){
-            console.log("--unconfirmed transaction(alice)--");
-            console.log(_);
-        },
-        err => console.error(err)
-    );
+    .subscribe(_=> $('#result1').collapse('show'),err => console.error(err));
 
     //承認データ受信トリガー
     listener
@@ -50,58 +62,60 @@ listener.open().then(() => {
     .subscribe(
         function(_){
             console.log("==confirmed transaction(alice)==");
-            if(!hasBuilt){
-                console.log("[[start sample program]]");
-                buildProcess();
-                hasBuilt = true;
+            if(isInit){
+                $('#button1').prop("disabled", false);
+                $('#button1').empty();
+                $('#button1').text("送信");
+                isInit = false;
+            }else{
+                $('#wait1').remove();
+                $('#result3').collapse('show');
             }
         },
         err => console.error(err)
     );
-
-    //ここにリスナーを追加します。
 });
 
 //サンプルプログラム開始
 function buildProcess(){
 
-    //ここでトランザクションを作成します。
+    const transferTx = nem.TransferTransaction.create(
+        nem.Deadline.create(),
+        alice.address,
+        [nem.NetworkCurrencyMosaic.createRelative(0)],
+        nem.PlainMessage.create('Hello World!'),
+        nem.NetworkType.MIJIN_TEST
+    );
 
     //署名
-    const signedTx = alice.sign(tx,GENERATION_HASH);
+    const signedTx = alice.sign(transferTx,GENERATION_HASH);
     console.log(signedTx);
-    appendInfo(NODE,signedTx,alice);
 
     //アナウンス
+    const txHttp = new nem.TransactionHttp(NODE);
     txHttp
     .announce(signedTx)
-    .subscribe(x =>{
-        console.log(x)
-    }, err => console.error(err));
+    .subscribe(x => appendInfo(NODE,signedTx,alice), err => console.error(err));
 }
 
 //結果出力
 function appendInfo(node,signedTx,account){
 
-    $('#items1 ul').append('<li><a target="_blank" href="' + node + '/account/' + account.pulicKey + '">' + account.address.address + '</a></li>');
+    $('#items1 ul').append('<li><a target="_blank" href="' + node + '/account/' + account.publicKey + '">' + account.address.address + '</a></li>');
+    $('#items1 ul').append('<li><a target="_blank" href="' + node + '/account/' + account.publicKey + '/transactions">' + account.address.address + '/transactions</a></li>');
     $('#items2 ul').append('<li><a target="_blank" href="' + node + '/transaction/' + signedTx.hash + '/status">' + signedTx.hash + '</a></li>');
     $('#items3 ul').append('<li><a target="_blank" href="' + node + '/transaction/' + signedTx.hash + '">' + signedTx.hash + '</a></li>');
+    $('#result2').collapse('show');
 }
 
 //ボタンイベント
-$("#btn1").click(
+$("#button1").click(
     function(){
+        buildProcess();
         return false;
     }
 );
 
-})</script>
-</head>
-<body>
-    <h1>sample</h1>
-    <div id="btn1"><button>送信</button></div>
-    <h3>account</h3><div id="items1"><ul></ul></div>
-    <h3>state</h3><div id="items2"><ul></ul></div>
-    <h3>confirmed</h3><div id="items3"><ul></ul></div>
+</script>
 </body>
 </html>
