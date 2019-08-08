@@ -14,14 +14,14 @@
         <h3>deposit to</h3>
         <div id="address"></div>
 
-		<table id="table"  class="table">
-			<thead><tr>
-				<th>height</th>
-				<th>recipient</th>
-				<th>mosaicId</th>
-				<th>amount</th>
-			</tr></thead>
-		</table>
+        <table id="table"  class="table">
+            <thead><tr>
+                <th>height</th>
+                <th>recipient</th>
+                <th>mosaicId</th>
+                <th>amount</th>
+            </tr></thead>
+        </table>
     </div>
 <script 
     src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
@@ -62,16 +62,16 @@ listener.open().then(() => {
             for(let transaction of transactions){
                 console.log(transaction);
 
-	            for(let mosaic of transaction.mosaics){
+                for(let mosaic of transaction.mosaics){
 
-					$("#table").append("<tr>" 
-						+"<td>"+ _.height.compact() + "</td>"
-						+"<td>"+ transaction.recipient.address + "</td>"
-						+"<td>"+ mosaic.id.toHex() + "</td>"
-						+"<td>"+ mosaic.amount.compact() + "</td>"
-						+ "</tr>"
-					);
-	            }
+                    $("#table").append("<tr>" 
+                        +"<td>"+ _.height.compact() + "</td>"
+                        +"<td>"+ transaction.recipient.address + "</td>"
+                        +"<td>"+ mosaic.id.toHex() + "</td>"
+                        +"<td>"+ mosaic.amount.compact() + "</td>"
+                        + "</tr>"
+                    );
+                }
 
             }
         })
