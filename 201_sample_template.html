@@ -11,6 +11,8 @@
 <body>
     <div class="container">
         <h1>sample</h1>
+
+        <!-- div block1 -->
         <h3>deposit to</h3>
         <div id="address"></div>
         <div class="collapse" id="result1">
@@ -20,15 +22,18 @@
             </button>
         </div>
 
+        <!-- div block2 -->
         <div class="collapse" id="result2">
-            <h3>state</h3><div id="items2"><ul></ul></div>
-            <div id="wait1" class="spinner-border text-primary" role="status">
+            <h3>status</h3><div id="status"><ul></ul></div>
+            <div id="wait2" class="spinner-border text-primary" role="status">
               <span class="sr-only">承認中...</span>
             </div>
         </div>
+
+        <!-- div block3 -->
         <div class="collapse" id="result3">
-            <h3>confirmed</h3><div id="items3"><ul></ul></div>
-            <h3>account</h3><div id="items1"><ul></ul></div>
+            <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
+            <h3>account</h3><div id="account"><ul></ul></div>
         </div>
     </div>
 
@@ -54,8 +59,6 @@ const NODE = 'https://catapult-test.opening-line.jp:3001';
 const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
 
 const nem = require("/node_modules/nem2-sdk");
-const rxjs = require("/node_modules/rxjs/operators");
-const sha3_256 = require("/node_modules/js-sha3").sha3_256;
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 $('#address').text(alice.address.address);
@@ -79,7 +82,7 @@ listener.open().then(() => {
                 $('#button1').text("送信");
                 isInit = false;
             }else{
-                $('#wait1').remove();
+                $('#wait2').remove();
                 $('#result3').collapse('show');
             }
         },
@@ -106,23 +109,21 @@ function buildProcess(){
     appendInfo(NODE,signedTx,alice);
 }
 
-//結果出力
 function appendInfo(node,signedTx,account){
 
     const pubkey = account.publicKey ;
     const address = account.address.address ;
     const hash = signedTx.hash
-    $('#items1 ul').append(strLi(node,'/account/' + pubkey ,address ));
-    $('#items1 ul').append(strLi(node,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
-    $('#items2 ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash ));
-    $('#items3 ul').append(strLi(node,'/transaction/' + hash ,hash ));
+    $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
+    $('#account ul').append(strLi(node,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
+    $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash ));
+    $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
 }
 
 function strLi(node,href,text){
     return '<li><a target="_blank" href="' + node + href + '">' + text + '</a></li>';
 }
 
-//ボタンイベント
 $("#button1").click(
     function(){
         buildProcess();
