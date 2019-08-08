@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
+<link rel="stylesheet" 
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+    crossorigin="anonymous">
+<body>
+    <div class="container">
+        <h1>sample</h1>
+        <!-- div block1 -->
+        <h3>deposit to</h3>
+        <div id="address"></div>
+
+		<table id="table"  class="table">
+			<thead><tr>
+				<th>height</th>
+				<th>recipient</th>
+				<th>mosaicId</th>
+				<th>amount</th>
+			</tr></thead>
+		</table>
+    </div>
+<script 
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
+    crossorigin="anonymous">
+</script>
+<script 
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" 
+    crossorigin="anonymous">
+</script>
+<script src="nem2-sdk-0.13.1.js"></script>
+<script>$(function() {
+const nem = require("/node_modules/nem2-sdk");
+
+const NODE = 'https://catapult-test.opening-line.jp:3001';
+const blockHttp = new nem.BlockHttp(NODE);
+const wsEndpoint = NODE.replace('https', 'wss');
+const listener = new nem.Listener(wsEndpoint, WebSocket);
+
+const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+$('#address').text(alice.address.address);
+
+
+listener.open().then(() => {
+
+    listener
+    .newBlock()
+    .subscribe(function(_){
+
+        console.log("==new block==");
+        console.log(_.height.compact());
+        console.log(new Date(_.timestamp.compact() + Date.UTC(2016, 3, 1, 0, 0, 0, 0)));
+
+        blockHttp.getBlockTransactions(_.height.compact())
+        .subscribe((transactions) => {
+            console.log("--transaction--");
+            for(let transaction of transactions){
+                console.log(transaction);
+
+	            for(let mosaic of transaction.mosaics){
+
+					$("#table").append("<tr>" 
+						+"<td>"+ _.height.compact() + "</td>"
+						+"<td>"+ transaction.recipient.address + "</td>"
+						+"<td>"+ mosaic.id.toHex() + "</td>"
+						+"<td>"+ mosaic.amount.compact() + "</td>"
+						+ "</tr>"
+					);
+	            }
+
+            }
+        })
+
+        blockHttp.getBlockReceipts(_.height.compact())
+        .subscribe((receipts) => {
+            console.log("--receipt--");
+            for(let statement of receipts.transactionStatements){
+                for(let receipt of statement.receipts){
+                    console.log(receipt);
+                }
+            }
+            for(let statement of receipts.addressResolutionStatements){
+                for(let receipt of statement.receipts){
+                    console.log(receipt);
+                }
+            }
+            for(let statement of receipts.mosaicResolutionStatements){
+                for(let receipt of statement.receipts){
+                    console.log(receipt);
+                }
+            }
+        })
+    },
+    err => console.error(err));
+
+});
+
+
+})</script>
+</body>
+</html>
