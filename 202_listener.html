@@ -11,9 +11,9 @@
     <div class="container">
         <h1>sample</h1>
         <!-- div block1 -->
-        <h3>deposit to</h3>
+        <h5>deposit to</h5>
         <div id="address"></div>
-
+        <hr>
         <table id="table"  class="table">
             <thead><tr>
                 <th>height</th>
@@ -45,7 +45,6 @@ const listener = new nem.Listener(wsEndpoint, WebSocket);
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 $('#address').text(alice.address.address);
 
-
 listener.open().then(() => {
 
     listener
@@ -63,7 +62,6 @@ listener.open().then(() => {
                 console.log(transaction);
 
                 for(let mosaic of transaction.mosaics){
-
                     $("#table").append("<tr>" 
                         +"<td>"+ _.height.compact() + "</td>"
                         +"<td>"+ transaction.recipient.address + "</td>"
@@ -72,7 +70,6 @@ listener.open().then(() => {
                         + "</tr>"
                     );
                 }
-
             }
         })
 
@@ -98,8 +95,25 @@ listener.open().then(() => {
     },
     err => console.error(err));
 
-});
+    listener
+    .unconfirmedAdded(alice.address)
+    .subscribe(
+        function(_){
+            console.log("> unconfirmed transaction(alice) <");
+            console.log(_);
+        },
+        err => console.error(err)
+    );
 
+    listener
+    .confirmed(alice.address)
+    .subscribe(
+        function(_){
+            console.log(">> confirmed transaction(alice) <<");
+        },
+        err => console.error(err)
+    );
+});
 
 })</script>
 </body>
