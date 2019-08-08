@@ -24,6 +24,7 @@
 
         <!-- div block2 -->
         <div class="collapse" id="result2">
+            <h3>signedTx</h3><textarea id="signedTx" rows="8" class="form-control"></textarea>
             <h3>status</h3><div id="status"><ul></ul></div>
             <div id="wait2" class="spinner-border text-primary" role="status">
               <span class="sr-only">承認中...</span>
@@ -90,7 +91,7 @@ listener.open().then(() => {
     );
 });
 
-function buildProcess(){
+function process(){
 
     const tx = nem.TransferTransaction.create(
         nem.Deadline.create(),
@@ -99,6 +100,7 @@ function buildProcess(){
         nem.PlainMessage.create('Hello World!'),
         nem.NetworkType.MIJIN_TEST
     );
+    console.log(tx);
 
     const signedTx = alice.sign(tx,GENERATION_HASH);
     const txHttp = new nem.TransactionHttp(NODE);
@@ -106,18 +108,20 @@ function buildProcess(){
     .announce(signedTx)
     .subscribe(_ =>_, err => console.error(err));
 
-    appendInfo(NODE,signedTx,alice);
+    showInfo(NODE,signedTx,alice);
 }
 
-function appendInfo(node,signedTx,account){
+function showInfo(node,signedTx,account){
 
     const pubkey = account.publicKey ;
     const address = account.address.address ;
     const hash = signedTx.hash
+
+    $('#signedTx').val(signedTx.payload);
+    $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash + '/status'));
+    $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
     $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
     $('#account ul').append(strLi(node,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
-    $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash ));
-    $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
 }
 
 function strLi(node,href,text){
@@ -126,7 +130,7 @@ function strLi(node,href,text){
 
 $("#button1").click(
     function(){
-        buildProcess();
+        process();
         $('#result2').collapse('show');
         return false;
     }
