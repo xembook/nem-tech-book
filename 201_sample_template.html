@@ -106,7 +106,7 @@ function process(){
     const txHttp = new nem.TransactionHttp(NODE);
     txHttp
     .announce(signedTx)
-    .subscribe(_ =>_, err => console.error(err));
+    .subscribe(_ => console.log(_), err => console.error(err));
 
     showInfo(NODE,signedTx,alice);
 }
