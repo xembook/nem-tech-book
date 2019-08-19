@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
-<link rel="stylesheet" 
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+<link rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
     crossorigin="anonymous">
 </head>
     <div class="container">
@@ -39,14 +39,14 @@
         </div>
     </div>
 
-<script 
-    src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
+<script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous">
 </script>
-<script 
-    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" 
+<script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
 <script src="nem2-sdk-0.13.1.js"></script>
@@ -56,6 +56,7 @@ const NODE = 'https://catapult-test.opening-line.jp:3001';
 const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
 
 const nem = require("/node_modules/nem2-sdk");
+const rxjs = require("/node_modules/rxjs/operators");
 
 const txHttp = new nem.TransactionHttp(NODE);
 const nsHttp = new nem.NamespaceHttp(NODE);
@@ -84,20 +85,25 @@ listener.open().then(() => {
                 $('#button1').text("送信");
                 isInit = false;
             }else{
+/*
                 $('#wait2').remove();
                 $('#result3').collapse('show');
 				nsHttp.getNamespace(nsId)
 			    .subscribe(_ => console.log(_), err => console.error(err));
 
 				nsHttp.getNamespacesFromAccount(alice.address)
-			    .subscribe(_ => console.log(_), err => console.error(err));
+			    .subscribe(_ => {
+console.log("alice address");
+					console.log(_);
+
+				}, err => console.error(err));
 
 				nsHttp.getNamespacesName([nsId])
 			    .subscribe(_ => console.log(_), err => console.error(err));
 
 				nsHttp.getLinkedMosaicId(nsId)
 			    .subscribe(_ => console.log(_), err => console.error(err));
-
+*/
 
             }
         },
@@ -110,7 +116,7 @@ function process(){
     //ネームスペース作成
     const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
         nem.Deadline.create(),
-        "xembook",
+        "xembook2",
         nem.UInt64.fromUint(3),
         nem.NetworkType.MIJIN_TEST
     );
@@ -169,6 +175,41 @@ function process(){
     .subscribe(_ => console.log(_), err => console.error(err));
 
     showInfo(NODE,signedTx,alice,mosaicDefTx.mosaicId.toHex(),namespaceTx.namespaceId.toHex());
+
+	listener
+    .confirmed(alice.address)
+    .subscribe(
+        function(_){
+
+                $('#wait2').remove();
+                $('#result3').collapse('show');
+
+				nsHttp.getNamespacesFromAccount(alice.address)
+				.pipe(
+
+					rxjs.mergeMap((_) => _),
+					rxjs.filter((_) => {
+						console.log(_);
+						if(_.alias.type === 1){　//MosaicAlias
+//							console.log(_.alias.mosaicId);
+							return true;
+						}
+					})
+				)
+
+			    .subscribe(_ => {
+					console.log(_.alias.mosaicId);
+					nsHttp.getNamespacesName(_.levels)
+					.subscribe(_ => console.log(_), err => console.error(err));
+
+
+				}, err => console.error(err));
+
+        },
+        err => console.error(err)
+    );
+
+
 }
 
 function showInfo(node,signedTx,account,mosaic,namespace){
