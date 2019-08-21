@@ -2,64 +2,99 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
+<link rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous">
+</head>
+    <div class="container">
+        <h1>sample</h1>
+
+        <!-- div block1 -->
+        <h3>deposit to</h3>
+        <div id="address"></div>
+        <div class="collapse" id="result1">
+            <button id="button1" class="btn btn-primary" type="button" disabled>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              承認中...
+            </button>
+        </div>
+
+        <!-- div block2 -->
+        <div class="collapse" id="result2">
+            <h3>signedTx</h3><textarea id="signedTx" rows="8" class="form-control"></textarea>
+            <h3>status</h3><div id="status"><ul></ul></div>
+            <div id="wait2" class="spinner-border text-primary" role="status">
+              <span class="sr-only">承認中...</span>
+            </div>
+        </div>
+
+        <!-- div block3 -->
+        <div class="collapse" id="result3">
+            <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
+            <h3>account</h3><div id="account"><ul></ul></div>
+            <h3>namespace</h3><div id="namespace"><ul></ul></div>
+        </div>
+    </div>
+
+<script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous">
+</script>
+<script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous">
+</script>
 <script src="nem2-sdk-0.13.1.js"></script>
 <script>$(function() {
 const nem = require("/node_modules/nem2-sdk");
 
-//覚え書き
-//Alice Bob Carol Dave Ellen Frank
-//https://hukusuke1007.github.io/nem2-wallet/
-//https://catapult-test.opening-line.jp:3001/account/
-//"generationHash":"453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235"
-//const NODE = 'https://catapult-test.opening-line.jp:3001';
-
-//個人用
-//"generationHash":"3125DF8F8C726660526886BAD6531A51A520845D984BE47943F9F844885CC7CA"
-//private key: CD52E4CA8F6EC1ADBE4BEF392BAD666179A495F87CBC15176F30C8A82EBA90D6
-//public key: 1BCA1267C0A13A6D78219463056B711683A4676A4C7F8883E64F7EC5291E6E51
-//address (mijin-test): SADW6WXZVIUWIJ6RAWFSM4F4SJRUBRVOARXXIFSH
-
-
 const NODE = 'https://catapult-test.opening-line.jp:3001';
 const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
-const transactionHttp = new nem.TransactionHttp(NODE);
+const txHttp = new nem.TransactionHttp(NODE);
+const nsHttp = new nem.NamespaceHttp(NODE);
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+$('#address').text(alice.address.address);
 
 console.log(alice.address);
 console.log(alice.privateKey);
 
+var isInit = true;
 const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
 listener.open().then(() => {
 
     listener
     .unconfirmedAdded(alice.address)
-    .subscribe(
-        function(_){
-            console.log("--unconfirmed transaction--");
-            console.log(_);
-        },
-        err => console.error(err));
+    .subscribe(_=> $('#result1').collapse('show'),err => console.error(err));
 
     listener
     .confirmed(alice.address)
     .subscribe(
         function(_){
-            listener.close();
-            buildNamespacedMultisigAccount();
+            if(isInit){
+                $('#button1').prop("disabled", false);
+                $('#button1').empty();
+                $('#button1').text("送信");
+                isInit = false;
+            }
         },
-        err => console.error(err));
+        err => console.error(err)
+    );
+
 });
 
-function buildNamespacedMultisigAccount(){
+function process(){
 
     //ネームスペース作成
     const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
         nem.Deadline.create(),
-        "xembook2",
+        "xembook",
         nem.UInt64.fromUint(1),
         nem.NetworkType.MIJIN_TEST
     );
@@ -86,7 +121,7 @@ function buildNamespacedMultisigAccount(){
         nem.NetworkType.MIJIN_TEST
     );
 
-    const aggregateTransaction = nem.AggregateTransaction.createComplete(
+    const aggregateTx = nem.AggregateTransaction.createComplete(
         nem.Deadline.create(),
         [
             namespaceTx.toAggregate(alice.publicAccount),
@@ -97,36 +132,70 @@ function buildNamespacedMultisigAccount(){
         []
     );
 
-/*
-    const signedTransaction =  alice.signTransactionWithCosignatories(
-        aggregateTransaction,
-        [bob],
-        GENERATION_HASH,
-    );
-*/
-    const signedTransaction =  aggregateTransaction.signTransactionWithCosignatories(
+    const signedTx =  aggregateTx.signTransactionWithCosignatories(
         alice,
         [bob],
         GENERATION_HASH,
     );
 
-    console.log(signedTransaction);
-    transactionHttp
-    .announce(signedTransaction)
+    console.log(signedTx);
+    txHttp
+    .announce(signedTx)
     .subscribe(x => {
-
-        $('#items2-ctrl ul').append('<li><a target="_blank" href="' + NODE + '/transaction/' + signedTransaction.hash + '/status">' + signedTransaction.hash + '</a></li>');
-        $('#items3-ctrl ul').append('<li><a target="_blank" href="' + NODE + '/transaction/' + signedTransaction.hash + '">' + signedTransaction.hash + '</a></li>');
 
         console.log(x)
     }, err => console.error(err));
+
+
+    showInfo(NODE,signedTx,alice);
+
+    listener
+    .confirmed(alice.address)
+    .subscribe(
+        function(_){
+
+            $('#wait2').remove();
+            $('#result3').collapse('show');
+
+            nsHttp.getNamespace(new nem.NamespaceId('xembook'))
+            .subscribe(_ => {
+
+                for(let ns of _.levels){
+                    const hexNs = ns.id.toHex();
+                    $('#namespace ul').append(strLi(NODE,'/namespace/' + hexNs ,hexNs));
+                }
+            }, err => console.error(err));
+
+        },
+        err => console.error(err)
+    );
 }
 
+function showInfo(node,signedTx,account){
+
+    const pubkey = account.publicKey ;
+    const address = account.address.address ;
+    const hash = signedTx.hash
+
+    $('#signedTx').val(signedTx.payload);
+    $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash + '/status'));
+    $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
+    $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
+    $('#account ul').append(strLi(node,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
+}
+
+function strLi(node,href,text){
+    return '<li><a target="_blank" href="' + node + href + '">' + text + '</a></li>';
+}
+
+$("#button1").click(
+    function(){
+        process();
+        $('#result2').collapse('show');
+        return false;
+    }
+);
+
 })</script>
-</head>
-<body>
-    <h1>sample</h1>
-    <h3>state確認</h3><div id="items2-ctrl"><ul></ul></div>
-    <h3>confirmed確認</h3><div id="items3-ctrl"><ul></ul></div>
 </body>
 </html>
