@@ -2,14 +2,73 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
+<link rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous">
+</head>
+    <div class="container">
+        <h1>sample</h1>
+
+        <!-- div block1 -->
+        <h3>deposit to</h3>
+        <div id="address"></div>
+        <div class="collapse" id="result1">
+            <button id="button1" class="btn btn-primary" type="button" disabled>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              承認中...
+            </button>
+        </div>
+
+        <!-- div block2 -->
+        <div class="collapse" id="result2">
+            <h3>signedTx</h3><textarea id="signedTx" rows="8" class="form-control"></textarea>
+            <h3>status</h3><div id="status"><ul></ul></div>
+            <div id="wait2" class="spinner-border text-primary" role="status">
+              <span class="sr-only">承認中...</span>
+            </div>
+        </div>
+
+        <!-- div block3 -->
+        <div class="collapse" id="result3">
+            <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
+            <h3>account</h3><div id="account"><ul></ul></div>
+            <button id="button3" class="btn btn-primary" type="button" >変更</button>
+        </div>
+
+        <!-- div block4 -->
+        <div class="collapse" id="result4">
+            <h3>signedTx</h3><textarea id="signedTx4" rows="8" class="form-control"></textarea>
+            <h3>status</h3><div id="status4"><ul></ul></div>
+            <div id="wait4" class="spinner-border text-primary" role="status">
+              <span class="sr-only">承認中...</span>
+            </div>
+        </div>
+
+        <!-- div block5 -->
+        <div class="collapse" id="result5">
+            <h3>confirmed</h3><div id="confirmed5"><ul></ul></div>
+            <h3>account</h3><div id="account5"><ul></ul></div>
+        </div>
+    </div>
+
+<script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous">
+</script>
+<script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous">
+</script>
 <script src="nem2-sdk-0.13.1.js"></script>
 <script>$(function() {
+
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 
-//Alice Bob Carol Dave Ellen Frank
-//Alice[asset]<-(2-of-3){Bob[security] and Carol and (Dave<-(1-of-2){Ellen or Frank})}
 const NODE = 'https://catapult-test.opening-line.jp:3001';
 const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
 const txHttp = new nem.TransactionHttp(NODE);
@@ -21,59 +80,47 @@ const dave = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const dave2 = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const ellen = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const frank = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-console.log(alice.address);
-console.log(alice.privateKey);
+$('#address').text(alice.address.address);
 
+var isInit = true;
 const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
 
-var hasBuilt = false;
 listener.open().then(() => {
 
-    //未承認データ受信トリガー
     listener
     .unconfirmedAdded(alice.address)
-    .subscribe(
-        function(_){
-            console.log("--unconfirmed transaction(alice)--");
-            console.log(_);
-        },
-        err => console.error(err)
-    );
+    .subscribe(_=> $('#result1').collapse('show'),err => console.error(err));
 
-    //承認データ受信トリガー
     listener
     .confirmed(alice.address)
     .subscribe(
         function(_){
-            console.log("==confirmed transaction(alice)==");
-            console.log(_);
-
-            if(!hasBuilt){
-                console.log("[[start sample program]]");
-                buildProcess();
-                hasBuilt = true;
+            if(isInit){
+                $('#button1').prop("disabled", false);
+                $('#button1').empty();
+                $('#button1').text("送信");
+                isInit = false;
             }
         },
         err => console.error(err)
     );
-
-    //ここにリスナーを追加します。
 });
 
-function buildProcess(){
+const addType = nem.MultisigCosignatoryModificationType.Add;
+const removeType = nem.MultisigCosignatoryModificationType.Remove;
 
-    const addType = nem.MultisigCosignatoryModificationType.Add;
-    const removeType = nem.MultisigCosignatoryModificationType.Remove;
-    const ellenOrFrankMultisigTx = nem.ModifyMultisigAccountTransaction.create(
-        nem.Deadline.create(),
-        1,1,
-        [
-            new nem.MultisigCosignatoryModification(addType, ellen),
-            new nem.MultisigCosignatoryModification(addType, frank)
-        ],
-        nem.NetworkType.MIJIN_TEST
-    );
+const ellenOrFrankMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+    nem.Deadline.create(),
+    1,1,
+    [
+        new nem.MultisigCosignatoryModification(addType, ellen),
+        new nem.MultisigCosignatoryModification(addType, frank)
+    ],
+    nem.NetworkType.MIJIN_TEST
+);
+
+function process(){
 
     const bobAndDaveAndCarolMultisigTx = nem.ModifyMultisigAccountTransaction.create(
         nem.Deadline.create(),
@@ -102,72 +149,119 @@ function buildProcess(){
         GENERATION_HASH,
     );
 
-    appendInfo(NODE,signedTx,alice);
-
     txHttp
     .announce(signedTx)
     .subscribe(x => {
         console.log(x)
     }, err => console.error(err));
 
+    showInfo(NODE,signedTx,alice.publicAccount);
 
     listener
     .confirmed(alice.address)
     .pipe(
         rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === signedTx.hash),
-        rxjs.mergeMap(_ => {
-
-            const switchDaveToMultisigTx = nem.ModifyMultisigAccountTransaction.create(
-                nem.Deadline.create(),
-                0,0,
-                [
-                    new nem.MultisigCosignatoryModification(addType, dave2),
-                    new nem.MultisigCosignatoryModification(removeType, dave),
-                ],
-                nem.NetworkType.MIJIN_TEST
-            );
-
-            const aggregateTx2 = nem.AggregateTransaction.createComplete(
-                nem.Deadline.create(),
-                [
-                    ellenOrFrankMultisigTx.toAggregate(dave2.publicAccount),
-                    switchDaveToMultisigTx.toAggregate(alice.publicAccount),
-                ],
-                nem.NetworkType.MIJIN_TEST,
-                []
-            );
-
-            const signedTx2 =  dave2.signTransactionWithCosignatories(
-                aggregateTx2,
-                [carol,ellen,frank],//bob,daveは必要なし
-                GENERATION_HASH,
-            );
-
-            console.log(signedTx2);
-            appendInfo(NODE,signedTx2,alice.pulicAccount);
-            return txHttp.announce(signedTx2)
-        })
     )
     .subscribe(x => {
+        $('#wait2').remove();
+        $('#result3').collapse('show');
         console.log(x);
     }, err => console.error(err));
 }
 
-//結果出力
-function appendInfo(node,signedTx,account){
+function process3(){
 
+    const switchDaveToMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+        nem.Deadline.create(),
+        0,0,
+        [
+            new nem.MultisigCosignatoryModification(addType, dave2),
+            new nem.MultisigCosignatoryModification(removeType, dave),
+        ],
+        nem.NetworkType.MIJIN_TEST
+    );
 
-    $('#items1 ul').append('<li><a target="_blank" href="' + node + '/account/' + account.publicKey + '">' + account.address.address + '</a></li>');
-    $('#items2 ul').append('<li><a target="_blank" href="' + node + '/transaction/' + signedTx.hash + '/status">' + signedTx.hash + '</a></li>');
-    $('#items3 ul').append('<li><a target="_blank" href="' + node + '/transaction/' + signedTx.hash + '">' + signedTx.hash + '</a></li>');
+    const aggregateTx4 = nem.AggregateTransaction.createComplete(
+        nem.Deadline.create(),
+        [
+            ellenOrFrankMultisigTx.toAggregate(dave2.publicAccount),
+            switchDaveToMultisigTx.toAggregate(alice.publicAccount),
+        ],
+        nem.NetworkType.MIJIN_TEST,
+        []
+    );
+
+    const signedTx4 =  dave2.signTransactionWithCosignatories(
+        aggregateTx4,
+        [carol,ellen,frank],//bob,daveは必要なし
+        GENERATION_HASH,
+    );
+
+    txHttp.announce(signedTx4)
+    .subscribe(_ => {
+    }, err => console.error(err));
+
+    const hash4 = signedTx4.hash;
+    const address5 = alice.address.address ;
+    const pubkey5 = alice.publicKey ;
+
+    $('#status4 ul').append(strLi(NODE,'/transaction/' + hash4 + '/status' ,hash4 + '/status'));
+    $('#signedTx4').val(signedTx4.payload);
+    $('#confirmed5 ul').append(strLi(NODE,'/transaction/' + hash4 ,hash4 ));
+    $('#account5 ul').append(strLi(NODE,'/account/' + pubkey5 + '/transactions' ,address5 + '/transactions'));
+    $('#account5 ul').append(strLi(NODE,'/account/' + pubkey5 + '/multisig' ,address5 + '/multisig'));
+    $('#account5 ul').append(strLi(NODE,'/account/' + dave.address.address + '/multisig' ,'/dave/multisig'));
+    $('#account5 ul').append(strLi(NODE,'/account/' + dave2.address.address + '/multisig' ,'/dave2/multisig'));
+
+    listener
+    .confirmed(alice.address)
+    .pipe(
+        rxjs.filter((tx) => {
+            return tx.transactionInfo !== undefined && tx.transactionInfo.hash === signedTx4.hash;
+        }),
+    )
+    .subscribe(_ => {
+        $('#wait4').remove();
+        $('#result5').collapse('show');
+
+    }, err => console.error(err));
 }
 
+function showInfo(node,signedTx,account){
+
+    const pubkey = account.publicKey ;
+    const address = account.address.address ;
+    const hash = signedTx.hash;
+
+    $('#signedTx').val(signedTx.payload);
+    $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash + '/status'));
+    $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
+    $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
+    $('#account ul').append(strLi(node,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
+    $('#account ul').append(strLi(node,'/account/' + pubkey + '/multisig' ,address + '/multisig'));
+    $('#account ul').append(strLi(node,'/account/' + dave.address.address + '/multisig' ,'/dave/multisig'));
+}
+
+function strLi(node,href,text){
+    return '<li><a target="_blank" href="' + node + href + '">' + text + '</a></li>';
+}
+
+$("#button1").click(
+    function(){
+        process();
+        $('#result2').collapse('show');
+        return false;
+    }
+);
+
+$("#button3").click(
+    function(){
+        process3();
+        $('#result4').collapse('show');
+        return false;
+    }
+);
+
 })</script>
-</head>
-<body>
-    <h1>sample</h1>
-    <h3>account</h3><div id="items1"><ul></ul></div>
-    <h3>state</h3><div id="items2"><ul></ul></div>
-    <h3>confirmed</h3><div id="items3"><ul></ul></div>
 </body>
 </html>
