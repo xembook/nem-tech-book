@@ -36,7 +36,6 @@
             <h3>account</h3><div id="account"><ul></ul></div>
             <h3>namespace</h3><div id="namespace"><ul></ul></div>
 			<h3>mosaic</h3><div id="mosaic"><ul></ul></div>
-			<h3>namespace name</h3><div id="namespace_name"><ul></ul></div>
         </div>
     </div>
 
@@ -64,8 +63,6 @@ const nsHttp = new nem.NamespaceHttp(NODE);
 const accountHttp = new nem.AccountHttp(NODE);
 const mosaicHttp = new nem.MosaicHttp(NODE);
 
-nsId = "";
-mosaicId = "";
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 $('#address').text(alice.address.address);
 
@@ -87,27 +84,6 @@ listener.open().then(() => {
                 $('#button1').empty();
                 $('#button1').text("送信");
                 isInit = false;
-            }else{
-/*
-                $('#wait2').remove();
-                $('#result3').collapse('show');
-				nsHttp.getNamespace(nsId)
-			    .subscribe(_ => console.log(_), err => console.error(err));
-
-				nsHttp.getNamespacesFromAccount(alice.address)
-			    .subscribe(_ => {
-console.log("alice address");
-					console.log(_);
-
-				}, err => console.error(err));
-
-				nsHttp.getNamespacesName([nsId])
-			    .subscribe(_ => console.log(_), err => console.error(err));
-
-				nsHttp.getLinkedMosaicId(nsId)
-			    .subscribe(_ => console.log(_), err => console.error(err));
-*/
-
             }
         },
         err => console.error(err)
@@ -119,11 +95,10 @@ function process(){
     //ネームスペース作成
     const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
         nem.Deadline.create(),
-        "xembook2",
-        nem.UInt64.fromUint(3),
+        "xembook",
+        nem.UInt64.fromUint(1),
         nem.NetworkType.MIJIN_TEST
     );
-	nsId = namespaceTx.namespaceId;
 
     //モザイク作成
     const nonce = nem.MosaicNonce.createRandom();
@@ -139,7 +114,6 @@ function process(){
         }),
         nem.NetworkType.MIJIN_TEST
     );
-	mosaicId = mosaicDefTx.mosaicId.toHex();
 
     //モザイク変更
     const mosaicChangeTx = nem.MosaicSupplyChangeTransaction.create(
@@ -177,67 +151,32 @@ function process(){
     .announce(signedTx)
     .subscribe(_ => console.log(_), err => console.error(err));
 
-    showInfo(NODE,signedTx,alice,mosaicDefTx.mosaicId.toHex(),namespaceTx.namespaceId.toHex());
+    showInfo(NODE,signedTx,alice);
 
 	listener
     .confirmed(alice.address)
     .subscribe(
         function(_){
 
-                $('#wait2').remove();
-                $('#result3').collapse('show');
+            $('#wait2').remove();
+            $('#result3').collapse('show');
 
-				accountHttp.getAccountInfo(alice.address)
-				.pipe(
-					rxjs.mergeMap((_) => _.mosaics),
-					rxjs.map(_=>{
-//						console.log(_);
-						return _.id;
-					}),
-					rxjs.toArray()
-				)
+			nsHttp.getNamespace(new nem.NamespaceId('xembook'))
+		    .subscribe(_ => {
+				const hexMosaic = (new nem.UInt64(_.alias.mosaicId)).toHex();
+			    $('#mosaic ul').append(strLi(NODE,'/mosaic/' + hexMosaic ,hexMosaic));
 
-				.subscribe(_ => {
-					console.log(_);
-					mosaicHttp.getMosaicsNames(_)
-					.subscribe(_=>console.log(_), err => console.error(err));
-				}, err => console.error(err));
-/*
-				nsHttp.getNamespacesFromAccount(alice.address)
-				.pipe(
-
-					rxjs.mergeMap((_) => _),
-					rxjs.filter((_) => {
-						console.log(_);
-						if(_.alias.type === 1){　//MosaicAlias
-//							console.log(_.alias.mosaicId);
-							return true;
-						}
-					})
-				)
-
-			    .subscribe(_ => {
-					console.log(_.alias.mosaicId);
-					nsHttp.getNamespacesName(_.levels)
-					.subscribe(_ => {
-						console.log(_);
-						for(let ns_name of _){
-							console.log(ns_name);
-						}
-
-					}, err => console.error(err));
-
-
-				}, err => console.error(err));
-*/
+				for(let ns of _.levels){
+					const hexNs = ns.id.toHex();
+					$('#namespace ul').append(strLi(NODE,'/namespace/' + hexNs ,hexNs));
+				}
+			}, err => console.error(err));
         },
         err => console.error(err)
     );
-
-
 }
 
-function showInfo(node,signedTx,account,mosaic,namespace){
+function showInfo(node,signedTx,account){
 
     const pubkey = account.publicKey ;
     const address = account.address.address ;
@@ -248,8 +187,6 @@ function showInfo(node,signedTx,account,mosaic,namespace){
     $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
     $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
     $('#account ul').append(strLi(node,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
-    $('#mosaic ul').append(strLi(node,'/mosaic/' + mosaic ,mosaic));
-    $('#namespace ul').append(strLi(node,'/namespace/' + namespace ,namespace));
 }
 
 function strLi(node,href,text){
@@ -265,9 +202,5 @@ $("#button1").click(
 );
 
 })</script>
-
-
 </body>
-
-
 </html>
