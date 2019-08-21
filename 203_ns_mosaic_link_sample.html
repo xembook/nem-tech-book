@@ -60,8 +60,6 @@ const rxjs = require("/node_modules/rxjs/operators");
 
 const txHttp = new nem.TransactionHttp(NODE);
 const nsHttp = new nem.NamespaceHttp(NODE);
-const accountHttp = new nem.AccountHttp(NODE);
-const mosaicHttp = new nem.MosaicHttp(NODE);
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 $('#address').text(alice.address.address);
