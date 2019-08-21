@@ -35,7 +35,8 @@
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
             <h3>namespace</h3><div id="namespace"><ul></ul></div>
-            <h3>mosaic</h3><div id="mosaic"><ul></ul></div>
+			<h3>mosaic</h3><div id="mosaic"><ul></ul></div>
+			<h3>namespace name</h3><div id="namespace_name"><ul></ul></div>
         </div>
     </div>
 
@@ -60,6 +61,8 @@ const rxjs = require("/node_modules/rxjs/operators");
 
 const txHttp = new nem.TransactionHttp(NODE);
 const nsHttp = new nem.NamespaceHttp(NODE);
+const accountHttp = new nem.AccountHttp(NODE);
+const mosaicHttp = new nem.MosaicHttp(NODE);
 
 nsId = "";
 mosaicId = "";
@@ -184,6 +187,22 @@ function process(){
                 $('#wait2').remove();
                 $('#result3').collapse('show');
 
+				accountHttp.getAccountInfo(alice.address)
+				.pipe(
+					rxjs.mergeMap((_) => _.mosaics),
+					rxjs.map(_=>{
+//						console.log(_);
+						return _.id;
+					}),
+					rxjs.toArray()
+				)
+
+				.subscribe(_ => {
+					console.log(_);
+					mosaicHttp.getMosaicsNames(_)
+					.subscribe(_=>console.log(_), err => console.error(err));
+				}, err => console.error(err));
+/*
 				nsHttp.getNamespacesFromAccount(alice.address)
 				.pipe(
 
@@ -200,11 +219,17 @@ function process(){
 			    .subscribe(_ => {
 					console.log(_.alias.mosaicId);
 					nsHttp.getNamespacesName(_.levels)
-					.subscribe(_ => console.log(_), err => console.error(err));
+					.subscribe(_ => {
+						console.log(_);
+						for(let ns_name of _){
+							console.log(ns_name);
+						}
+
+					}, err => console.error(err));
 
 
 				}, err => console.error(err));
-
+*/
         },
         err => console.error(err)
     );
