@@ -35,7 +35,7 @@
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
             <h3>namespace</h3><div id="namespace"><ul></ul></div>
-			<h3>mosaic</h3><div id="mosaic"><ul></ul></div>
+            <h3>mosaic</h3><div id="mosaic"><ul></ul></div>
         </div>
     </div>
 
@@ -151,7 +151,7 @@ function process(){
 
     showInfo(NODE,signedTx,alice);
 
-	listener
+    listener
     .confirmed(alice.address)
     .subscribe(
         function(_){
@@ -159,16 +159,16 @@ function process(){
             $('#wait2').remove();
             $('#result3').collapse('show');
 
-			nsHttp.getNamespace(new nem.NamespaceId('xembook'))
-		    .subscribe(_ => {
-				const hexMosaic = (new nem.UInt64(_.alias.mosaicId)).toHex();
-			    $('#mosaic ul').append(strLi(NODE,'/mosaic/' + hexMosaic ,hexMosaic));
+            nsHttp.getNamespace(new nem.NamespaceId('xembook'))
+            .subscribe(_ => {
+                const hexMosaic = (new nem.UInt64(_.alias.mosaicId)).toHex();
+                $('#mosaic ul').append(strLi(NODE,'/mosaic/' + hexMosaic ,hexMosaic));
 
-				for(let ns of _.levels){
-					const hexNs = ns.id.toHex();
-					$('#namespace ul').append(strLi(NODE,'/namespace/' + hexNs ,hexNs));
-				}
-			}, err => console.error(err));
+                for(let ns of _.levels){
+                    const hexNs = ns.id.toHex();
+                    $('#namespace ul').append(strLi(NODE,'/namespace/' + hexNs ,hexNs));
+                }
+            }, err => console.error(err));
         },
         err => console.error(err)
     );
