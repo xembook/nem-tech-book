@@ -34,6 +34,7 @@
         <div class="collapse" id="result3">
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
+			<button id="button3" class="btn btn-primary" type="button">Bob署名</button>
         </div>
 
         <!-- div block4 -->
@@ -71,6 +72,7 @@ const rxjs = require("/node_modules/rxjs/operators");
 const NODE = 'https://catapult-test.opening-line.jp:3001';
 const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
 const transactionHttp = new nem.TransactionHttp(NODE);
+const accountHttp = new nem.AccountHttp(NODE);
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
@@ -99,19 +101,7 @@ listener.open().then(() => {
         err => console.error(err)
     );
 
-    //aliceの中にbobの署名が必要なtxを探す
-    listener
-    .aggregateBondedAdded(alice.address)
-    .pipe(
-        rxjs.filter((_) => {
-            return !_.signedByAccount(bob.publicAccount)
-        }),
-        rxjs.map(_ => bob.signCosignatureTransaction(nem.CosignatureTransaction.create(_))),
-        rxjs.mergeMap(_ => transactionHttp.announceAggregateBondedCosignature(_))
-    )
-    .subscribe(_ =>{ 
-        console.log(">>Bob cosign in Alice partial transaction<<");
-    }, err => console.error(err));
+
 
 });
 
@@ -146,7 +136,7 @@ function process(){
         nem.UInt64.fromUint(480),
         signedTx,
         nem.NetworkType.MIJIN_TEST);
-    
+
     const lockSignedTx = alice.sign(lockTx, GENERATION_HASH);
 
     transactionHttp
@@ -168,17 +158,25 @@ function process(){
 
 	        $('#wait2').remove();
 	        $('#result3').collapse('show');
-	        $('#result4').collapse('show');
-
-		    const hash4 = signedTx.hash;
-
-		    $('#status4 ul').append(strLi(NODE,'/transaction/' + hash4 + '/status' ,hash4 + '/status'));
-		    $('#signedTx4').val(signedTx.payload);
-		    $('#confirmed5 ul').append(strLi(NODE,'/transaction/' + hash4 ,hash4 ));
 
         },
         err => console.error(err)
     );
+
+	//aliceの中にbobの署名が必要なtxを探す
+    listener
+    .aggregateBondedAdded(alice.address)
+    .pipe(
+        rxjs.filter((_) => {
+            return !_.signedByAccount(bob.publicAccount)
+        }),
+//        rxjs.map(_ => bob.signCosignatureTransaction(nem.CosignatureTransaction.create(_))),
+//        rxjs.mergeMap(_ => transactionHttp.announceAggregateBondedCosignature(_))
+    )
+    .subscribe(_ =>{
+        console.log(">>Bob cosign in Alice partial transaction<<");
+    }, err => console.error(err));
+
 
     listener
     .confirmed(alice.address)
@@ -194,6 +192,22 @@ function process(){
         err => console.error(err)
     );
 
+}
+
+function process3(){
+	accountHttp.aggregateBondedTransactions(alice.publicAccount)
+	.subscribe(_ => {
+		console.log(_);
+		$('#result4').collapse('show');
+
+//		const hash4 = signedTx.hash;
+//		$('#status4 ul').append(strLi(NODE,'/transaction/' + hash4 + '/status' ,hash4 + '/status'));
+//		$('#signedTx4').val(signedTx.payload);
+//		$('#confirmed5 ul').append(strLi(NODE,'/transaction/' + hash4 ,hash4 ));
+
+        },
+        err => console.error(err)
+    );
 }
 
 function showInfo(node,signedTx,account){
