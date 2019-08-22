@@ -33,13 +33,12 @@
         <!-- div block3 -->
         <div class="collapse" id="result3">
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
-            <h3>account</h3><div id="account"><ul></ul></div>
-            <button id="button3" class="btn btn-primary" type="button" >Bobの資産をロック on Private</button>
+            <button id="button3" class="btn btn-primary" type="button" >BobのPrivate資産をロック</button>
         </div>
 
         <!-- div block4 -->
         <div class="collapse" id="result4">
-            <h3>signedLockTx on PrivateChain(ロックされたボブの資産をAliceが取得)</h3><textarea id="signedTx4" rows="8" class="form-control"></textarea>
+            <h3>signedLockTx on PrivateChain</h3><textarea id="signedTx4" rows="8" class="form-control"></textarea>
             <h3>status</h3><div id="status4"><ul></ul></div>
 
 
@@ -50,11 +49,11 @@
 
         <!-- div block5 -->
         <div class="collapse" id="result5">
-            <h3>signedLockTx on PrivateChain</h3><textarea id="signedTx5_0" rows="8" class="form-control"></textarea>
+            <h3>signedProofTx on PrivateChain</h3>BobのPrivate資産をAliceが取得<textarea id="signedTx5_0" rows="8" class="form-control"></textarea>
             <h3>status</h3><div id="status5_0"><ul></ul></div>
 
             <h3>confirmed</h3><div id="confirmed5"><ul></ul></div>
-            <button id="button5" class="btn btn-primary" type="button" >ロックされたアリスの資産をボブへ on Public</button>
+            <button id="button5" class="btn btn-primary" type="button" >AliceのPublic資産をBobが取得</button>
         </div>
 
         <!-- div block6 -->
@@ -98,14 +97,6 @@ const bobPrivate  = nem.Account.createFromPrivateKey('BB68B933E188D9800A987E3DB0
 const bobPublic = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST); //空
 $('#address').text(alicePublic.address.address);
 
-console.log("alice public");
-console.log(alicePublic.address);
-console.log(alicePublic.publicKey);
-
-console.log("bob private");
-console.log(bobPrivate.address);
-console.log(bobPrivate.publicKey);
-
 const NODE_PUBLIC = "https://catapult-test.opening-line.jp:3001";
 const GEN_HASH_PUBLIC = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
 const txHttpPublic  = new nem.TransactionHttp(NODE_PUBLIC);
@@ -126,7 +117,6 @@ const wsEndpointPrivate = NODE_PRIVATE.replace('http', 'ws');
 const listenerPublic = new nem.Listener(wsEndpointPublic, WebSocket);
 const listenerPrivate = new nem.Listener(wsEndpointPrivate, WebSocket);
 
-
 var isInit = true;
 listenerPublic.open().then(() => {
 
@@ -141,7 +131,7 @@ listenerPublic.open().then(() => {
             if(isInit){
                 $('#button1').prop("disabled", false);
                 $('#button1').empty();
-                $('#button1').text("Aliceの資産をロック");
+                $('#button1').text("AliceのPublic資産をロック");
                 isInit = false;
             }
         },
@@ -167,7 +157,7 @@ function process(){
     );
 
     const lockTxPublicSigned = alicePublic.sign(lockTxPublic, GEN_HASH_PUBLIC);
-	showInfo(NODE_PUBLIC,lockTxPublicSigned,alicePublic);
+    showInfo(NODE_PUBLIC,lockTxPublicSigned,alicePublic);
 
     txHttpPublic
     .announce(lockTxPublicSigned)
@@ -185,108 +175,104 @@ function process(){
 
 
     }, err => console.error(err));
-
-
-
 }
 
 function process3(){
 
-	accountHttpPublic.unconfirmedTransactions(alicePublic.publicAccount)
-	.pipe(
-	    rxjs.mergeMap(_ => {
-			console.log(_);
-			return _;
-		}),
-	    rxjs.filter((tx) => {
-			return tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_LOCK 
-		}),
-	    rxjs.map(_ => {
+    accountHttpPublic.unconfirmedTransactions(alicePublic.publicAccount)
+    .pipe(
+        rxjs.mergeMap(_ => {
+            console.log(_);
+            return _;
+        }),
+        rxjs.filter((tx) => {
+            return tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_LOCK 
+        }),
+        rxjs.map(_ => {
 
-			console.log(_);
-	        const lockTxPrivate = nem.SecretLockTransaction.create(
-	            nem.Deadline.create(),
-	            nem.NetworkCurrencyMosaic.createRelative(1),
-	            nem.UInt64.fromUint(84 * 3600 / 15),
-	            nem.HashType.Op_Sha3_256,
-	            _.secret,
-	            alicePrivate.address,
-	            nem.NetworkType.MIJIN_TEST
-	        );
+            console.log(_);
+            const lockTxPrivate = nem.SecretLockTransaction.create(
+                nem.Deadline.create(),
+                nem.NetworkCurrencyMosaic.createRelative(1),
+                nem.UInt64.fromUint(84 * 3600 / 15),
+                nem.HashType.Op_Sha3_256,
+                _.secret,
+                alicePrivate.address,
+                nem.NetworkType.MIJIN_TEST
+            );
 
-	        console.log(lockTxPrivate);
-	        const lockTxPrivateSigned = bobPrivate.sign(lockTxPrivate, GEN_HASH_PRIVATE);
+            console.log(lockTxPrivate);
+            const lockTxPrivateSigned = bobPrivate.sign(lockTxPrivate, GEN_HASH_PRIVATE);
 
-		    const hash4 = lockTxPrivateSigned.hash;
-		    $('#signedTx4').val(lockTxPrivateSigned.payload);
-		    $('#status4 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hash4 + '/status' ,hash4 + '/status'));
-		    $('#confirmed5 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hash4 ,hash4 ));
+            const hash4 = lockTxPrivateSigned.hash;
+            $('#signedTx4').val(lockTxPrivateSigned.payload);
+            $('#status4 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hash4 + '/status' ,hash4 + '/status'));
+            $('#confirmed5 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hash4 ,hash4 ));
+
+            return txHttpPrivate
+            .announce(lockTxPrivateSigned)
+        })
+    )
+    .subscribe(x => {
+        console.log(x);
+
+        //TX3:private Lock(bob)->alice using proof
+        listenerPrivate
+        .confirmed(bobPrivate.address)
+        .pipe(
+
+            rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_LOCK ),
+            rxjs.mergeMap(_ => {
+
+                const aliceProof = random.toString('hex');
+
+                //private (Lock)Bob->Alice 作ったaliceProofで取り出す
+                const proofTxPrivate = nem.SecretProofTransaction.create(
+                    nem.Deadline.create(),
+                    nem.HashType.Op_Sha3_256,
+                    aliceSecret,
+                    alicePrivate.address,
+                    aliceProof,
+                    nem.NetworkType.MIJIN_TEST
+                );
+
+                console.log(proofTxPrivate);
+                const proofTxPrivateSigned = alicePrivate.sign(proofTxPrivate, GEN_HASH_PRIVATE);
+                const hashx = proofTxPrivateSigned.hash;
+
+                $('#signedTx5_0').val(proofTxPrivateSigned.payload);
+                $('#status5_0 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hashx + '/status' ,hashx + '/status'));
+//              $('#confirmed5 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hashx ,hashx ));
 
 
-	        return txHttpPrivate
-	        .announce(lockTxPrivateSigned)
-	    })
-	)
-	.subscribe(x => {
-	    console.log(x);
-
-	    //TX3:private Lock(bob)->alice using proof
-	    listenerPrivate
-	    .confirmed(bobPrivate.address)
-	    .pipe(
-
-	        rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_LOCK ),
-	        rxjs.mergeMap(_ => {
-
-	            const aliceProof = random.toString('hex');
-
-	            //private (Lock)Bob->Alice 作ったaliceProofで取り出す
-	            const proofTxPrivate = nem.SecretProofTransaction.create(
-	                nem.Deadline.create(),
-	                nem.HashType.Op_Sha3_256,
-	                aliceSecret,
-	                alicePrivate.address,
-	                aliceProof,
-	                nem.NetworkType.MIJIN_TEST
-	            );
-
-	            console.log(proofTxPrivate);
-	            const proofTxPrivateSigned = alicePrivate.sign(proofTxPrivate, GEN_HASH_PRIVATE);
-			    const hashx = proofTxPrivateSigned.hash;
-
-			    $('#signedTx5_0').val(proofTxPrivateSigned.payload);
-			    $('#status5_0 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hashx + '/status' ,hashx + '/status'));
-//			    $('#confirmed5 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hashx ,hashx ));
-
-
-	            return txHttpPrivate.announce(proofTxPrivateSigned);
-	        })
-	    )
-	    .subscribe(
-	        function(_){
-		        $('#wait4').remove();
-		        $('#result5').collapse('show');
-	        },
-	        err => console.error(err)
-	    );
-
+                return txHttpPrivate.announce(proofTxPrivateSigned);
+            })
+        )
+        .subscribe(
+            function(_){
+                $('#wait4').remove();
+                $('#result5').collapse('show');
+            },
+            err => console.error(err)
+        );
 
 
 
-	}, err => console.error(err));
+
+    }, err => console.error(err));
 
 }
 
 function process5(){
 
     //TX4:public Lock(alice)->bob by alice's proof
-	accountHttpPrivate.unconfirmedTransactions(alicePrivate.publicAccount)
+    accountHttpPrivate.unconfirmedTransactions(alicePrivate.publicAccount)
     .pipe(
-	    rxjs.mergeMap(_ => _),
+        rxjs.mergeMap(_ => _),
         rxjs.filter(tx => {
-			console.log(tx);
-			return tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_PROOF;
-		}),
+            console.log(tx);
+            return tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_PROOF;
+        }),
         rxjs.mergeMap(_ => {
             const proofTxPublic = nem.SecretProofTransaction.create(
                 nem.Deadline.create(),
@@ -300,16 +286,16 @@ function process5(){
 
             const proofTxPublicSigned = bobPublic.sign(proofTxPublic, GEN_HASH_PUBLIC);
 
-		    const hash6 = proofTxPublicSigned.hash;
+            const hash6 = proofTxPublicSigned.hash;
 
-		    $('#signedTx6').val(proofTxPublicSigned.payload);
-		    $('#status6 ul').append(strLi(NODE_PUBLIC,'/transaction/' + hash6 + '/status' ,hash6 + '/status'));
-		    $('#confirmed7 ul').append(strLi(NODE_PUBLIC,'/transaction/' + hash6 ,hash6 ));
+            $('#signedTx6').val(proofTxPublicSigned.payload);
+            $('#status6 ul').append(strLi(NODE_PUBLIC,'/transaction/' + hash6 + '/status' ,hash6 + '/status'));
+            $('#confirmed7 ul').append(strLi(NODE_PUBLIC,'/transaction/' + hash6 ,hash6 ));
 
-		    $('#account7 ul').append(strLi(NODE_PUBLIC,'/account/' + alicePublic.publicKey ,'/public/alice' ));
-		    $('#account7 ul').append(strLi(NODE_PUBLIC,'/account/' + bobPublic.publicKey ,'/public/bob' ));
-		    $('#account7 ul').append(strLi(NODE_PRIVATE,'/account/' + alicePrivate.publicKey ,'/private/alice' ));
-		    $('#account7 ul').append(strLi(NODE_PRIVATE,'/account/' + bobPrivate.publicKey ,'private/bob' ));
+            $('#account7 ul').append(strLi(NODE_PUBLIC,'/account/' + alicePublic.publicKey ,'/public/alice' ));
+            $('#account7 ul').append(strLi(NODE_PUBLIC,'/account/' + bobPublic.publicKey ,'/public/bob' ));
+            $('#account7 ul').append(strLi(NODE_PRIVATE,'/account/' + alicePrivate.publicKey ,'/private/alice' ));
+            $('#account7 ul').append(strLi(NODE_PRIVATE,'/account/' + bobPrivate.publicKey ,'private/bob' ));
 
             return txHttpPublic.announce(proofTxPublicSigned)
         })
@@ -330,8 +316,8 @@ function process5(){
     .subscribe(
         function(_){
 
-		    $('#wait6').remove();
-	        $('#result7').collapse('show');
+            $('#wait6').remove();
+            $('#result7').collapse('show');
         },
         err => console.error(err)
     );
@@ -345,8 +331,6 @@ function showInfo(node,signedTx,account){
     $('#signedTx').val(signedTx.payload);
     $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash + '/status'));
     $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
-    $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
-    $('#account ul').append(strLi(node,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
 }
 
 function strLi(node,href,text){
