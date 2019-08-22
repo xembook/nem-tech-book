@@ -295,7 +295,7 @@ function process5(){
             $('#account7 ul').append(strLi(NODE_PUBLIC,'/account/' + alicePublic.publicKey ,'/public/alice' ));
             $('#account7 ul').append(strLi(NODE_PUBLIC,'/account/' + bobPublic.publicKey ,'/public/bob' ));
             $('#account7 ul').append(strLi(NODE_PRIVATE,'/account/' + alicePrivate.publicKey ,'/private/alice' ));
-            $('#account7 ul').append(strLi(NODE_PRIVATE,'/account/' + bobPrivate.publicKey ,'private/bob' ));
+            $('#account7 ul').append(strLi(NODE_PRIVATE,'/account/' + bobPrivate.publicKey ,'/private/bob' ));
 
             return txHttpPublic.announce(proofTxPublicSigned)
         })
