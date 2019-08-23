@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
-<link rel="stylesheet" 
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+<link rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
     crossorigin="anonymous">
 </head>
 <body>
@@ -35,31 +35,34 @@
         <div class="collapse" id="result3">
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
+			<input type="text" id="authtx" class="form-control">
+			<button id="button3" class="btn btn-primary" type="button">ログイン</button>
         </div>
     </div>
 
-<script 
-    src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
+<script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous">
 </script>
-<script 
-    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" 
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
     crossorigin="anonymous">
 </script>
-<script 
-    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" 
+<script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
 <script src="nem2-sdk-0.13.1.js"></script>
 <script>
 
-const NODE = 'https://catapult-test.opening-line.jp:3001';
+			const NODE = 'https://catapult-test.opening-line.jp:3001';
 const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
 
 const nem = require("/node_modules/nem2-sdk");
+const rxjs = require("/node_modules/rxjs/operators");
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const bob = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
@@ -112,13 +115,59 @@ function process(){
     showInfo(NODE,signedTx,bob);
 }
 
+function process3(){
+
+    const tx = nem.TransferTransaction.create(
+        nem.Deadline.create(),
+        alice.address,
+        [nem.NetworkCurrencyMosaic.createRelative(0)],
+        nem.PlainMessage.create($('#authtx').val()),
+        nem.NetworkType.MIJIN_TEST
+    );
+    console.log(tx);
+
+    const signedTx = alice.sign(tx,GENERATION_HASH);
+    const txHttp = new nem.TransactionHttp(NODE);
+    txHttp
+    .announce(signedTx)
+    .subscribe(_ => console.log(_), err => console.error(err));
+
+	listener
+    .confirmed(alice.address)
+    .subscribe(
+        function(_){
+			console.log(_.message.payload);
+			txHttp.getTransaction(_.message.payload)
+			.pipe(
+				rxjs.filter((tx) => {
+					console.log(tx);
+					return true;
+				}),
+
+			)
+			.subscribe(_ => {
+
+				console.log("getTransaction");
+				console.log(_);
+			});
+
+        },
+        err => console.error(err)
+    );
+
+
+
+    showInfo(NODE,signedTx,bob);
+}
+
 function showInfo(node,signedTx,account){
 
     const pubkey = account.publicKey ;
     const address = account.address.address ;
     const hash = signedTx.hash
 
-    $('#signedTx').val(signedTx.payload);
+	$('#signedTx').val(signedTx.payload);
+	$('#authtx').val(signedTx.hash);
     $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash + '/status'));
     $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
     $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
@@ -136,6 +185,15 @@ $("#button1").click(
         return false;
     }
 );
+
+$("#button3").click(
+    function(){
+        process3();
+        $('#result4').collapse('show');
+        return false;
+    }
+);
+
 </script>
 </body>
 </html>
