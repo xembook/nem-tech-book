@@ -71,18 +71,11 @@ const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FC
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const carol = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-
-console.log("alice");
-console.log(alice.address);
-console.log(alice.publicKey);
-
-console.log("bob");
-console.log(bob.publicKey);
-console.log(bob);
+$('#address').text(alice.address.address);
 
 const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
-var hasBuilt = false;
+var isInit = true;
 
 listener.open().then(() => {
 
@@ -108,7 +101,7 @@ listener.open().then(() => {
     );
 });
 
-function buildProcess(){
+function process(){
 
     const sendAmount = nem.NetworkCurrencyMosaic.createRelative(10);
     const backAmount = nem.NetworkCurrencyMosaic.createRelative(1);
@@ -129,10 +122,20 @@ function buildProcess(){
 
     //Aliceで署名してシリアライズをBobに渡す
     const aliceSignedTx = aggregateTransaction.signWith(alice, GENERATION_HASH);
+    showInfo(NODE,aliceSignedTx,bob);
+
+}
+
+function process3(){
 
     //別端末でBobが署名
     const bobSignedTx = nem.CosignatureTransaction.signTransactionPayload(bob, aliceSignedTx.payload, GENERATION_HASH);
     console.log(bobSignedTx);
+
+}
+
+function process5(){
+
 
     //Alice側でまとめてTx再作成→アナウンス
     const cosignSignedTxs = [
@@ -150,8 +153,6 @@ function buildProcess(){
     }, 
     err => console.error(err)
     );
-    showInfo(NODE,signedTx,bob);
-
 }
 
 function showInfo(node,signedTx,account){
@@ -175,6 +176,22 @@ $("#button1").click(
     function(){
         process();
         $('#result2').collapse('show');
+        return false;
+    }
+);
+
+$("#button3").click(
+    function(){
+        process3();
+        $('#result4').collapse('show');
+        return false;
+    }
+);
+
+$("#button5").click(
+    function(){
+        process5();
+        $('#result6').collapse('show');
         return false;
     }
 );

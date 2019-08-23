@@ -71,18 +71,11 @@ const transactionHttp = new nem.TransactionHttp(NODE);
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const carol = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-
-console.log("alice");
-console.log(alice.address);
-console.log(alice.publicKey);
-
-console.log("bob");
-console.log(bob.publicKey);
-console.log(bob);
+$('#address').text(alice.address.address);
 
 const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
-var hasBuilt = false;
+var isInit = true;
 
 listener.open().then(() => {
 
@@ -238,6 +231,21 @@ $("#button1").click(
     }
 );
 
+$("#button3").click(
+    function(){
+        process3();
+        $('#result4').collapse('show');
+        return false;
+    }
+);
+
+$("#button5").click(
+    function(){
+        process5();
+        $('#result6').collapse('show');
+        return false;
+    }
+);
 
 
 })</script>
