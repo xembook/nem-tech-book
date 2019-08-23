@@ -35,9 +35,14 @@
         <div class="collapse" id="result3">
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
-			<input type="text" id="authtx" class="form-control">
+			<div><input type="text" id="authtx" class="form-control"></div>
 			<button id="button3" class="btn btn-primary" type="button">ログイン</button>
         </div>
+        <!-- div block4 -->
+        <div class="collapse" id="result4">
+            <h1>ログイン完了</h1>
+        </div>
+
     </div>
 
 <script
@@ -55,19 +60,20 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.1.js"></script>
+<script src="nem2-sdk-0.13.0.js"></script>
 <script>
 
-			const NODE = 'https://catapult-test.opening-line.jp:3001';
+const NODE = 'https://catapult-test.opening-line.jp:3001';
 const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
+const NAMESPACE = "available";
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const bob = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const carol = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 $('#address').text(alice.address.address);
-
 var isInit = true;
 const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
@@ -97,16 +103,87 @@ listener.open().then(() => {
 
 function process(){
 
-    const tx = nem.TransferTransaction.create(
+    //ネームスペース作成
+    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
         nem.Deadline.create(),
-        bob.address,
-        [nem.NetworkCurrencyMosaic.createRelative(0)],
-        nem.PlainMessage.create(''),
+        NAMESPACE,
+        nem.UInt64.fromUint(1),
         nem.NetworkType.MIJIN_TEST
     );
-    console.log(tx);
 
-    const signedTx = alice.sign(tx,GENERATION_HASH);
+    //モザイク作成
+    const nonce = nem.MosaicNonce.createRandom();
+    const mosaicDefTx = nem.MosaicDefinitionTransaction.create(
+        nem.Deadline.create(),
+        nonce,
+        nem.MosaicId.createFromNonce(nonce, alice.publicAccount),
+        nem.MosaicProperties.create({
+            supplyMutable: true,
+            transferable: true,
+            divisibility: 0,
+            duration: nem.UInt64.fromUint(1)
+        }),
+        nem.NetworkType.MIJIN_TEST
+    );
+
+    //モザイク変更
+    const mosaicChangeTx = nem.MosaicSupplyChangeTransaction.create(
+        nem.Deadline.create(),
+        mosaicDefTx.mosaicId,
+        nem.MosaicSupplyType.Increase,
+        nem.UInt64.fromUint(1000000),
+        nem.NetworkType.MIJIN_TEST
+    );
+
+    //モザイクとネームスペースのリンク
+    const mosaicAliasTx = nem.AliasTransaction.createForMosaic(
+        nem.Deadline.create(),
+        nem.AliasActionType.Link,
+        namespaceTx.namespaceId,
+        mosaicDefTx.mosaicId,
+        nem.NetworkType.MIJIN_TEST
+    );
+
+
+   const sendSealFromAliceToBobTx = nem.TransferTransaction.create(
+        nem.Deadline.create(),
+        bob.address,
+        [
+			new nem.Mosaic(new nem.NamespaceId(NAMESPACE), nem.UInt64.fromUint(1)),
+			nem.NetworkCurrencyMosaic.createRelative(1)
+		],
+        nem.EmptyMessage,
+        nem.NetworkType.MIJIN_TEST
+    );
+
+   const sendAuthFromBobToCarolTx = nem.TransferTransaction.create(
+        nem.Deadline.create(),
+        carol.address,
+        [nem.NetworkCurrencyMosaic.createRelative(0)],
+        nem.EmptyMessage,
+        nem.NetworkType.MIJIN_TEST
+    );
+
+    const aggregateTx = nem.AggregateTransaction.createComplete(
+        nem.Deadline.create(),
+        [
+            namespaceTx.toAggregate(alice.publicAccount),
+            mosaicDefTx.toAggregate(alice.publicAccount),
+            mosaicChangeTx.toAggregate(alice.publicAccount),
+            mosaicAliasTx.toAggregate(alice.publicAccount),
+            sendSealFromAliceToBobTx.toAggregate(alice.publicAccount),
+            sendAuthFromBobToCarolTx.toAggregate(bob.publicAccount),
+        ],
+        nem.NetworkType.MIJIN_TEST,
+        []
+    );
+    console.log(aggregateTx);
+    const signedTx =  aggregateTx.signTransactionWithCosignatories(
+        alice,
+        [bob],
+        GENERATION_HASH,
+    );
+
     const txHttp = new nem.TransactionHttp(NODE);
     txHttp
     .announce(signedTx)
@@ -117,47 +194,45 @@ function process(){
 
 function process3(){
 
-    const tx = nem.TransferTransaction.create(
-        nem.Deadline.create(),
-        alice.address,
-        [nem.NetworkCurrencyMosaic.createRelative(0)],
-        nem.PlainMessage.create($('#authtx').val()),
-        nem.NetworkType.MIJIN_TEST
-    );
-    console.log(tx);
+	const authTx = $('#authtx').val();
+	const signed = carol.signData(authTx);
 
-    const signedTx = alice.sign(tx,GENERATION_HASH);
-    const txHttp = new nem.TransactionHttp(NODE);
-    txHttp
-    .announce(signedTx)
-    .subscribe(_ => console.log(_), err => console.error(err));
+	//ここからサーバ側で検証
+	if(carol.publicAccount.verifySignature(authTx, signed)){
 
-	listener
-    .confirmed(alice.address)
-    .subscribe(
-        function(_){
-			console.log(_.message.payload);
-			txHttp.getTransaction(_.message.payload)
-			.pipe(
-				rxjs.filter((tx) => {
-					console.log(tx);
-					return true;
-				}),
+		const accountHttp = new nem.AccountHttp(NODE);
+	    const txHttp = new nem.TransactionHttp(NODE);
+		const nsHttp = new nem.NamespaceHttp(NODE);
 
-			)
-			.subscribe(_ => {
+		txHttp.getTransaction(authTx)
+		.pipe(
+			rxjs.mergeMap(_ => _.innerTransactions),
+			rxjs.filter(_=> {
+				return _.recipient !== undefined 
+					&& _.recipient.address == carol.publicAccount.address.address
+					&& _.signer.address.address == bob.publicAccount.address.address ;
+			}),
+			rxjs.mergeMap(_ => {
 
-				console.log("getTransaction");
-				console.log(_);
-			});
+			    return accountHttp.getAccountInfo(bob.publicAccount.address)
+				.pipe(
+					rxjs.mergeMap(info => info.mosaics),
+				);
+			}),
+			rxjs.mergeMap(_ => {
 
-        },
-        err => console.error(err)
-    );
-
-
-
-    showInfo(NODE,signedTx,bob);
+			    return nsHttp.getNamespace(new nem.NamespaceId(NAMESPACE))
+				.pipe(
+					rxjs.filter(ns=>{
+						return _.id.id.toDTO().toString() ==  ns.alias.mosaicId.toString();
+					})
+				)
+			}),
+		)
+		.subscribe(_ => {
+			$('#result4').collapse('show');
+		});
+	}
 }
 
 function showInfo(node,signedTx,account){
@@ -189,7 +264,6 @@ $("#button1").click(
 $("#button3").click(
     function(){
         process3();
-        $('#result4').collapse('show');
         return false;
     }
 );
