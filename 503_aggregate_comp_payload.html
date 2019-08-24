@@ -24,21 +24,32 @@
 
         <!-- div block2 -->
         <div class="collapse" id="result2">
-            <h3>signedTx</h3><textarea id="signedTx" rows="8" class="form-control"></textarea>
-            <h3>status</h3><div id="status"><ul></ul></div>
-            <div id="wait2" class="spinner-border text-primary" role="status">
-              <span class="sr-only">承認中...</span>
-            </div>
+			<h3>aliceSignedTx</h3><textarea id="aliceSignedTx" rows="8" class="form-control"></textarea>
+			<h3>aliceSignedTxHash</h3><div><input type="text" id="aliceSignedTxHash" class="form-control"></div>
+			<button id="button2" class="btn btn-primary" type="button">Bob署名</button>
         </div>
 
         <!-- div block3 -->
         <div class="collapse" id="result3">
+			<h3>bobSignedTxSignature</h3><textarea id="bobSignedTxSignature" rows="2" class="form-control"></textarea>
+			<h3>bobSignedTxSigner</h3><textarea id="bobSignedTxSigner" rows="1" class="form-control"></textarea>
+			<button id="button3" class="btn btn-primary" type="button">アナウンス</button>
+        </div>
+
+		<div class="collapse" id="result4">
+            <h3>signedTx</h3><textarea id="signedTx" rows="8" class="form-control"></textarea>
+            <h3>status</h3><div id="status"><ul></ul></div>
+            <div id="wait4" class="spinner-border text-primary" role="status">
+              <span class="sr-only">承認中...</span>
+            </div>
+        </div>
+
+        <!-- div block5 -->
+		<div class="collapse" id="result5">
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
-			<div><input type="text" id="authtx" class="form-control"></div>
-			<button id="button3" class="btn btn-primary" type="button">ログイン</button>
+
         </div>
-        <!-- div block4 -->
 
     </div>
 
@@ -59,8 +70,6 @@
 </script>
 <script src="nem2-sdk-0.13.1.js"></script>
 <script>$(function() {
-
-
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
@@ -122,43 +131,74 @@ function process(){
 
     //Aliceで署名してシリアライズをBobに渡す
     const aliceSignedTx = aggregateTransaction.signWith(alice, GENERATION_HASH);
-    showInfo(NODE,aliceSignedTx,bob);
+	$('#aliceSignedTx').val(aliceSignedTx.payload);
+	$('#aliceSignedTxHash').val(aliceSignedTx.hash);
+
+//    showInfo(NODE,aliceSignedTx,bob);
+
+}
+
+function process2(){
+
+    //別端末でBobが署名
+    const bobSignedTx = nem.CosignatureTransaction.signTransactionPayload(bob, $('#aliceSignedTx').val(), GENERATION_HASH);
+	$('#bobSignedTxSignature').val(bobSignedTx.signature);
+	$('#bobSignedTxSigner').val(bobSignedTx.signer);
+
+    console.log(bobSignedTx);
 
 }
 
 function process3(){
 
-    //別端末でBobが署名
-    const bobSignedTx = nem.CosignatureTransaction.signTransactionPayload(bob, aliceSignedTx.payload, GENERATION_HASH);
-    console.log(bobSignedTx);
-
-}
-
-function process5(){
-
 
     //Alice側でまとめてTx再作成→アナウンス
     const cosignSignedTxs = [
-        new nem.CosignatureSignedTransaction(bobSignedTx.parentHash, bobSignedTx.signature, bobSignedTx.signer)
+        new nem.CosignatureSignedTransaction(
+			$('#aliceSignedTxHash').val(),
+			$('#bobSignedTxSignature').val(),
+			$('#bobSignedTxSigner').val()
+		)
     ];
-    const recreatedTx = nem.TransactionMapping.createFromPayload(aliceSignedTx.payload);
+    const recreatedTx = nem.TransactionMapping.createFromPayload($('#aliceSignedTx').val());
     const signedTx = recreatedTx.signTransactionGivenSignatures(alice, cosignSignedTxs, GENERATION_HASH);
     console.log(signedTx.payload);
+
+	const address = alice.address.address ;
+	const hash = signedTx.hash
+	const pubkey = alice.publicKey ;
+
+	$('#signedTx').val(signedTx.payload);
+	$('#status ul').append(strLi(NODE,'/transaction/' + hash + '/status' ,hash + '/status'));
+	$('#confirmed ul').append(strLi(NODE,'/transaction/' + hash ,hash ));
+    $('#account ul').append(strLi(NODE,'/account/' + pubkey ,address ));
+    $('#account ul').append(strLi(NODE,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
 
     const transactionHttp = new nem.TransactionHttp(NODE);
     transactionHttp
     .announce(signedTx)
-    .subscribe(x =>{ 
+    .subscribe(x =>{
         console.log(x);
-    }, 
+    },
     err => console.error(err)
     );
+
+	listener
+	.confirmed(alice.address)
+	.subscribe(_ => {
+		$('#wait4').remove();
+		$('#result5').collapse('show');
+
+		},
+		err => console.error(err)
+	);
 }
 
 function showInfo(node,signedTx,account){
 
     const pubkey = account.publicKey ;
     const address = account.address.address ;
+	const hash = signedTx.hash
 
 	$('#signedTx').val(signedTx.payload);
 	$('#authtx').val(signedTx.hash);
@@ -180,18 +220,18 @@ $("#button1").click(
     }
 );
 
-$("#button3").click(
+$("#button2").click(
     function(){
-        process3();
-        $('#result4').collapse('show');
+        process2();
+        $('#result3').collapse('show');
         return false;
     }
 );
 
-$("#button5").click(
+$("#button3").click(
     function(){
-        process5();
-        $('#result6').collapse('show');
+        process3();
+        $('#result4').collapse('show');
         return false;
     }
 );
