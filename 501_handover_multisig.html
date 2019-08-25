@@ -35,10 +35,22 @@
         <div class="collapse" id="result3">
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
-			<div><input type="text" id="authtx" class="form-control"></div>
-			<button id="button3" class="btn btn-primary" type="button">ログイン</button>
+			<button id="button3" class="btn btn-primary" type="button">交換</button>
         </div>
         <!-- div block4 -->
+		<div class="collapse" id="result4">
+            <h3>signedTx</h3><textarea id="signedTx4" rows="8" class="form-control"></textarea>
+            <h3>status</h3><div id="status4"><ul></ul></div>
+            <div id="wait4" class="spinner-border text-primary" role="status">
+              <span class="sr-only">承認中...</span>
+            </div>
+        </div>
+
+		<!-- div block5 -->
+        <div class="collapse" id="result5">
+            <h3>confirmed</h3><div id="confirmed5"><ul></ul></div>
+            <h3>account</h3><div id="account5"><ul></ul></div>
+        </div>
 
     </div>
 
@@ -100,6 +112,7 @@ listener.open().then(() => {
         err => console.error(err)
     );
 
+/*
     //aliceの中にbobの署名が必要なtxを探す
     listener
     .aggregateBondedAdded(alice.address)
@@ -108,10 +121,11 @@ listener.open().then(() => {
         rxjs.map(_ => bob.signCosignatureTransaction(nem.CosignatureTransaction.create(_))),
         rxjs.mergeMap(_ => transactionHttp.announceAggregateBondedCosignature(_))
     )
-    .subscribe(_ =>{ 
+    .subscribe(_ =>{
         console.log(">>Bob cosign in Alice partial transaction<<");
     }, err => console.error(err));
-
+*/
+/*
     listener
     .aggregateBondedAdded(alice.address)
     .pipe(
@@ -119,12 +133,54 @@ listener.open().then(() => {
         rxjs.map(_ => carol.signCosignatureTransaction(nem.CosignatureTransaction.create(_))),
         rxjs.mergeMap(_ => transactionHttp.announceAggregateBondedCosignature(_))
     )
-    .subscribe(_ =>{ 
+    .subscribe(_ =>{
         console.log(">>Carol cosign in Alice partial transaction<<");
     }, err => console.error(err));
+*/
 });
 
 function process(){
+
+	//ネームスペース作成
+    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
+        nem.Deadline.create(),
+        "item",
+        nem.UInt64.fromUint(1),
+        nem.NetworkType.MIJIN_TEST
+    );
+
+    //モザイク作成
+    const nonce = nem.MosaicNonce.createRandom();
+    const mosaicDefTx = nem.MosaicDefinitionTransaction.create(
+        nem.Deadline.create(),
+        nonce,
+        nem.MosaicId.createFromNonce(nonce, alice.publicAccount),
+        nem.MosaicProperties.create({
+            supplyMutable: true,
+            transferable: true,
+            divisibility: 0,
+            duration: nem.UInt64.fromUint(1)
+        }),
+        nem.NetworkType.MIJIN_TEST
+    );
+
+    //モザイク変更
+    const mosaicChangeTx = nem.MosaicSupplyChangeTransaction.create(
+        nem.Deadline.create(),
+        mosaicDefTx.mosaicId,
+        nem.MosaicSupplyType.Increase,
+        nem.UInt64.fromUint(1000000),
+        nem.NetworkType.MIJIN_TEST
+    );
+
+    //モザイクとネームスペースのリンク
+    const mosaicAliasTx = nem.AliasTransaction.createForMosaic(
+        nem.Deadline.create(),
+        nem.AliasActionType.Link,
+        namespaceTx.namespaceId,
+        mosaicDefTx.mosaicId,
+        nem.NetworkType.MIJIN_TEST
+    );
 
     //マルチシグ化
     const multisigTx = nem.ModifyMultisigAccountTransaction.create(
@@ -138,6 +194,51 @@ function process(){
         nem.NetworkType.MIJIN_TEST
     );
 
+	const aggregateTx = nem.AggregateTransaction.createComplete(
+        nem.Deadline.create(),
+        [
+			namespaceTx.toAggregate(alice.publicAccount),
+            mosaicDefTx.toAggregate(alice.publicAccount),
+            mosaicChangeTx.toAggregate(alice.publicAccount),
+            mosaicAliasTx.toAggregate(alice.publicAccount),
+            multisigTx.toAggregate(alice.publicAccount),
+        ],
+        nem.NetworkType.MIJIN_TEST
+    );
+
+	const signedTx =  alice.signTransactionWithCosignatories(
+		aggregateTx ,[bob],GENERATION_HASH
+	);
+
+	const txHttp = new nem.TransactionHttp(NODE);
+	txHttp.announce(signedTx)
+    .subscribe(_ => {
+    }, err => console.error(err));
+
+	showInfo(NODE,signedTx,alice.publicAccount);
+
+
+	listener
+    .confirmed(alice.address)
+	.pipe(
+		rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === signedTx.hash),
+	)
+	.subscribe(
+        function(_){
+
+            $('#wait2').remove();
+            $('#result3').collapse('show');
+
+        },
+        err => console.error(err)
+    );
+
+
+    console.log(signedTx);
+
+}
+
+function process3(){
     //譲渡
     const modifyMultisigTx = nem.ModifyMultisigAccountTransaction.create(
         nem.Deadline.create(),
@@ -168,15 +269,27 @@ function process(){
     const aggregateTx = nem.AggregateTransaction.createBonded(
         nem.Deadline.create(),
         [
-            multisigTx.toAggregate(alice.publicAccount),
             modifyMultisigTx.toAggregate(alice.publicAccount),
             transferTx.toAggregate(carol.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST
     );
 
-    const signedTx =  alice.sign(aggregateTx, GENERATION_HASH);
+    const signedTx =  bob.signTransactionWithCosignatories(aggregateTx, [carol],GENERATION_HASH);
+
     console.log(signedTx);
+
+	const pubkey = alice.publicKey ;
+    const address = alice.address.address ;
+    const hash = signedTx.hash
+
+	$('#signedTx4').val(signedTx.payload);
+	$('#status4 ul').append(strLi(NODE,'/transaction/' + hash + '/status' ,hash + '/status'));
+    $('#confirmed5 ul').append(strLi(NODE,'/transaction/' + hash ,hash ));
+    $('#account5 ul').append(strLi(NODE,'/account/' + pubkey ,address ));
+    $('#account5 ul').append(strLi(NODE,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
+
+
 
     const lockTx = nem.HashLockTransaction.create(
         nem.Deadline.create(),
@@ -184,12 +297,22 @@ function process(){
         nem.UInt64.fromUint(480),
         signedTx,
         nem.NetworkType.MIJIN_TEST);
-    
-    const lockSignedTx = alice.sign(lockTx, GENERATION_HASH);
+
+	const aggregateLockTx = nem.AggregateTransaction.createComplete(
+        nem.Deadline.create(),
+        [
+            lockTx.toAggregate(alice.publicAccount),
+        ],
+        nem.NetworkType.MIJIN_TEST
+    );
+
+    const lockSignedTx = bob.sign(aggregateLockTx, GENERATION_HASH);
+	$('#status4 ul').append(strLi(NODE,'/transaction/' + lockSignedTx.hash + '/status' ,lockSignedTx.hash + '/status'));
 
     transactionHttp
     .announce(lockSignedTx)
     .subscribe(x => {
+		console.log("Locked!!");
     }, err => console.error(err));
 
     //ロックが承認されたらトランザクションを投げる
@@ -200,10 +323,40 @@ function process(){
         rxjs.mergeMap(ignored => transactionHttp.announceAggregateBonded(signedTx))
     )
     .subscribe(_ => {
+			console.log("announce bond");
         },
         err => console.error(err)
     );
+
+	listener
+    .aggregateBondedAdded(alice.address)
+    .pipe(
+        rxjs.filter(_ => !_.signedByAccount(carol.publicAccount)),
+        rxjs.map(_ => carol.signCosignatureTransaction(nem.CosignatureTransaction.create(_))),
+        rxjs.mergeMap(_ => transactionHttp.announceAggregateBondedCosignature(_))
+    )
+    .subscribe(_ =>{
+        console.log(">>Carol cosign in Alice partial transaction<<");
+		listener
+	    .confirmed(alice.address)
+		.pipe(
+			rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === signedTx.hash),
+		)
+		.subscribe(
+	        function(_){
+
+	            $('#wait4').remove();
+	            $('#result5').collapse('show');
+
+	        },
+	        err => console.error(err)
+	    );
+
+    }, err => console.error(err));
+
+
 }
+
 
 function showInfo(node,signedTx,account){
 
@@ -238,15 +391,6 @@ $("#button3").click(
         return false;
     }
 );
-
-$("#button5").click(
-    function(){
-        process5();
-        $('#result6').collapse('show');
-        return false;
-    }
-);
-
 
 })</script>
 </head>
