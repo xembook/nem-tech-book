@@ -15,6 +15,130 @@
 ## 3.1 マルチレベルマルチシグ
 ## 3.2 保留型アグリゲートトランザクション
 ## 3.3 アトミックスワップ
+- 303_atomic_swap.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/303_atomic_swap.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/303_atomic_swap.html
+
+### 3.3.1 2つのチェーン環境を定義
+
+```js
+const alicePublic  = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const alicePrivate = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+
+const bobPrivate  = nem.Account.createFromPrivateKey('BB68B933E188D9800A987E3DB055E9C4C05BDE53915308BF62910005A797A94D', nem.NetworkType.MIJIN_TEST);
+const bobPublic = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST); //空
+$('#address').text(alicePublic.address.address);
+
+//パブリックチェーン想定
+const NODE_PUBLIC = "https://catapult-test.opening-line.jp:3001";
+const GEN_HASH_PUBLIC = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
+const txHttpPublic  = new nem.TransactionHttp(NODE_PUBLIC);
+const accountHttpPublic = new nem.AccountHttp(NODE_PUBLIC);
+
+//プライベートチェーン想定
+const NODE_PRIVATE = "http://13.231.159.197:3000";
+const GEN_HASH_PRIVATE = "FC0A097C9A8ADA831255440873328D68B7561D25D9132B083CC29B7D563A3D32";
+const txHttpPrivate = new nem.TransactionHttp(NODE_PRIVATE);
+const accountHttpPrivate = new nem.AccountHttp(NODE_PRIVATE);
+
+```
+
+### 3.3.2 パブリックチェーンのAlice資産をロック
+```js
+const lockTxPublic = nem.SecretLockTransaction.create(
+    nem.Deadline.create(),
+    nem.NetworkCurrencyMosaic.createRelative(1),
+    nem.UInt64.fromUint(96 * 3600 / 15),
+    nem.HashType.Op_Sha3_256,
+    aliceSecret,
+    bobPublic.address,
+    nem.NetworkType.MIJIN_TEST
+);
+
+const lockTxPublicSigned = alicePublic.sign(lockTxPublic, GEN_HASH_PUBLIC);
+txHttpPublic.announce(lockTxPublicSigned)
+```
+
+### 3.3.3 プライベートチェーンのBob資産をロック 
+
+プライベートチェーン上のBobの資産をロックし、承認されればAliceがProofトランザクションで取得する。
+```js
+accountHttpPublic.unconfirmedTransactions(alicePublic.publicAccount)
+.pipe(
+    rxjs.mergeMap(_ => _),
+    rxjs.filter((tx) => {
+        return tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_LOCK 
+    }),
+    rxjs.map(_ => {
+
+        const lockTxPrivate = nem.SecretLockTransaction.create(
+            nem.Deadline.create(),
+            nem.NetworkCurrencyMosaic.createRelative(1),
+            nem.UInt64.fromUint(84 * 3600 / 15),
+            nem.HashType.Op_Sha3_256,
+            _.secret,
+            alicePrivate.address,
+            nem.NetworkType.MIJIN_TEST
+        );
+        const lockTxPrivateSigned = bobPrivate.sign(lockTxPrivate, GEN_HASH_PRIVATE);
+        return txHttpPrivate.announce(lockTxPrivateSigned)
+    })
+)
+```
+
+### 3.3.4 AliceがプライベートのBob資産を取得
+
+```js
+listenerPrivate
+.confirmed(bobPrivate.address)
+.pipe(
+
+    rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_LOCK ),
+    rxjs.mergeMap(_ => {
+
+        const aliceProof = random.toString('hex');
+        const proofTxPrivate = nem.SecretProofTransaction.create(
+            nem.Deadline.create(),
+            nem.HashType.Op_Sha3_256,
+            aliceSecret,
+            alicePrivate.address,
+            aliceProof,
+            nem.NetworkType.MIJIN_TEST
+        );
+       
+        const proofTxPrivateSigned = alicePrivate.sign(proofTxPrivate, GEN_HASH_PRIVATE);
+        return txHttpPrivate.announce(proofTxPrivateSigned);
+    })
+)
+```
+
+### 3.3.5 BobがパブリックのAlice資産を取得
+
+```js
+//TX4:public Lock(alice)->bob by alice's proof
+accountHttpPrivate.unconfirmedTransactions(alicePrivate.publicAccount)
+.pipe(
+    rxjs.mergeMap(_ => _),
+    rxjs.filter(tx => {
+        console.log(tx);
+        return tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_PROOF;
+    }),
+    rxjs.mergeMap(_ => {
+        const proofTxPublic = nem.SecretProofTransaction.create(
+            nem.Deadline.create(),
+            nem.HashType.Op_Sha3_256,
+            _.secret,
+            bobPublic.address,
+            _.proof,
+            nem.NetworkType.MIJIN_TEST
+        );
+        const proofTxPublicSigned = bobPublic.sign(proofTxPublic, GEN_HASH_PUBLIC);
+        return txHttpPublic.announce(proofTxPublicSigned)
+    })
+)
+```
 
 # 4 社会実装のヒント
 ブロックチェーンをシステムを開発するためには、実社会ならではの実装パターンを把握しておくことが重要です。
