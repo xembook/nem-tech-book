@@ -17,6 +17,8 @@
 ## 3.3 アトミックスワップ
 
 # 4 社会実装のヒント
+ブロックチェーンをシステムを開発するためには、実社会ならではの実装パターンを把握しておくことが重要です。
+
 ## 4.1 所有
 ### 4.1.1 動作概要
 - モザイク「item」を生成しAliceに割り当てます
@@ -77,7 +79,7 @@ const aggregateTx = nem.AggregateTransaction.createBonded(
 
 
 ## 4.2 認証
-### AliceがBobに監査人シールを送る
+### 4.2.1 AliceがBobに監査人シールを送る
 ```js
 const sendSealFromAliceToBobTx = nem.TransferTransaction.create(
     nem.Deadline.create(),
@@ -91,7 +93,7 @@ const sendSealFromAliceToBobTx = nem.TransferTransaction.create(
 );
 ```
 
-### BobがCarolに登録トランザクションを送る
+### 4.2.2 BobがCarolに登録トランザクションを送る
 ```js
 const sendAuthFromBobToCarolTx = nem.TransferTransaction.create(
     nem.Deadline.create(),
@@ -103,7 +105,7 @@ const sendAuthFromBobToCarolTx = nem.TransferTransaction.create(
 
 ```
 
-### Carolの署名を検証する
+### 4.2.3 Carolの署名を検証する
 ```js
 const authTx = $('#authtx').val();
 const signed = carol.signData(authTx);
@@ -114,7 +116,7 @@ if(carol.publicAccount.verifySignature(authTx, signed)){
 
 ```
 
-### ログイン認証
+### 4.2.4 ログイン認証
 ```js
 const accountHttp = new nem.AccountHttp(NODE);
 const txHttp = new nem.TransactionHttp(NODE);
@@ -148,7 +150,7 @@ txHttp.getTransaction(authTx)
 ```
 
 ## 4.3 トレーサビリティ
-### トランザクション作成
+### 4.3.1 トランザクション作成
 ```js
 const aggregateTx = nem.AggregateTransaction.createComplete(
     nem.Deadline.create(),
@@ -164,7 +166,7 @@ $('#aliceSignedTx').val(aliceSignedTx.payload);
 $('#aliceSignedTxHash').val(aliceSignedTx.hash);
 ```
 
-### 別環境でBobが署名
+### 4.3.2 別環境でBobが署名
 ```js
 const bobSignedTx = nem.CosignatureTransaction.signTransactionPayload(bob, $('#aliceSignedTx').val(), GENERATION_HASH);
 $('#bobSignedTxSignature').val(bobSignedTx.signature);
@@ -172,7 +174,7 @@ $('#bobSignedTxSigner').val(bobSignedTx.signer);
 
 ```
 
-### 署名を集めてトランザクションを再作成
+### 4.3.3 署名を集めてトランザクションを再作成
 ```js
 const cosignSignedTxs = [
     new nem.CosignatureSignedTransaction(
