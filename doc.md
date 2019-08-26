@@ -1,9 +1,177 @@
 # はじめに
 
+こんにちは、XEMBookです。この章ではブラウザではじめるNEMアプリケーション開発について解説してきたいと思います。
+
 # 1 開発環境の準備
 
 ## 1.1 バンドルファイルの作成
+nem2-sdkはNodeJS用に書かれたライブラリです。ブラウザで利用するためにはブラウザからライブラリを読み込めるようにバンドル化する必要があります。今回はbrowserifyというライブラリを利用してnem2-sdkをバンドル化します。バンドル化にはNode.jsの環境が必要になりますので、必要に応じてインストールしてください。インストール環境が無い人は以下のリポジトリに筆者のバンドルファイルを置いています。
+
+- xembook/nem2-sdk-browserify
+  - https://github.com/xembook/nem2-sdk-browserify
+
+
+Node.jsのインストールを終えたらbrowserify、nem2-sdkをインストールし、バンドルファイルを作成します。
+
+### 1.1.1 browserifyインストール
+```sh
+npm install browserify
+```
+
+### 1.1.2 nem2-sdkインストール
+入手可能なバージョンを検索し、指定バージョンをインストールします。今回は執筆時最新バージョンの0.13.1を入れます。依存関係にあるrxjsは自動的にインストールされます。
+
+```sh
+npm info nem2-sdk versions
+npm install nem2-sdk@0.13.0
+```
+
+ブラウザバンドル版を書き出します。書き出す場所によって、JavaScriptからの呼び出し方が異なります。今回はNode.jsが参照するライブラリnode_modulesが配置されているディレクトリと同じ場所で以下のコマンドを実行します。
+
+```sh
+ browserify -r ./node_modules/nem2-sdk -r ./node_modules/rxjs/operators -o nem2-sdk-0.13.1.js
+```
+
+nem2-sdk-0.13.1.jsというバンドルファイルが作成たと思います。
+-r オプションをつけて外部js側からrequireが使えるようにしておきます。
+
+それでは実際にHTMLファイルから読み込んでみましょう。まず、scriptタグでバンドルファイルの場所を指定します。
+
+```html
+<script src="nem2-sdk-0.13.1.js"></script>
+```
+
+次に 変数にライブラリを読み込みます。-r でオプション指定したパスから ".(ピリオド)"を取った形式で指定します。rxjs/operators　も同時に読み込んでおきましょう。
+
+```js
+
+const nem = require("/node_modules/nem2-sdk");
+const rxjs = require("/node_modules/rxjs/operators");
+
+```
+
+これで　`nem.` と指定することで nem2-sdkが提供するクラスが使えるようになりました。
+
+
+
 ## 1.2 ブラウザを使ったデバッグ手法
+今回はchromeブラウザをメインに利用して開発を行います。chromeには便利な開発者向けのデベロッパーツールがありますのでぜひ活用してください。
+ここで簡単な操作方法を説明しておきます。以下のHTMLファイルを作成して保存してください。
+
+
+```html
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script src="nem2-sdk-0.13.1.js"></script>
+<script>
+const nem = require("/node_modules/nem2-sdk");
+console.log(nem);
+</script>
+</head>
+</html>
+
+```
+
+F12キーを押してコンソールを開きます。
+Sourcesタブから表示中のHTMLファイルを選択し、以下コード以降の箇所でブレークポイントを設定します。
+ページをリロードし、該当箇所に処理が差し掛かるとデバッグモードになります。
+
+```js
+const nem = require("/node_modules/nem2-sdk");
+```
+
+### 1.2.1 開発者コンソールを利用して変換する
+
+デバッグモード中にConsoleタブを開きコマンドを入力することで、nem2-sdkの挙動を確認することができます。
+以下のように入力値と出力値を区別して読み進めてください。
+
+```
+> 入力値
+< 出力値
+```
+
+#### UInt64形式の数値を10進数数値に変換する
+
+```js
+> new nem.UInt64([27174,0]).compact()
+< 27174
+```
+
+#### UInt64形式のIDをHEX文字列に変換する
+
+```js
+> new nem.UInt64([853116887,2007078553]).toHex()
+< "77A1969932D987D7"
+```
+
+#### UInt64形式のtmiestampを日本時間に変換する
+```js
+> new Date(new nem.UInt64([1241926107,24]).compact() + Date.UTC(2016, 3, 1, 0, 0, 0, 0))
+< Mon Jul 22 2019 19:05:41 GMT+0900 (日本標準時)
+```
+
+#### 10進数の数値を UInt64形式に変換する
+
+```js
+
+> nem.UInt64.fromUint(27174).toDTO()
+< (2) [27174, 0]
+```
+#### HEX文字列をUInt64形式に変換する
+
+```js
+> nem.UInt64.fromHex("77A1969932D987D7").toDTO()
+< (2) [853116887, 2007078553]
+```
+
+#### utf-8テキストををHEX文字列に変換
+
+```js
+o="";r=nem.Convert.rstr2utf8("日本語でも大丈夫");for (i in r){o+=r.charCodeAt(i).toString(16)}
+< "e697a5e69cace8aa9ee381a7e38282e5a4a7e4b888e5a4ab"
+```
+
+#### HEX文字列をutf-8テキストに変換
+
+```js
+> o="";hex="e697a5e69cace8aa9ee381a7e38282e5a4a7e4b888e5a4ab";for(var i=0;i<hex.length;i+=2){o+= String.fromCharCode(parseInt(hex.substr(i,2),16));}decodeURIComponent(escape(o));
+< "日本語でも大丈夫"
+```
+
+#### NEMESISブロック時間を取得
+
+```js
+
+> nem.Deadline.timestampNemesisBlock
+< 1459468800
+```
+
+#### タイムスタンプ取得
+```js
+> nem.UInt64.fromUint((new Date()).getTime() - nem.Deadline.timestampNemesisBlock * 1000).toDTO();
+< (2) [2360861166, 24]
+```
+
+#### 公開鍵からアドレス変換
+```js
+
+> nem.Address.createFromPublicKey("FF6E61F2A0440FB09CA7A530C0C64A275ADA3A13F60D1EC916D7F1543D7F0574", nem.NetworkType.MIJIN_TEST).address
+< "SCAZJP2UPDEMZJZMY3CCUJQGXY7JMDVJ7CRG6ROT"
+```
+
+#### アドレスのBase32変換
+```js
+> nem.Address.createFromEncoded("9019CC9DFFB37ED9142E7937CA375FB65BF1349ED563503D67").address
+< "SAM4ZHP7WN7NSFBOPE34UN27WZN7CNE62VRVAPLH"
+```
+
+##### アドレスのHEX変換
+```js
+> nem.Convert.uint8ToHex(nem.RawAddress.stringToAddress("SAM4ZHP7WN7NSFBOPE34UN27WZN7CNE62VRVAPLH"))
+< "9019CC9DFFB37ED9142E7937CA375FB65BF1349ED563503D67"
+```
 
 # 2 サンプルプログラム基本編
 ## 2.1 サンプルテンプレート
