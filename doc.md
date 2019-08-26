@@ -12,8 +12,172 @@
 ## 2.4 アグリゲートトランザクション(マルチシグ)
 
 # 3 サンプルプログラム応用編
+以下のサンプルプログラムについて説明します。
+
+- マルチレベルマルチシグ
+- 保留型アグリゲートトランザクション
+- アトミックスワップ
+
 ## 3.1 マルチレベルマルチシグ
-## 3.2 保留型アグリゲートトランザクション
+
+- 301_multilevel_multisig.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/301_multilevel_multisig.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/301_multilevel_multisig.html
+
+### 3.1.1 アカウント生成
+```js
+const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const carol = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const dave = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const dave2 = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const ellen = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const frank = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+```
+
+### 3.1.2 マルチシグ組成
+```js
+
+const addType = nem.MultisigCosignatoryModificationType.Add;
+const removeType = nem.MultisigCosignatoryModificationType.Remove;
+const ellenOrFrankMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+    nem.Deadline.create(),
+    1,1,
+    [
+        new nem.MultisigCosignatoryModification(addType, ellen),
+        new nem.MultisigCosignatoryModification(addType, frank)
+    ],
+    nem.NetworkType.MIJIN_TEST
+);
+
+const bobAndDaveAndCarolMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+    nem.Deadline.create(),
+    2,2,
+    [
+        new nem.MultisigCosignatoryModification(addType, bob),
+        new nem.MultisigCosignatoryModification(addType, dave),
+        new nem.MultisigCosignatoryModification(addType, carol),
+    ],
+    nem.NetworkType.MIJIN_TEST
+);
+
+const aggregateTx = nem.AggregateTransaction.createComplete(
+    nem.Deadline.create(),
+    [
+        ellenOrFrankMultisigTx.toAggregate(dave.publicAccount),
+        bobAndDaveAndCarolMultisigTx.toAggregate(alice.publicAccount),
+    ],
+    nem.NetworkType.MIJIN_TEST,
+    []
+);
+
+const signedTx =  alice.signTransactionWithCosignatories(
+    aggregateTx,
+    [bob,carol,dave,ellen,frank],
+    GENERATION_HASH,
+);
+txHttp.announce(signedTx)
+```
+
+
+### 3.1.3 DaveからDave2に連署者を変更
+```js
+const switchDaveToMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+    nem.Deadline.create(),
+    0,0,
+    [
+        new nem.MultisigCosignatoryModification(addType, dave2),
+        new nem.MultisigCosignatoryModification(removeType, dave),
+    ],
+    nem.NetworkType.MIJIN_TEST
+);
+
+const aggregateTx2 = nem.AggregateTransaction.createComplete(
+    nem.Deadline.create(),
+    [
+        ellenOrFrankMultisigTx.toAggregate(dave2.publicAccount),
+        switchDaveToMultisigTx.toAggregate(alice.publicAccount),
+    ],
+    nem.NetworkType.MIJIN_TEST,
+    []
+);
+
+const signedTx2 =  dave2.signTransactionWithCosignatories(
+    aggregateTx2,
+    [carol,ellen,frank],//bob,daveは必要なし
+    GENERATION_HASH,
+);
+
+```
+
+# 3.2 保留型アグリゲートトランザクション
+
+- 302_bonded_multisigg.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/302_bonded_multisig.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/302_bonded_multisig.html
+
+### 3.2.1 マルチシグ化トランザクションを生成する
+```js
+const multisigTx = nem.ModifyMultisigAccountTransaction.create(
+    nem.Deadline.create(),
+    1,1,
+    [
+        new nem.MultisigCosignatoryModification(addType,bob)
+    ],
+    nem.NetworkType.MIJIN_TEST
+);
+
+const aggregateTx = nem.AggregateTransaction.createBonded(
+    nem.Deadline.create(),
+    [
+        multisigTx.toAggregate(alice.publicAccount),
+    ],
+    nem.NetworkType.MIJIN_TEST
+);
+
+```
+
+### 3.2.2 ロックが承認されたらトランザクションを送信する
+```js
+const lockTx = nem.HashLockTransaction.create(
+    nem.Deadline.create(),
+    nem.NetworkCurrencyMosaic.createRelative(10),
+    nem.UInt64.fromUint(480),
+    signedTx,
+    nem.NetworkType.MIJIN_TEST);
+
+const lockSignedTx = alice.sign(lockTx, GENERATION_HASH);
+transactionHttp.announce(lockSignedTx)
+
+listener
+.confirmed(alice.address)
+.pipe(
+    rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === lockSignedTx.hash),
+    rxjs.mergeMap(ignored => transactionHttp.announceAggregateBonded(signedTx))
+)
+```
+
+### 3.2.3 保留されているトランザクションがあれば署名する
+```js
+accountHttp.aggregateBondedTransactions(alice.publicAccount)
+.pipe(
+    rxjs.mergeMap(_ => _),
+    rxjs.filter((_) => {
+        return !_.signedByAccount(bob.publicAccount)
+    }),
+    rxjs.map(_ => {
+        return bob.signCosignatureTransaction(nem.CosignatureTransaction.create(_));
+    }),
+    rxjs.mergeMap(_ => {
+        return transactionHttp.announceAggregateBondedCosignature(_);
+    })
+)
+```
+
 ## 3.3 アトミックスワップ
 - 303_atomic_swap.html
   - ソースコード
@@ -141,9 +305,18 @@ accountHttpPrivate.unconfirmedTransactions(alicePrivate.publicAccount)
 ```
 
 # 4 社会実装のヒント
+
 ブロックチェーンをシステムを開発するためには、実社会ならではの実装パターンを把握しておくことが重要です。
 
 ## 4.1 所有
+
+- 401_handover_multisig.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/401_handover_multisig.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/401_handover_multisig.html
+
+
 ### 4.1.1 動作概要
 - モザイク「item」を生成しAliceに割り当てます
 - Aliceをマルチシグ化し、Bobを連署アカウントに指定します
@@ -203,6 +376,12 @@ const aggregateTx = nem.AggregateTransaction.createBonded(
 
 
 ## 4.2 認証
+- 402_auth.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/402_auth.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/402_auth.html
+
 ### 4.2.1 AliceがBobに監査人シールを送る
 ```js
 const sendSealFromAliceToBobTx = nem.TransferTransaction.create(
@@ -274,6 +453,13 @@ txHttp.getTransaction(authTx)
 ```
 
 ## 4.3 トレーサビリティ
+
+- 403_aggregate_comp_payload.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/403_aggregate_comp_payload.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/403_aggregate_comp_payload.html
+
 ### 4.3.1 トランザクション作成
 ```js
 const aggregateTx = nem.AggregateTransaction.createComplete(
