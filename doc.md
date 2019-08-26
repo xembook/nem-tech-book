@@ -7,9 +7,433 @@
 
 # 2 サンプルプログラム基本編
 ## 2.1 サンプルテンプレート
+
+- 201_sample_template.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/201_sample_template.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/201_sample_template.html
+
+- deposit to
+  - サンプルプログラムを動かすために必要なXEMを入金先アドレスを表示します。Faucetサービスなどを利用して表示されたアカウントアドレスに送金してください。送金必要額はサンプルプログラムによって異なります。
+- 送信ボタン
+  - 着金が確認されると送信ボタンが表示されます。このボタンをクリックすることでサンプルプログラムが開始します。
+- signedTx
+  - トランザクションの署名結果が出力されます。この文字列がノードにアナウンスされます。
+- status
+  - トランザクションが承認されるまでの間、このリンクで状態を確認することができます。エラーがあった場合もここで確認します。
+- confirmed
+  - トランサクションが承認された後、このリンクで取り込まれた情報を確認します。
+- account
+  - トランザクションの承認後、アカウントの状態変化を確認します。
+
+### 2.1.1 body部分
+画面に表示される項目順に動作の概要を説明します。画面表示時は入金先アドレスしか表示されず、手順を進めていくうちに確認可能な項目、実行可能な項目が順次表示していきます。
+
+```html
+<h1>sample</h1>
+
+<!-- div block1 -->
+<h3>deposit to</h3>
+<div id="address"></div>
+<div class="collapse" id="result1">
+    <button id="button1" class="btn btn-primary" type="button" disabled>
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      承認中...
+    </button>
+</div>
+
+<!-- div block2 -->
+<div class="collapse" id="result2">
+    <h3>signedTx</h3><textarea id="signedTx" rows="8" class="form-control"></textarea>
+    <h3>status</h3><div id="status"><ul></ul></div>
+    <div id="wait2" class="spinner-border text-primary" role="status">
+      <span class="sr-only">承認中...</span>
+    </div>
+</div>
+
+<!-- div block3 -->
+<div class="collapse" id="result3">
+    <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
+    <h3>account</h3><div id="account"><ul></ul></div>
+</div>
+```
+
+### 2.1.2 読み込みスクリプト
+nem2-sdkのほかにjqueryを使用します。
+```html
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="nem2-sdk-0.13.1.js"></script>
+```
+
+### 2.1.3 実装サンプルプログラム
+```html
+<script>$(function() {
+
+})</script>
+```
+今回のサンプルプログラムはすべてHTMLファイルの上に記述していきます。
+jQueryの表示機能を使用するので、nem2-sdkの処理は上記 `$(function(){　}) `　で囲ってください。
+
+### 2.1.4 固定値の定義
+```js
+const NODE = 'https://catapult-test.opening-line.jp:3001';
+const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
+```
+今回使用するノードとそのブロックチェーンが最初に生成したハッシュ値を定義します。
+
+### 2.1.5 nem2-sdk関連モジュールの定義
+```js
+const nem = require("/node_modules/nem2-sdk");
+const rxjs = require("/node_modules/rxjs/operators");
+const sha3_256 = require("/node_modules/js-sha3").sha3_256;
+```
+nem2-sdkで使用するモジュールを読み込みます。
+
+### 2.1.6 アカウント生成
+```js
+const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+$('#address').text(alice.address.address);
+```
+サンプルプログラムで使用するアカウントを生成します。必要分を定義してください。
+入金確認後に起動するサンプルが多いので、アドレスをコンソール出力しておくと便利です。
+
+### 2.1.7 リスナー準備
+```js
+
+const wsEndpoint = NODE.replace('https', 'wss');
+const listener = new nem.Listener(wsEndpoint, WebSocket);
+let isInit = false;
+listener.open().then(() => {
+
+  //ここにリスナーを追加します。
+});
+```
+
+### 2.1.8 リスナー定義
+```js
+listener
+.unconfirmedAdded(alice.address)
+.subscribe(_=> $('#result1').collapse('show'),err => console.error(err));
+
+listener
+.confirmed(alice.address)
+.subscribe(
+    function(_){
+        if(isInit){
+            $('#button1').prop("disabled", false);
+            $('#button1').empty();
+            $('#button1').text("送信");
+            isInit = false;
+        }else{
+            $('#wait2').remove();
+            $('#result3').collapse('show');
+        }
+    },
+    err => console.error(err)
+);
+```
+
+### 2.1.9 トランザクション処理
+```js
+
+function process(){
+
+    const tx = nem.TransferTransaction.create(
+        nem.Deadline.create(),
+        alice.address,
+        [nem.NetworkCurrencyMosaic.createRelative(0)],
+        nem.PlainMessage.create('Hello World!'),
+        nem.NetworkType.MIJIN_TEST
+    );
+    const signedTx = alice.sign(tx,GENERATION_HASH);
+    const txHttp = new nem.TransactionHttp(NODE);
+    txHttp
+    .announce(signedTx)
+    .subscribe(_ => console.log(_), err => console.error(err));
+
+    showInfo(NODE,signedTx,alice);
+}
+```
+トランザクションの作成、署名、アナウンスを記述
+
+### 2.1.10 結果出力
+```js
+function showInfo(node,signedTx,account){
+
+    const pubkey = account.publicKey ;
+    const address = account.address.address ;
+    const hash = signedTx.hash
+
+    $('#signedTx').val(signedTx.payload);
+    $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash + '/status'));
+    $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
+    $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
+    $('#account ul').append(strLi(node,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
+}
+
+function strLi(node,href,text){
+    return '<li><a target="_blank" href="' + node + href + '">' + text + '</a></li>';
+}
+```
+画面上への出力
+
+### 2.1.11 ボタン定義
+```js
+
+$("#button1").click(
+    function(){
+        process();
+        $('#result2').collapse('show');
+        return false;
+    }
+);
+```
+
 ## 2.2 監視
-## 2.3 アグリゲートトランザクション
-## 2.4 アグリゲートトランザクション(マルチシグ)
+
+- 202_listener.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/202_listener.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/202_listener.html
+
+
+### 2.2.1 ブロック監視
+```js
+listener
+.newBlock()
+.subscribe(function(_){
+
+    console.log("==new block==");
+    console.log(_.height.compact());
+    console.log(new Date(_.timestamp.compact() + Date.UTC(2016, 3, 1, 0, 0, 0, 0)));
+},
+err => console.error(err));
+
+```
+
+### 2.2.2 トランザクションの監視
+```js
+blockHttp.getBlockTransactions(_.height.compact())
+.subscribe((transactions) => {
+    console.log("--transaction--");
+    for(let transaction of transactions){
+        console.log(transaction);
+
+        for(let mosaic of transaction.mosaics){
+            $("#table").append("<tr>" 
+                +"<td>"+ _.height.compact() + "</td>"
+                +"<td>"+ transaction.recipient.address + "</td>"
+                +"<td>"+ mosaic.id.toHex() + "</td>"
+                +"<td>"+ mosaic.amount.compact() + "</td>"
+                + "</tr>"
+            );
+        }
+    }
+})
+```
+
+### 2.2.3 レシートの監視
+```js
+blockHttp.getBlockReceipts(_.height.compact())
+.subscribe((receipts) => {
+    console.log("--receipt--");
+    for(let statement of receipts.transactionStatements){
+        for(let receipt of statement.receipts){
+            console.log(receipt);
+        }
+    }
+    for(let statement of receipts.addressResolutionStatements){
+        for(let receipt of statement.receipts){
+            console.log(receipt);
+        }
+    }
+    for(let statement of receipts.mosaicResolutionStatements){
+        for(let receipt of statement.receipts){
+            console.log(receipt);
+        }
+    }
+})
+```
+
+### 2.2.4 アカウント監視
+```js
+
+//未承認トランザクションの監視
+listener
+.confirmed(alice.address)
+.subscribe(
+    function(_){
+        console.log("==confirmed transaction(alice)==");
+        if(!hasBuilt){
+            console.log("[[start sample program]]");
+            buildProcess();
+            hasBuilt = true;
+        }
+    },
+    err => console.error(err)
+);
+
+//承認済みトランザクションの監視
+listener
+.unconfirmedAdded(alice.address)
+.subscribe(
+    function(_){
+        console.log("--unconfirmed transaction(alice)--");
+        console.log(_);
+    },
+    err => console.error(err)
+);
+```
+
+## 2.3 アグリゲートトランザクション(モザイク生成)
+アグリゲートトランザクションを使うと複数のトランザクションを集約して１つのブロック内で処理を行うことができます。
+
+
+- 203_ns_mosaic_link_sample.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/203_ns_mosaic_link_sample.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/203_ns_mosaic_link_sample.html
+
+
+今回はネームスペースを作成し、モザイクに割り当てるまでの処理をまとめてみます。
+
+### 2.3.1 ネームスペース作成
+```js
+    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
+        nem.Deadline.create(),
+        "xembook",
+        nem.UInt64.fromUint(1),
+        nem.NetworkType.MIJIN_TEST
+    );
+```
+
+### 2.3.2 モザイク作成
+```js
+const nonce = nem.MosaicNonce.createRandom();
+const mosaicDefTx = nem.MosaicDefinitionTransaction.create(
+    nem.Deadline.create(),
+    nonce,
+    nem.MosaicId.createFromNonce(nonce, alice.publicAccount),
+    nem.MosaicProperties.create({
+        supplyMutable: true,
+        transferable: true,
+        divisibility: 0,
+        duration: nem.UInt64.fromUint(1)
+    }),
+    nem.NetworkType.MIJIN_TEST
+);
+```
+
+### 2.3.3 モザイク変更
+```js
+const mosaicChangeTx = nem.MosaicSupplyChangeTransaction.create(
+    nem.Deadline.create(),
+    mosaicDefTx.mosaicId,
+    nem.MosaicSupplyType.Increase,
+    nem.UInt64.fromUint(1000000),
+    nem.NetworkType.MIJIN_TEST
+);
+```
+
+### 2.3.4 モザイクとネームスペースのリンク
+```js
+const mosaicAliasTx = nem.AliasTransaction.createForMosaic(
+    nem.Deadline.create(),
+    nem.AliasActionType.Link,
+    namespaceTx.namespaceId,
+    mosaicDefTx.mosaicId,
+    nem.NetworkType.MIJIN_TEST
+);
+```
+
+### 2.3.5 集約
+```js
+    const aggregateTransaction = nem.AggregateTransaction.createComplete(
+        nem.Deadline.create(),
+        [
+            namespaceTx.toAggregate(alice.publicAccount),
+            mosaicDefTx.toAggregate(alice.publicAccount),
+            mosaicChangeTx.toAggregate(alice.publicAccount),
+            mosaicAliasTx.toAggregate(alice.publicAccount),
+        ],
+        nem.NetworkType.MIJIN_TEST,
+        []
+    );
+```
+
+## 2.4 アグリゲートトランザクション(マルチシグ組成)
+- 204_ns_account_link_multisig.html
+  - ソースコード
+    - https://github.com/xembook/nem-tech-book/blob/master/204_ns_account_link_multisig.html
+  - デモ
+    - https://xembook.github.io/nem-tech-book/204_ns_account_link_multisig.html
+
+### 2.4.1 ネームスペース作成
+```js
+const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
+    nem.Deadline.create(),
+    "xembook",
+    nem.UInt64.fromUint(1),
+    nem.NetworkType.MIJIN_TEST
+);
+```
+
+### 2.4.2 アカウントとネームスペースのリンク
+```js
+const accountAliasTx = nem.AliasTransaction.createForAddress(
+    nem.Deadline.create(),
+    nem.AliasActionType.Link,
+    namespaceTx.namespaceId,
+    alice.address,
+    nem.NetworkType.MIJIN_TEST
+);
+
+```
+
+### 2.4.3 マルチシグ化
+```js
+const multisigTx = nem.ModifyMultisigAccountTransaction.create(
+    nem.Deadline.create(),
+    1,1,
+    [
+        new nem.MultisigCosignatoryModification(
+            nem.MultisigCosignatoryModificationType.Add,
+            bob,
+        )
+    ],
+    nem.NetworkType.MIJIN_TEST
+);
+```
+Aliceをマルチシグに変更しBobを連署者とします。
+
+### 2.4.4 集約
+```js
+const aggregateTransaction = nem.AggregateTransaction.createComplete(
+    nem.Deadline.create(),
+    [
+        namespaceTx.toAggregate(alice.publicAccount),
+        accountAliasTx.toAggregate(alice.publicAccount),
+        multisigTx.toAggregate(alice.publicAccount),
+    ],
+    nem.NetworkType.MIJIN_TEST,
+    []
+);
+```
+
+### 2.4.5 署名
+```js
+const signedTransaction =  alice.signTransactionWithCosignatories(
+    aggregateTransaction,
+    [bob],
+    GENERATION_HASH,
+);
+```
+
+マルチシグを行うためには 署名者の署名も必要になります。
+`signTransactionWithCosignatories` を使用してbobの署名を行います。
 
 # 3 サンプルプログラム応用編
 以下のサンプルプログラムについて説明します。
