@@ -36,6 +36,7 @@
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
             <div><input type="text" id="authtx" class="form-control"></div>
+            <div><input type="text" id="blockhash" class="form-control"></div>
             <button id="button3" class="btn btn-primary" type="button">ログイン</button>
         </div>
         <!-- div block4 -->
@@ -74,6 +75,10 @@ const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const bob = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const carol = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 $('#address').text(alice.address.address);
+
+const blockHttp = new nem.BlockHttp(NODE);
+const chainHttp = new nem.ChainHttp(NODE);
+
 var isInit = true;
 const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
@@ -95,10 +100,35 @@ listener.open().then(() => {
             }else{
                 $('#wait2').remove();
                 $('#result3').collapse('show');
+
+                chainHttp.getBlockchainHeight()
+                .pipe(
+                    rxjs.mergeMap(_=>{
+                        return blockHttp.getBlockByHeight(_.compact());
+                    })
+                )
+                .subscribe(
+                    _ => {console.log(_);
+                    $('#blockhash').val(_.hash);
+                    }
+                );
+
+
             }
         },
         err => console.error(err)
     );
+
+    listener
+    .newBlock()
+    .subscribe(function(_){
+
+        console.log("==new block==");
+        console.log(_);
+        console.log(new Date(_.timestamp.compact() + Date.UTC(2016, 3, 1, 0, 0, 0, 0)));
+
+
+    });
 });
 
 function process(){
@@ -204,6 +234,9 @@ function process3(){
         const txHttp = new nem.TransactionHttp(NODE);
         const nsHttp = new nem.NamespaceHttp(NODE);
 
+
+
+
         txHttp.getTransaction(authTx)
         .pipe(
             rxjs.mergeMap(_ => _.innerTransactions),
@@ -227,6 +260,25 @@ function process3(){
                         return _.id.id.toDTO().toString() ==  ns.alias.mosaicId.toString();
                     })
                 )
+            }),
+            rxjs.mergeMap(_ => {
+
+                return chainHttp.getBlockchainHeight()
+                .pipe(
+                    rxjs.mergeMap(chain => {
+                        return blockHttp.getBlockByHeight(chain.compact())
+                        .pipe(
+                            rxjs.filter(block => {
+                                console.log("======filter======");
+                                console.log(block);
+                                if(block.hash === $('#blockhash').val()){
+                                    return true;
+                                }
+                            })
+                        );
+                    })
+                )
+
             }),
         )
         .subscribe(_ => {
