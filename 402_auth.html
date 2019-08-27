@@ -35,8 +35,8 @@
         <div class="collapse" id="result3">
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
-			<div><input type="text" id="authtx" class="form-control"></div>
-			<button id="button3" class="btn btn-primary" type="button">ログイン</button>
+            <div><input type="text" id="authtx" class="form-control"></div>
+            <button id="button3" class="btn btn-primary" type="button">ログイン</button>
         </div>
         <!-- div block4 -->
         <div class="collapse" id="result4">
@@ -149,9 +149,9 @@ function process(){
         nem.Deadline.create(),
         bob.address,
         [
-			new nem.Mosaic(new nem.NamespaceId(NAMESPACE), nem.UInt64.fromUint(1)),
-			nem.NetworkCurrencyMosaic.createRelative(1)
-		],
+            new nem.Mosaic(new nem.NamespaceId(NAMESPACE), nem.UInt64.fromUint(1)),
+            nem.NetworkCurrencyMosaic.createRelative(1)
+        ],
         nem.EmptyMessage,
         nem.NetworkType.MIJIN_TEST
     );
@@ -194,45 +194,45 @@ function process(){
 
 function process3(){
 
-	const authTx = $('#authtx').val();
-	const signed = carol.signData(authTx);
+    const authTx = $('#authtx').val();
+    const signed = carol.signData(authTx);
 
-	//ここからサーバ側で検証
-	if(carol.publicAccount.verifySignature(authTx, signed)){
+    //ここからサーバ側で検証
+    if(carol.publicAccount.verifySignature(authTx, signed)){
 
-		const accountHttp = new nem.AccountHttp(NODE);
-	    const txHttp = new nem.TransactionHttp(NODE);
-		const nsHttp = new nem.NamespaceHttp(NODE);
+        const accountHttp = new nem.AccountHttp(NODE);
+        const txHttp = new nem.TransactionHttp(NODE);
+        const nsHttp = new nem.NamespaceHttp(NODE);
 
-		txHttp.getTransaction(authTx)
-		.pipe(
-			rxjs.mergeMap(_ => _.innerTransactions),
-			rxjs.filter(_=> {
-				return _.recipient !== undefined 
-					&& _.recipient.address == carol.publicAccount.address.address
-					&& _.signer.address.address == bob.publicAccount.address.address ;
-			}),
-			rxjs.mergeMap(_ => {
+        txHttp.getTransaction(authTx)
+        .pipe(
+            rxjs.mergeMap(_ => _.innerTransactions),
+            rxjs.filter(_=> {
+                return _.recipient !== undefined 
+                    && _.recipient.address == carol.publicAccount.address.address
+                    && _.signer.address.address == bob.publicAccount.address.address ;
+            }),
+            rxjs.mergeMap(_ => {
 
-			    return accountHttp.getAccountInfo(bob.publicAccount.address)
-				.pipe(
-					rxjs.mergeMap(info => info.mosaics),
-				);
-			}),
-			rxjs.mergeMap(_ => {
+                return accountHttp.getAccountInfo(bob.publicAccount.address)
+                .pipe(
+                    rxjs.mergeMap(info => info.mosaics),
+                );
+            }),
+            rxjs.mergeMap(_ => {
 
-			    return nsHttp.getNamespace(new nem.NamespaceId(NAMESPACE))
-				.pipe(
-					rxjs.filter(ns=>{
-						return _.id.id.toDTO().toString() ==  ns.alias.mosaicId.toString();
-					})
-				)
-			}),
-		)
-		.subscribe(_ => {
-			$('#result4').collapse('show');
-		});
-	}
+                return nsHttp.getNamespace(new nem.NamespaceId(NAMESPACE))
+                .pipe(
+                    rxjs.filter(ns=>{
+                        return _.id.id.toDTO().toString() ==  ns.alias.mosaicId.toString();
+                    })
+                )
+            }),
+        )
+        .subscribe(_ => {
+            $('#result4').collapse('show');
+        });
+    }
 }
 
 function showInfo(node,signedTx,account){
@@ -241,8 +241,8 @@ function showInfo(node,signedTx,account){
     const address = account.address.address ;
     const hash = signedTx.hash
 
-	$('#signedTx').val(signedTx.payload);
-	$('#authtx').val(signedTx.hash);
+    $('#signedTx').val(signedTx.payload);
+    $('#authtx').val(signedTx.hash);
     $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash + '/status'));
     $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
     $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
