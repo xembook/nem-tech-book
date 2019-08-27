@@ -69,14 +69,14 @@ const rxjs = require("/node_modules/rxjs/operators");
 ```html
 <!doctype html>
 <html lang="ja">
-	<head>
-		<meta charset="utf-8">
-		<script src="nem2-sdk-0.13.1.js"></script>
-		<script>
-			const nem = require("/node_modules/nem2-sdk");
-			console.log(nem); //ここにブレークポイントを設定
-		</script>
-	</head>
+    <head>
+        <meta charset="utf-8">
+        <script src="nem2-sdk-0.13.1.js"></script>
+        <script>
+            const nem = require("/node_modules/nem2-sdk");
+            console.log(nem); //ここにブレークポイントを設定
+        </script>
+    </head>
 </html>
 
 ```
@@ -209,13 +209,13 @@ Alice#changeMosaic=>{id:mosaicId,amount:1000000}
 トランザクションの集約は以下のようにカッコ内の配列で表現します。
 ```
 complete[
-	(1XEM){Alice=>Bob},
-	...
+    (1XEM){Alice=>Bob},
+    ...
 ]
 
 bonded[
-	(1XEM){Alice=>Bob},
-	...
+    (1XEM){Alice=>Bob},
+    ...
 ]
 ```
 
@@ -582,10 +582,10 @@ listener
 ### モデリング
 ```
 complete(Alice)[
-	Alice#createNamespace=>"xembook"
-	Alice#defineMosaic=>{id:mosaicId}
-	Alice#changeMosaic=>{id:mosaicId,amount:1000000}
-	Alice#linkMosaic=>{namespace:"xembook",id:mosaicId}
+    Alice#createNamespace=>"xembook"
+    Alice#defineMosaic=>{id:mosaicId}
+    Alice#changeMosaic=>{id:mosaicId,amount:1000000}
+    Alice#linkMosaic=>{namespace:"xembook",id:mosaicId}
 ]
 ```
 
@@ -757,10 +757,10 @@ AggregateTransaction.createCompleteを見るとaliceの署名だけで通りそ�
 ### モデリング
 ```
 Alice<-(2-of-3){
-	Bob,
-	Carol,
-	Dave<-(1-of-2)(Ellen,Frank)
-		=>Dave2<-(1-of-2)(Ellen,Frank)
+    Bob,
+    Carol,
+    Dave<-(1-of-2)(Ellen,Frank)
+        =>Dave2<-(1-of-2)(Ellen,Frank)
 }
 ```
 Aliceに3人の連署者を登録し、そのうちの1人（Dave）に対しさらに2人の連署者を登録します。最後にDaveを連署者から除外しDave2に変更します。
@@ -873,9 +873,9 @@ Bob,Daveの秘密鍵を必要とせず、連署アカウントの構成を変更
 ```
 (10XEM)Alice=>{type:lock}
 listener(lock.confirmed){
-	bonded[
-		Alice#addCosignatory=>Bob
-	]
+    bonded[
+        Alice#addCosignatory=>Bob
+    ]
 }
 ```
 10XEMのロックトランザクションを通知し、承認されるとアグリゲートボンデッドトランザクション内のマルチシグ化します。
@@ -1125,15 +1125,15 @@ proof値はunconfirmedですでにばれているので、Aliceが取ろうと�
 ```
 準備
 complete[
-	Alice#createNamespace=>"item",
-	Alice#linkAccount=>("item",Alice),
-	Alice#addCosignatory=>Bob,
+    Alice#createNamespace=>"item",
+    Alice#linkAccount=>("item",Alice),
+    Alice#addCosignatory=>Bob,
 ]
 
 譲渡
 complete[
-	Alice<-(1-of-1){Bob=>Carol},
-	(0XEM){Carol=>Bob}
+    Alice<-(1-of-1){Bob=>Carol},
+    (0XEM){Carol=>Bob}
 ]
 
 所有確認
@@ -1348,8 +1348,8 @@ txHttp.getTransaction(authTx)
 ### モデリング
 ```
 complete[
-	(1safety){Alice#transfer=>(0safety)Bob},
-	(1safety){Bob#transfer=>(0safety)Carol}
+    (1safety){Alice#transfer=>(0safety)Bob},
+    (1safety){Bob#transfer=>(0safety)Carol}
 ]
 ```
 
