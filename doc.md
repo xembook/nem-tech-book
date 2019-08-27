@@ -3,23 +3,23 @@
 こんにちはXEMBookです。この章ではブラウザを通じてNEM/mijinの可能性について触れみたいと思います。ぜひ最後までお付き合いください。
 
 ## まず動かしてみたいひとへ
-人が新しい技術に触れる時、そのきっかけはいろいろあります。でも「仕様書を見て感動したから」という人はあまりいません。もちろんNEMに使用されている技術は感動するに値する価値がありますが、たいていは「自分の信頼する誰かが勧めていたから」だったり「いつも便利に使ってるものがその技術で作られていたから」だったりするものです。新しい技術を採用する立場にある人も同様です。多くの技術を比較しなければいけないため、その技術習得のために新たなプラットフォームを身につけなければいかず、その労力は計り知れません。NEMテクノロジーの最も優れている点はだれでもすぐにブロックチェーンを安全に使える状態まで、すでに準備されていることです。また、社会実装というキーワードが用いられるようにブロックチェーンはITエンジニア以外の専門家にも注目してほしい技術です。今まで当たり前でなかった煩雑な一連の確認・決定作業が一瞬で終わることが新しいイノベーションを生み出します。この改善のタネはAIの活用と同じく現場にいる人間しか気づかないケースが多くあると感じています。ぜひ、本章のサンプルプログラムを動かして世界に公開された状態が更新されていく興奮を体感してみてください。
+人が新しい技術に触れる時、そのきっかけはいろいろあります。でも「仕様書を見て感動したから」という人はあまりいません。もちろんNEMに使用されている技術は感動するに値する価値がありますが、きっかけはたいてい「自分の信頼する誰かが勧めていたから」だったり「いつも便利に使ってるものがその技術で作られていたから」だったりするものです。また、新しい技術を採用する立場にある人にとっては多くの技術を比較しなければいけないため、その技術習得のために新たなプラットフォームを身につけなければいかず、その労力は計り知れません。NEMテクノロジーの最も優れている点はだれでもすぐにブロックチェーンを安全に使える状態まで、すでに準備されていることです。また、社会実装というキーワードが用いられるようにブロックチェーンはITエンジニア以外の専門家にも注目してほしい技術です。今まで当たり前でなかった煩雑な一連の確認・決定作業が一瞬で終わることが新しいイノベーションを生み出します。この改善のタネはAIの活用と同じく現場にいる人間しか気づかないケースが多くあると感じています。ぜひ、本章のサンプルプログラムを動かして世界に公開された状態が更新されていく興奮を体感してみてください。
 
 ## 解説の流れ
 - 開発環境の準備
-  - バンドルファイルの作成とブラウザを使ったデバッグ手法について説明します
+  - バンドルファイルの作成とブラウザを使ったデバッグ手法について説明します。
 - サンプルプログラム（基礎編）
-  - 全てのサンプルプログラムで共通して使うテンプレートの説明、ブロックやアカウントの状態監視、アグリゲートトランザクションについて説明します
+  - 全てのサンプルプログラムで共通して使うテンプレートの説明、ブロックやアカウントの状態監視、アグリゲートトランザクションについて説明します。
 - サンプルプログラム（応用編）
-  - マルチレベルマルチシグ、保留型アグリゲートトランザクション、アトミックスワップについて説明します
+  - マルチレベルマルチシグ、保留型アグリゲートトランザクション、アトミックスワップについて説明します。
 - 社会実装のヒント
-  - 所有、認証、トレーサビリティについて説明します
+  - 所有、認証、トレーサビリティについて説明します。
 
 # 6.1 開発環境の準備
-この章のサンプルプログラムを動かすための環境について説明します。NEMはREST APIが実装されており、基本的にはインターネットブラウザがあればクライアント側に提供されるすべての機能を実行可能です。そのため、開発には言語を選びません。また想定外のバグが侵入する可能性もなく、セキュリティ障害（脆弱性）が内部から発生することもありません。
+この章のサンプルプログラムを動かすための環境について説明します。NEMはREST APIが実装されており、基本的にはインターネットブラウザがあればクライアント側に提供されるすべての機能を実行可能です。そのため、開発には言語を選びません。また想定外のバグが侵入する可能性もなく、セキュリティ障害（脆弱性）がチェーン内部から発生することもありません。
 
 ## 6.1.1 バンドルファイルの作成
-nem2-sdkはNodeJS用に書かれたライブラリです。ブラウザで利用するためにはブラウザからライブラリを読み込めるようにバンドル化する必要があります。今回はbrowserifyというライブラリを利用してnem2-sdkをバンドル化します。バンドル化にはNode.jsの環境が必要になりますので、必要に応じてインストールしてください。インストール環境が無い人は以下のリポジトリに筆者のバンドルファイルをご利用ください。
+nem2-sdkはNode.js用に書かれたライブラリです。ブラウザで利用するためにはブラウザからライブラリを読み込めるようにバンドル化する必要があります。今回はbrowserifyというライブラリを利用してnem2-sdkをバンドル化します。バンドル化にはNode.jsの環境が必要になりますので、必要に応じてインストールしてください。インストール環境が無い人は以下のリポジトリに筆者のバンドルファイルをご利用ください。
 
 - xembook/nem2-sdk-browserify
   - https://github.com/xembook/nem2-sdk-browserify
@@ -56,15 +56,10 @@ nem2-sdk-0.13.1.jsというバンドルファイルが作成されました。
 次に 変数にライブラリを読み込みます。-r でオプション指定したパスから ".(ピリオド)"を取った形式で指定します。rxjs/operators　も同時に読み込んでおきましょう。
 
 ```js
-
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
-
 ```
-
 これで　`nem.` と指定することで nem2-sdkが提供するクラスが使えるようになりました。
-
-
 
 ## 6.1.2 ブラウザを使ったデバッグ手法
 今回はchromeブラウザをメインに利用して開発を行います。chromeには便利な開発者向けのデベロッパーツールがありますのでぜひ活用してください。
@@ -74,42 +69,38 @@ const rxjs = require("/node_modules/rxjs/operators");
 ```html
 <!doctype html>
 <html lang="ja">
-<head>
-<meta charset="utf-8">
-<script src="nem2-sdk-0.13.1.js"></script>
-<script>
-const nem = require("/node_modules/nem2-sdk");
-console.log(nem);
-</script>
-</head>
+	<head>
+		<meta charset="utf-8">
+		<script src="nem2-sdk-0.13.1.js"></script>
+		<script>
+			const nem = require("/node_modules/nem2-sdk");
+			console.log(nem); //ここにブレークポイントを設定
+		</script>
+	</head>
 </html>
 
 ```
 
-F12キーを押してコンソールを開きます。Sourcesタブから表示中のHTMLファイルを選択し、以下コード以降の箇所でブレークポイントを設定します。ページをリロードし、該当箇所に処理が差し掛かるとデバッグモードになります。
+F12キーを押してコンソールを開きます。Sourcesタブから表示中のHTMLファイルを選択し、以下のコード以降の箇所でブレークポイントを設定します。ページをリロードし、該当箇所に処理が差し掛かるとデバッグモードになります。
 
 ```js
 const nem = require("/node_modules/nem2-sdk");
 ```
 
 ### 開発者コンソールを利用して変換する
-
 デバッグモード中にConsoleタブを開きコマンドを入力することで、nem2-sdkの挙動を確認することができます。入力値と出力値は以下のように区別して読み進めてください。
-
 ```
 > 入力値
 < 出力値
 ```
 
 #### UInt64形式の数値を10進数数値に変換
-
 ```js
 > new nem.UInt64([27174,0]).compact()
 < 27174
 ```
 
 #### UInt64形式のIDをHEX文字列に変換
-
 ```js
 > new nem.UInt64([853116887,2007078553]).toHex()
 < "77A1969932D987D7"
@@ -122,37 +113,37 @@ const nem = require("/node_modules/nem2-sdk");
 ```
 
 #### 10進数の数値を UInt64形式に変換
-
 ```js
 
 > nem.UInt64.fromUint(27174).toDTO()
 < (2) [27174, 0]
 ```
-#### HEX文字列をUInt64形式に変換
 
+#### HEX文字列をUInt64形式に変換
 ```js
 > nem.UInt64.fromHex("77A1969932D987D7").toDTO()
 < (2) [853116887, 2007078553]
 ```
 
 #### utf-8テキストををHEX文字列に変換
-
 ```js
-o="";r=nem.Convert.rstr2utf8("日本語でも大丈夫");for (i in r){o+=r.charCodeAt(i).toString(16)}
+> o="";r=nem.Convert.rstr2utf8("日本語でも大丈夫");for (i in r){o+=r.charCodeAt(i).toString(16)}
 < "e697a5e69cace8aa9ee381a7e38282e5a4a7e4b888e5a4ab"
 ```
 
 #### HEX文字列をutf-8テキストに変換
-
 ```js
-> o="";hex="e697a5e69cace8aa9ee381a7e38282e5a4a7e4b888e5a4ab";for(var i=0;i<hex.length;i+=2){o+= String.fromCharCode(parseInt(hex.substr(i,2),16));}decodeURIComponent(escape(o));
+> o="";
+> hex="e697a5e69cace8aa9ee381a7e38282e5a4a7e4b888e5a4ab";
+> for(var i=0;i<hex.length;i+=2){
+>  o+= String.fromCharCode(parseInt(hex.substr(i,2),16));
+> }
+> decodeURIComponent(escape(o));
 < "日本語でも大丈夫"
 ```
 
 #### NEMESISブロック時間を取得
-
 ```js
-
 > nem.Deadline.timestampNemesisBlock
 < 1459468800
 ```
@@ -165,7 +156,6 @@ o="";r=nem.Convert.rstr2utf8("日本語でも大丈夫");for (i in r){o+=r.charC
 
 #### 公開鍵からアドレス変換
 ```js
-
 > nem.Address.createFromPublicKey("FF6E61F2A0440FB09CA7A530C0C64A275ADA3A13F60D1EC916D7F1543D7F0574", nem.NetworkType.MIJIN_TEST).address
 < "SCAZJP2UPDEMZJZMY3CCUJQGXY7JMDVJ7CRG6ROT"
 ```
@@ -184,9 +174,60 @@ o="";r=nem.Convert.rstr2utf8("日本語でも大丈夫");for (i in r){o+=r.charC
 
 nem2-sdkが提供する型については、まだ若干のゆれが見られるため今後改善されていく可能性があります。
 
+## 6.1.3 モデリング記法
+本章ではブロックチェーンをわかりやすく理解するために独自モデリング記法を使用します。この章のみで使用します。
+
+### 記述例
+#### 所有
+Aliceが1XEMを所有
+```
+(1XEM){Alice}
+```
+
+#### マルチシグ
+```
+Alice<-(2-of-3){Bob,Carol,Dave}
+Alice<-(2-of-3){} //連署アカウントの省略
+```
+
+#### トランザクション
+AliceからBobへの1XEM送金
+```
+(1XEM){Alice#transfer=>Bob}
+(1XEM){Alice=>Bob} //省略形
+```
+#の後にはトランザクションの種類を書きます。前置パラメータにより自明の場合は省略も可能です。
+
+#### レシート
+手数料のみ支払いアカウントの状態変更を行うトランザクショントランザクション
+```
+Alice#changeMosaic=>{id:mosaicId,amount:1000000}
+```
+`=>`の右辺にオブジェクト形式で必要項目をパラメータ指定します。
+
+#### アグリゲートトランザクション
+トランザクションの集約は以下のようにカッコ内の配列で表現します。
+```
+complete[
+	(1XEM){Alice=>Bob},
+	...
+]
+
+bonded[
+	(1XEM){Alice=>Bob},
+	...
+]
+```
+
+#### リスナー
+条件を満たすときにトランザクションを処理
+```
+listener(条件){
+  (1XEM){Alice=>Bob}
+}
+```
 # 6.2 サンプルプログラム基礎編
 サンプルプログラムを通してNEMで発行できるトランザクションの基礎的な部分を解説していきます。アグリゲートトランザクションは欠かせない機能となっており、本節で扱います。
-
 ## 6.2.1 サンプルテンプレート
 本章であつかう全てのサンプルプログラムの動作的に共通する部分をここでまとめて説明しておきます。以後同様の説明はしませんが、プログラムの記述内容が不明な場合は一度ここに戻って読み直すと疑問点が解決するかもしれません。また、すべての説明にはソースコードとデモページのURLを記載していますので、併せてご参考ください。
 
@@ -276,9 +317,7 @@ jQueryの表示機能を使用するので、nem2-sdkの処理は上記 `$(funct
 })</script>
 ```
 
-
-
-### 2.1.4 固定値の定義
+### 固定値の定義
 ノードの接続情報やGENERATION_HASH値などを指定します。
 ```js
 const NODE = 'https://catapult-test.opening-line.jp:3001';
@@ -293,15 +332,15 @@ const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 const sha3_256 = require("/node_modules/js-sha3").sha3_256;
 ```
-
+sha3_256は本章ではアトミックスワップの時のみに使用します。
 
 ### アカウント生成
-サンプルプログラムで使用するアカウントを生成します。必要分を定義してください。
+サンプルプログラムで使用するアカウントを生成します。必要な数だけ定義してください。
 ```js
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 $('#address').text(alice.address.address);
 ```
-
+よく使用される変数名として、Alice,Bob,Carol,Dave,Ellen,Frankなどがあります。本章でもそれを踏襲します。
 
 ### リスナー準備
 nem2-sdkではWebSocketを利用してノードの状態監視を行います。
@@ -315,11 +354,12 @@ listener.open().then(() => {
   //ここにリスナーを追加します。
 });
 ```
-これはブラウザJS特有の記述方法です。
-
+listenerの定義について、これはブラウザJS特有の記述方法です。Node.jsで実行する場合は
+`const listener = new Listener('http://localhost:3000');`
+などと指定してください。
 
 ### リスナー定義
-さきほど準備したlistenerに対し処理内容を追加してきます。
+さきほど準備したリスナーに対し処理内容を定義していきます。
 ```js
 listener
 .unconfirmedAdded(alice.address)
@@ -348,12 +388,11 @@ listener
 - .confirmed
   - 承認済みデータが追加されたときに処理
     - 初回は送信ボタンを表示する。
-    - 以降はreult3 divを開く
+    - 以降はresult3 divを開く
 
 ### ボタン定義
 ボタンクリック時の挙動を定義します。
 ```js
-
 $("#button1").click(
     function(){
         process();
@@ -385,12 +424,18 @@ function process(){
     showInfo(NODE,signedTx,alice);
 }
 ```
-- TransferTransaction.create でトランザクションの定義引数には以下のようなものをしていします
+- TransferTransaction.create でトランザクションの定義引数には以下のようなものを指定します
   - 締め切り、転送先、単位、メッセージ、ネットワークID
 - alice.signでトランザクションに署名を行います
 - txHttp.announceで署名されたトランザクションをネットワークにアナウンスします
 - subscribeでネットワークからの応答が _ に代入されて返ってきます
 
+#### モデリング
+独自記法で表現してみます。
+```
+(0XEM)Alice#transfer{message:"Hello World!"}=>Alice
+```
+0XEMをメッセージ「Hello World!」をつけてAliceからAlice（自分）へ転送する、という意味になります。
 
 ### 結果出力
 トランザクションの結果を画面上に出力します。
@@ -412,6 +457,7 @@ function strLi(node,href,text){
     return '<li><a target="_blank" href="' + node + href + '">' + text + '</a></li>';
 }
 ```
+このあたりの処理はjQueryの仕様に基づいて書いています。Vue、React、Angularなどお使いの方は各項目変更してお使いください。
 
 ## 6.2.2 監視
 ブロックチェーン技術を利用した開発で重要なのは、トランザクションの作成とブロックの状態監視です。ブロックの状態を監視できれば、ブロックチェーンをトリガーとして利用することができます。NEMではWebSocketを使って状態監視ができるので利用してみましょう。このサンプルプログラムの挙動はF12を押してConsole.logでご確認ください。
@@ -421,7 +467,6 @@ function strLi(node,href,text){
     - https://github.com/xembook/nem-tech-book/blob/master/202_listener.html
   - デモ
     - https://xembook.github.io/nem-tech-book/202_listener.html
-
 
 ### ブロック監視
 ブロックが生成されるたびに通知を受け取ります。
@@ -490,7 +535,6 @@ blockHttp.getBlockReceipts(_.height.compact())
 })
 ```
 
-
 ### アカウント監視
 aliceアカウントに新しくトランザクションが追加されると通知されます。
 ```js
@@ -522,8 +566,6 @@ listener
 );
 ```
 
-
-
 ## 6.2.3 アグリゲートトランザクション(モザイク生成)
 アグリゲートトランザクションを使うと複数のトランザクションを集約して１つのブロック内で処理を行うことができます。
 
@@ -536,6 +578,16 @@ listener
 
 ### 動作概要
 ネームスペースを作成し、モザイクに割り当てるまでの処理をまとめます。
+
+### モデリング
+```
+complete(Alice)[
+	Alice#createNamespace=>"xembook"
+	Alice#defineMosaic=>{id:mosaicId}
+	Alice#changeMosaic=>{id:mosaicId,amount:1000000}
+	Alice#linkMosaic=>{namespace:"xembook",id:mosaicId}
+]
+```
 
 ### ネームスペース作成
 有効期限1ブロックで"xembook"というネームスペースを作成（レンタル）。
@@ -621,6 +673,15 @@ txHttp.announce(signedTx)
 ### 動作概要
 ネームスペースを作成し、アカウントに割り当てたものをマルチシグ化します。
 
+### モデリング
+```
+complete(Alice)[
+Alice#createNamespace=>"xembook",
+Alice#linkAccount=>{namespace:"xembook",account:Alice},
+Alice#addCosignatory=>Bob
+]
+```
+
 ### ネームスペース作成
 ```js
 const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
@@ -651,17 +712,13 @@ const multisigTx = nem.ModifyMultisigAccountTransaction.create(
     nem.Deadline.create(),
     1,1,
     [
-        new nem.MultisigCosignatoryModification(
-            nem.MultisigCosignatoryModificationType.Add,
-            bob,
-        )
+        new nem.MultisigCosignatoryModification(addType,bob)
     ],
     nem.NetworkType.MIJIN_TEST
 );
 ```
 
 ### 集約
-
 ```js
 const aggregateTx = nem.AggregateTransaction.createComplete(
     nem.Deadline.create(),
@@ -679,7 +736,7 @@ const signedTx =  alice.signTransactionWithCosignatories(
     GENERATION_HASH,
 );
 ```
-AggregateTransaction.createCompleteを見るとalicの署名だけで通りそうな気もします。しかし、実際にはマルチシグを行うためには 署名者の署名も必要になります。その場合は `signTransactionWithCosignatories` を使用してbobの署名を行います。
+AggregateTransaction.createCompleteを見るとaliceの署名だけで通りそうな気もします。しかし、実際にはマルチシグを行うためには Bobの署名も必要になります。その場合は `signTransactionWithCosignatories` を使用してbobの署名を行います。
 
 # 6.3 サンプルプログラム応用編
 少し複雑なトランザクションに挑戦してみましょう。
@@ -696,6 +753,17 @@ AggregateTransaction.createCompleteを見るとalicの署名だけで通りそ�
 - さらにDaveをマルチシグ化し、Ellen,Frankを連署アカウントに指定
 - Daveの役割をDave2に譲渡するため、Dave2をマルチシグ化しEllen,Frankを連署アカウントに指定
 - Aliceの連署アカウントからDaveを除き、Dave2を追加
+
+### モデリング
+```
+Alice<-(2-of-3){
+	Bob,
+	Carol,
+	Dave<-(1-of-2)(Ellen,Frank)
+		=>Dave2<-(1-of-2)(Ellen,Frank)
+}
+```
+Aliceに3人の連署者を登録し、そのうちの1人（Dave）に対しさらに2人の連署者を登録します。最後にDaveを連署者から除外しDave2に変更します。
 
 ### アカウント生成
 ```js
@@ -724,13 +792,13 @@ const ellenOrFrankMultisigTx = nem.ModifyMultisigAccountTransaction.create(
     nem.NetworkType.MIJIN_TEST
 );
 
-const bobAndDaveAndCarolMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+const bobAndCarolAndDaveMultisigTx = nem.ModifyMultisigAccountTransaction.create(
     nem.Deadline.create(),
     2,2,
     [
         new nem.MultisigCosignatoryModification(addType, bob),
-        new nem.MultisigCosignatoryModification(addType, dave),
         new nem.MultisigCosignatoryModification(addType, carol),
+        new nem.MultisigCosignatoryModification(addType, dave),
     ],
     nem.NetworkType.MIJIN_TEST
 );
@@ -739,7 +807,7 @@ const aggregateTx = nem.AggregateTransaction.createComplete(
     nem.Deadline.create(),
     [
         ellenOrFrankMultisigTx.toAggregate(dave.publicAccount),
-        bobAndDaveAndCarolMultisigTx.toAggregate(alice.publicAccount),
+        bobAndCarolAndDaveMultisigTx.toAggregate(alice.publicAccount),
     ],
     nem.NetworkType.MIJIN_TEST,
     []
@@ -801,6 +869,17 @@ Bob,Daveの秘密鍵を必要とせず、連署アカウントの構成を変更
 - マルチシグトランザクションの通知
 - Bobの署名
 
+### モデリング
+```
+(10XEM)Alice=>{type:lock}
+listener(lock.confirmed){
+	bonded[
+		Alice#addCosignatory=>Bob
+	]
+}
+```
+10XEMのロックトランザクションを通知し、承認されるとアグリゲートボンデッドトランザクション内のマルチシグ化します。
+
 ### マルチシグ化トランザクションを生成する
 マルチシグ化には双方の署名が必要なので、アグリゲートトランザクションを作成します。このときにcreateBondedで作成します。
 ```js
@@ -845,7 +924,7 @@ listener
     rxjs.mergeMap(ignored => txHttp.announceAggregateBonded(signedTx))
 )
 ```
-rxjsのpipeを使用するこどとで想定外のトランザクションが入ってきたときに誤動作を防ぐことができます。
+rxjsのpipeを使用することで想定外のトランザクションが入ってきたときに誤動作を防ぐことができます。
 またmergeMapの内部で新たなトランザクションを発行するテクニックも覚えておいてください。
 
 
@@ -878,7 +957,7 @@ accountHttp.aggregateBondedTransactions(alice.publicAccount)
 
 
 ## 6.3.3 アトミックスワップ
-2つのチェーン間でトークン交換をする方法アトミックスワップについて説明します。本当にトークンが飛ぶのではなく、パブリックチェーン上でAliceからBobへトークンを飛ばすと同時にプライベートチェーン上でBobからAliceへトークンを飛ばすといった仕組みです。
+2つのチェーン間でトークン交換をする方法アトミックスワップについて説明します。本当にチェーンを超えてトークンが記録されるのではなく、パブリックチェーン上でAliceからBobへトークンを移動させると同時にプライベートチェーン上でBobからAliceへトークンを移動させるといった仕組みです。
 
 - 303_atomic_swap.html
   - ソースコード
@@ -886,6 +965,20 @@ accountHttp.aggregateBondedTransactions(alice.publicAccount)
   - デモ
     - https://xembook.github.io/nem-tech-book/303_atomic_swap.html
 
+
+### モデリング
+```
+(10XEM)AlicePublic#SecretLock=>{secret:aliceSecret}
+listener(AlicePublicSecretLock.unconfirmed){
+    (10XEM)BobPrivate#SecretLock=>{secret:aliceSecret}
+}
+listener(BobPrivate.SecretLock.confirmed){
+    AlicePrivate#SecretProof=>{proof:aliceProof}
+}
+listener(AlicePrivate.SecretLock.unconfirmed){
+    BobPublic#SecretProof=>{proof:aliceProof}
+}
+```
 ### 2つのチェーン環境を定義
 
 2種類のチェーンを準備して定義します。
@@ -1013,7 +1106,9 @@ proof値はunconfirmedですでにばれているので、Aliceが取ろうと�
 
 # 6.4 社会実装のヒント
 ## 6.4.1 所有
+実社会において、資産やリソースは譲渡・共有・貸与されるものであり、その実施には代表者や代理人によって行われることがよくあります。つまり、組織が持つ資産とそれを操作する個人がもつ権限を明確に分離する必要があります。NEMではマルチシグを用いることでそれらの関係を上手にモデリングすることができます。ここでいう所有とは実行権限を持つトークンを所有するのではなく、実行権限を持つアカウントを所有するという意味です。
 
+### サンプルプログラム
 - 401_handover_multisig.html
   - ソースコード
     - https://github.com/xembook/nem-tech-book/blob/master/401_handover_multisig.html
@@ -1026,8 +1121,30 @@ proof値はunconfirmedですでにばれているので、Aliceが取ろうと�
 - Aliceをマルチシグ化し、Bobを連署アカウントに指定します
 - BobはAliceをCarolに譲渡し、CarolはBobに代金を支払います
 
-### 所有
-モザイク「item」を所有するAliceをマルチシグ化し、Bobを連署アカウントに指定します。
+### モデリング
+```
+準備
+complete[
+	Alice#createNamespace=>"item",
+	Alice#linkAccount=>("item",Alice),
+	Alice#addCosignatory=>Bob,
+]
+
+譲渡
+complete[
+	Alice<-(1-of-1){Bob=>Carol},
+	(0XEM){Carol=>Bob}
+]
+
+所有確認
+Alice<-(1-of-1){Carol}
+```
+
+### ポイント
+- Aliceを資産としてマルチシグ化、Bobを権限保持者として連署アカウント指定することでBobがAliceを所有しているとみなします。
+- 実社会での権限の構成変更が発生した場合はマルチシグを操作することで秘密鍵を受け渡しすることなく所有関係を変更できます。
+
+### (準備)モザイク「item」を所有するAliceをマルチシグ化し、Bobを連署アカウントに指定
 ```js
 const aggregateTx = nem.AggregateTransaction.createComplete(
     nem.Deadline.create(),
@@ -1044,8 +1161,7 @@ const aggregateTx = nem.AggregateTransaction.createComplete(
 2.3と同様にネームスペースで割り当てられたモザイクを生成し、Aliceをマルチシグ化します。
 今回は生成したAliceが所有者となります。
 
-### 譲渡
-マルチシグの連署アカウントをBobからCarolに変更します。CarolはBobに代金を払います。
+### マルチシグの連署アカウントをBobからCarolに変更しCarolはBobに代金を払う
 ```js
 //譲渡
 const modifyMultisigTx = nem.ModifyMultisigAccountTransaction.create(
@@ -1080,13 +1196,43 @@ const aggregateTx = nem.AggregateTransaction.createBonded(
 
 
 ## 6.4.2 認証
+
+ブロックチェーン技術を使えば、過去に登録したものと同じ秘密鍵を所有しているかを秘密鍵を見せずに証明することができます。ただし、このままでは実社会に適用することはできません。実社会では登録された情報の有効期限は有限であり、一度証明された署名データを流用されてしまう場合も考えられます。できるだけ手数料をかけずにブロックチェーンを活用する必要があります。
+
 - 402_auth.html
   - ソースコード
     - https://github.com/xembook/nem-tech-book/blob/master/402_auth.html
   - デモ
     - https://xembook.github.io/nem-tech-book/402_auth.html
 
-### AliceがBobに監査人シールを送る
+### 動作概要
+組織AliceがCarolをユーザとして認定(登録)し、その後、Carolの申請に対して認証するものとします。
+
+- 認定
+  - 認定者AliceがBobに認定権を付与するためのトークンを送信
+  - BobがCarolを認定するためにトランザクション送信
+- 申請
+  - Carolが認定された当時のトランザクションを署名し、現在のブロックハッシュ値とともに認証申請
+- 認証
+  - BobにAliceからの認定権が存在することを確認
+  - Carolの署名を検証し、当時のトランザクションの受信者と同じアカウントであることを確認
+  - 認証申請時のブロックハッシュ値と現在のブロックハッシュ値が等しいことを確認
+
+### モデリング
+```
+認定
+(1ValidToken){Alice=>Bob}
+(0XEM){Bob=>Carol}
+
+認証
+Carol#sign{message:"authTx" + lastBlockHash}
+```
+#### ポイント
+- Aliceではなく認定権を付与されたBobが認定する。Bobから認定権をはく奪すればCarolは無効にできる。
+- ユーザごとにBobの役割を持つアカウントが必要な場合は量が多くなるためマルチシグは使用しない。
+- 署名データの再利用を防ぐために、申請時には推測不可能な現在のブロックハッシュ値を必要とする。
+
+### AliceがBobに認定権付与モザイクを送る
 ```js
 const sendSealFromAliceToBobTx = nem.TransferTransaction.create(
     nem.Deadline.create(),
@@ -1100,7 +1246,7 @@ const sendSealFromAliceToBobTx = nem.TransferTransaction.create(
 );
 ```
 
-### BobがCarolに登録トランザクションを送る
+### BobがCarolに認定トランザクションを送る
 ```js
 const sendAuthFromBobToCarolTx = nem.TransferTransaction.create(
     nem.Deadline.create(),
@@ -1109,8 +1255,8 @@ const sendAuthFromBobToCarolTx = nem.TransferTransaction.create(
     nem.EmptyMessage,
     nem.NetworkType.MIJIN_TEST
 );
-
 ```
+認定権を持つBobが送信することでCarolが認定されます。AliceとBobの秘密鍵はシステム運用側で把握しておく必要があります。
 
 ### Carolの署名を検証する
 ```js
@@ -1124,6 +1270,7 @@ if(carol.publicAccount.verifySignature(authTx, signed)){
 ```
 
 ### ログイン認証
+Carolの署名が過去にAliceの委託したBobによって承認されたアカウントかどうかの確認を行います。
 ```js
 const accountHttp = new nem.AccountHttp(NODE);
 const txHttp = new nem.TransactionHttp(NODE);
@@ -1138,14 +1285,12 @@ txHttp.getTransaction(authTx)
             && _.signer.address.address == bob.publicAccount.address.address ;
     }),
     rxjs.mergeMap(_ => {
-
         return accountHttp.getAccountInfo(bob.publicAccount.address)
         .pipe(
             rxjs.mergeMap(info => info.mosaics),
         );
     }),
     rxjs.mergeMap(_ => {
-
         return nsHttp.getNamespace(new nem.NamespaceId(NAMESPACE))
         .pipe(
             rxjs.filter(ns=>{
@@ -1153,16 +1298,61 @@ txHttp.getTransaction(authTx)
             })
         )
     }),
+    rxjs.mergeMap(_ => {
+        return chainHttp.getBlockchainHeight()
+        .pipe(
+            rxjs.mergeMap(chain => {
+                return blockHttp.getBlockByHeight(chain.compact())
+                .pipe(
+                    rxjs.filter(block => {
+                      return block.hash === $('#blockhash').val();
+                    }
+                );
+            })
+        )
+
+    }),
 )
 ```
+以下のような処理をしています。
+- サンプルプログラムではアグリゲートトランザクションなのでinnerTransactionで抽出
+- 申請時に指定されたトランザクションがBobからCarolに向けて送信されたものかチェック
+- Bobのアカウント情報から所有モザイクを調査
+- ネームスペース情報からBobの所有モザイクに認定権モザイクが含まれているかを検査（有効期限チェック）
+- 申請時に指定されたブロックハッシュと現在のブロックハッシュ値が等しいかチェック
+
 
 ## 6.4.3 トレーサビリティ
+時系列に認証結果を記録していくことでブロックチェーンはトレーサビリティに利用することができます。不特定多数の組織が関与する物流や多くの部品を扱うメーカーなどは、その管理品質を企業の信頼に頼るしかありませんでした。IoTなどの技術が普及し、安全・適法な環境で作業された証明がブロックチェーンで発行されるようになれば、信頼を得るためのコストが大幅に下がり新たな分野に予算を投入することができます。
 
 - 403_aggregate_comp_payload.html
   - ソースコード
     - https://github.com/xembook/nem-tech-book/blob/master/403_aggregate_comp_payload.html
   - デモ
     - https://xembook.github.io/nem-tech-book/403_aggregate_comp_payload.html
+
+### 動作概要
+トレーサビリティについてはさまざまな方法があります。例えばNEM1のプライベートアポスティーユを更新していき公証アカウントを調べることでもトレース可能です。今回はNEM2ならではのオフラインで署名を集めて最後にネットワークにアナウンスする方法を紹介します。
+
+- 品質保証トークン(safety)をAliceからBobに送信するトランザクション作成
+- 品質保証トークンを持っていないBobからCarolに送信するトランザクション作成
+- 上記アグリゲートトランザクションを作成し、Aliceが署名
+- 署名結果をBobにテキストで渡し、Bobが連署
+- Aliceが2人の連署結果からトランザクションを再作成しネットワークにアナウンス
+
+#### ポイント
+- 順序を保証するために最初はAliceしか持ちえないトークンを数珠つなぎで送信します。
+- オフラインでも署名が回せるようにシリアライズされた署名に連署を行います。
+- 最後のAliceの署名が承認されてはじめてトランザクションとして取り込まれ追跡可能となります。
+
+### モデリング
+```
+complete[
+	(1safety){Alice#transfer=>(0safety)Bob},
+	(1safety){Bob#transfer=>(0safety)Carol}
+]
+```
+
 
 ### トランザクション作成
 ```js
@@ -1175,18 +1365,19 @@ const aggregateTx = nem.AggregateTransaction.createComplete(
     nem.NetworkType.MIJIN_TEST,
     []
 );
-const aliceSignedTx = aggregateTransaction.signWith(alice, GENERATION_HASH);
+const aliceSignedTx = aggregateTx.signWith(alice, GENERATION_HASH);
 $('#aliceSignedTx').val(aliceSignedTx.payload);
 $('#aliceSignedTxHash').val(aliceSignedTx.hash);
 ```
 
-### 別環境でBobが署名
+### オフラインを想定した環境でBobが署名
 ```js
 const bobSignedTx = nem.CosignatureTransaction.signTransactionPayload(bob, $('#aliceSignedTx').val(), GENERATION_HASH);
 $('#bobSignedTxSignature').val(bobSignedTx.signature);
 $('#bobSignedTxSigner').val(bobSignedTx.signer);
-
 ```
+署名に必要なパラメータはHTML上からテキストで取得します。これはオフラインであっても別環境であってもテキストさえ受け渡しできれば同様の処理が可能なことを意味します。
+IoTなどを利用した技術など、常にオンラインであることが保証できない場合も連署アカウントは署名を行い、順序を保証するためにAliceしか持ちえないトークンを送信します。
 
 ### 署名を集めてトランザクションを再作成
 ```js
@@ -1199,9 +1390,9 @@ const cosignSignedTxs = [
 ];
 const recreatedTx = nem.TransactionMapping.createFromPayload($('#aliceSignedTx').val());
 const signedTx = recreatedTx.signTransactionGivenSignatures(alice, cosignSignedTxs, GENERATION_HASH);
-const transactionHttp = new nem.TransactionHttp(NODE);
-transactionHttp.announce(signedTx)
+txHttp.announce(signedTx)
 ```
+最後にAliceがトランザクションを再作成してノードにアナウンスします。`signTransactionGivenSignatures` で署名済みトランザクションが生成されればあとはいつも通りです。
 
-
-
+# さいごに
+XEMBookによるブラウザを活用したNEMアプリケーション開発の解説は以上になります。ブロックチェーンNEMを活用したサービスが、みなさんの手でこれからたくさん生み出されることを楽しみにしています。
