@@ -127,7 +127,9 @@ const nem = require("/node_modules/nem2-sdk");
 
 #### utf-8テキストををHEX文字列に変換
 ```js
-> o="";r=nem.Convert.rstr2utf8("日本語でも大丈夫");for (i in r){o+=r.charCodeAt(i).toString(16)}
+> o="";
+> r=nem.Convert.rstr2utf8("日本語でも大丈夫");
+> for (i in r){o+=r.charCodeAt(i).toString(16)}
 < "e697a5e69cace8aa9ee381a7e38282e5a4a7e4b888e5a4ab"
 ```
 
@@ -150,13 +152,17 @@ const nem = require("/node_modules/nem2-sdk");
 
 #### タイムスタンプ取得
 ```js
-> nem.UInt64.fromUint((new Date()).getTime() - nem.Deadline.timestampNemesisBlock * 1000).toDTO();
+> nem.UInt64.fromUint(
+>  (new Date()).getTime() - nem.Deadline.timestampNemesisBlock * 1000
+> ).toDTO();
 < (2) [2360861166, 24]
 ```
 
 #### 公開鍵からアドレス変換
 ```js
-> nem.Address.createFromPublicKey("FF6E61F2A0440FB09CA7A530C0C64A275ADA3A13F60D1EC916D7F1543D7F0574", nem.NetworkType.MIJIN_TEST).address
+> nem.Address.createFromPublicKey(
+>  "FF6E61F2A0440FB09CA7A530C0C64A275ADA3A13F60D1EC916D7F1543D7F0574", 
+>  nem.NetworkType.MIJIN_TEST).address
 < "SCAZJP2UPDEMZJZMY3CCUJQGXY7JMDVJ7CRG6ROT"
 ```
 
@@ -920,7 +926,8 @@ transactionHttp.announce(lockSignedTx)
 listener
 .confirmed(alice.address)
 .pipe(
-    rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === lockSignedTx.hash),
+    rxjs.filter((tx) => tx.transactionInfo !== undefined 
+                && tx.transactionInfo.hash === lockSignedTx.hash),
     rxjs.mergeMap(ignored => txHttp.announceAggregateBonded(signedTx))
 )
 ```
@@ -986,7 +993,10 @@ listener(AlicePrivate.SecretLock.unconfirmed){
 const alicePublic  = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const alicePrivate = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 
-const bobPrivate  = nem.Account.createFromPrivateKey('BB68B933E188D9800A987E3DB055E9C4C05BDE53915308BF62910005A797A94D', nem.NetworkType.MIJIN_TEST);
+const bobPrivate  = nem.Account.createFromPrivateKey(
+  'BB68B933E188D9800A987E3DB055E9C4C05BDE53915308BF62910005A797A94D', 
+  nem.NetworkType.MIJIN_TEST
+);
 const bobPublic = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST); //空
 $('#address').text(alicePublic.address.address);
 
@@ -1030,7 +1040,8 @@ accountHttpPublic.unconfirmedTransactions(alicePublic.publicAccount)
 .pipe(
     rxjs.mergeMap(_ => _),
     rxjs.filter((tx) => {
-        return tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_LOCK 
+        return tx.transactionInfo !== undefined 
+        && tx.type === nem.TransactionType.SECRET_LOCK 
     }),
     rxjs.map(_ => {
 
@@ -1056,7 +1067,8 @@ listenerPrivate
 .confirmed(bobPrivate.address)
 .pipe(
 
-    rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_LOCK ),
+    rxjs.filter((tx) => tx.transactionInfo !== undefined 
+                && tx.type === nem.TransactionType.SECRET_LOCK ),
     rxjs.mergeMap(_ => {
 
         const aliceProof = random.toString('hex');
@@ -1084,7 +1096,8 @@ accountHttpPrivate.unconfirmedTransactions(alicePrivate.publicAccount)
     rxjs.mergeMap(_ => _),
     rxjs.filter(tx => {
         console.log(tx);
-        return tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_PROOF;
+        return tx.transactionInfo !== undefined 
+        && tx.type === nem.TransactionType.SECRET_PROOF;
     }),
     rxjs.mergeMap(_ => {
         const proofTxPublic = nem.SecretProofTransaction.create(
@@ -1372,7 +1385,10 @@ $('#aliceSignedTxHash').val(aliceSignedTx.hash);
 
 ### オフラインを想定した環境でBobが署名
 ```js
-const bobSignedTx = nem.CosignatureTransaction.signTransactionPayload(bob, $('#aliceSignedTx').val(), GENERATION_HASH);
+const bobSignedTx = nem.CosignatureTransaction.signTransactionPayload(
+  bob, $('#aliceSignedTx').val(), 
+  GENERATION_HASH
+);
 $('#bobSignedTxSignature').val(bobSignedTx.signature);
 $('#bobSignedTxSigner').val(bobSignedTx.signer);
 ```
@@ -1388,9 +1404,15 @@ const cosignSignedTxs = [
         $('#bobSignedTxSigner').val()
     )
 ];
-const recreatedTx = nem.TransactionMapping.createFromPayload($('#aliceSignedTx').val());
-const signedTx = recreatedTx.signTransactionGivenSignatures(alice, cosignSignedTxs, GENERATION_HASH);
-txHttp.announce(signedTx)
+const recreatedTx = nem.TransactionMapping.createFromPayload(
+  $('#aliceSignedTx').val()
+);
+const signedTx = recreatedTx.signTransactionGivenSignatures(
+  alice, 
+  cosignSignedTxs, 
+  GENERATION_HASH
+);
+txHttp.announce(signedTx);
 ```
 最後にAliceがトランザクションを再作成してノードにアナウンスします。`signTransactionGivenSignatures` で署名済みトランザクションが生成されればあとはいつも通りです。
 
