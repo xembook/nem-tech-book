@@ -212,7 +212,8 @@ const nem = require("/node_modules/nem2-sdk");
 nem2-sdkが提供する型については、まだ若干のゆれが見られるため今後改善されていく可能性があります。
 
 ### モデリング記法
-本章ではブロックチェーンをわかりやすく理解するために独自モデリング記法を使用します。この章のみで使用します。
+
+本章ではアカウントやモザイクの設計をわかりやすく理解するために独自モデリング記法を使用します。この章のみで使用します。
 
 #### 書式
 ```js
@@ -229,17 +230,17 @@ listener(condition){
 ```
 
 #### 説明
-- listener(condition)
+- **listener(condition)**
   - condition部に監視条件を指定、trueの場合にカッコ内の処理を実施します。
-- (complete|bonded)[transactions]
+- **(complete|bonded)[transactions]**
   - アグリゲートトランザクションの種類を選択し、角カッコ内に配列形式でトランザクションを列記します。
-- (amount:mosaic)account#label
+- **(amount:mosaic)account#label**
   - 操作対象のアカウントと作用させるモザイクの種類・数量を指定します。#でアカウントの用途を記述します
-- <-(n-of-m){[cosignatories]}
+- **<-(n-of-m){[cosignatories]}**
   - マルチシグ構成を表現します。モデリングの内容によってはcosignatoryは省略可能とします。
-- .txtype{txObject}
+- **.transactionType{transactionObject}**
   - トランザクションの種類とオブジェクト構成（必要部のみ）を表記します。
-- =>recipient
+- **=>recipient**
   - 送金先や連署アカウントなどトランザクションの実行により効果を及ぼすアカウントを指定します。
 
 #### 記述例
@@ -247,17 +248,17 @@ listener(condition){
 ###### 所有
 
 ```
-(1:XEM){Alice}
+(1:XEM){Alice#User}
 (1cat.currency){Alice}
 ```
-Aliceが1XEMを所有している状態を表現します。コロンは省略可能とします。モザイクは割り当てられたネームスペース名で表記します。また、ピリオドでサブネームスペースを表現します。
+ユーザーとして使用するAliceが1XEMを所有している状態を表現します。コロンは省略可能とします。モザイクは割り当てられたネームスペース名で表記します。また、ピリオドでサブネームスペースを表現します。
 
 ###### 送金トランザクション
 
 ```
-(1XEM)Alice#User=>Bob#Shop
 (1XEM){Alice.transfer=>Bob}
 (1XEM){Alice.transfer{message:"Hello!"}=>Bob}
+(1XEM){Alice=>Bob}
 ```
 AliceからBobへの送金を表現します。Aliceの後にトランザクションの種類、トランザクション情報を追記します。トランザクションの種類が自明であれば省略可能とします。
 
@@ -277,7 +278,7 @@ Alice<-(1-of-1){Bob.modify=>Carol}
 Alice.changeMosaic{id:mosaicId,amount:1000000}=>Alice
 Alice.changeMosaic{id:mosaicId,amount:1000000}
 ```
-送金先・自分以外のアカウントに作用しない状態変更トランザクションは「=>」表記を省略可能とします。
+送金先・自身以外のアカウントに作用しない状態変更トランザクションは「=>」表記を省略可能とします。
 
 ###### アグリゲートトランザクション
 
@@ -531,7 +532,7 @@ function process(){
 (0XEM)Alice#User.transfer{message:"Hello World!"} => Alice
 ```
 
-トランザクション作成部分をモデリング。0XEMをメッセージ「Hello World!」をつけてAliceからAlice（自分）へ転送する、という意味になります。省略すると ``` (0XEM)Alice{message:"..."} => Alice ```となります。
+0XEMをメッセージ「Hello World!」をつけてAliceからAlice（自分）へ転送という意味になります。省略すると ``` (0XEM)Alice{message:"..."} => Alice ```と表記できます。
 
 
 #### 結果出力
@@ -581,9 +582,9 @@ listener
 .subscribe(function(_){
 
   console.log("==new block==");
-  console.log(_.height.compact());
+  console.log(block.height.compact());
   console.log(
-      new Date(_.timestamp.compact() + Date.UTC(2016, 3, 1, 0, 0, 0, 0))
+      new Date(block.timestamp.compact() + Date.UTC(2016, 3, 1, 0, 0, 0, 0))
   );
 },
 err => console.error(err));
@@ -595,15 +596,12 @@ err => console.error(err));
 前述の新しく生成されたブロック内に含まれているトランザクション情報を確認します。
 
 ```js
-blockHttp.getBlockTransactions(_.height.compact())
+blockHttp.getBlockTransactions(block.height.compact())
 .subscribe((transactions) => {
-    console.log("--transaction--");
     for(let transaction of transactions){
-        console.log(transaction);
-
         for(let mosaic of transaction.mosaics){
             $("#table").append("<tr>" 
-                +"<td>"+ _.height.compact() + "</td>"
+                +"<td>"+ block.height.compact() + "</td>"
                 +"<td>"+ transaction.recipient.address + "</td>"
                 +"<td>"+ mosaic.id.toHex() + "</td>"
                 +"<td>"+ mosaic.amount.compact() + "</td>"
@@ -613,8 +611,8 @@ blockHttp.getBlockTransactions(_.height.compact())
     }
 })
 ```
-- _.height.compact()
-  - "_" 部分に新しいブロック情報を指定すると、ブロックの高さが返ります
+- block.height.compact()
+  - "block" 部分に新しいブロック情報を指定すると、ブロックの高さが返ります
 - subscribeで含まれるトランザクション情報が取れるのでループ処理により以下の単位に分解します
   - トランザクション単位
     - モザイク単位
@@ -622,10 +620,8 @@ blockHttp.getBlockTransactions(_.height.compact())
 
 #### レシートの監視
 
-同様に新しく生成されたブロック内に含まれているレシート情報を確認します。取得できるレシート情報は3種類あります。
-
 ```js
-blockHttp.getBlockReceipts(_.height.compact())
+blockHttp.getBlockReceipts(block.height.compact())
 .subscribe((receipts) => {
     console.log("--receipt--");
     for(let statement of receipts.transactionStatements){
@@ -645,6 +641,8 @@ blockHttp.getBlockReceipts(_.height.compact())
     }
 })
 ```
+
+新しく生成されたブロック内に含まれているレシート情報を確認します。取得できるレシート情報は3種類あります。
 
 #### アカウント監視
 
@@ -780,6 +778,7 @@ const aggregateTransaction = nem.AggregateTransaction.createComplete(
 const signedTx = alice.sign(aggregateTx,GENERATION_HASH);
 txHttp.announce(signedTx)
 ```
+
 アグリゲートの種類はCompleteでネットワークに通知する前にすべての署名を集める必要がありますが、今回の署名が必要なアカウントはaliceだけなので、普通にsignとannounceでネットワークに通知できます。
 
 ### アグリゲートトランザクション(マルチシグ組成)
@@ -861,7 +860,9 @@ const signedTx =  alice.signTransactionWithCosignatories(
 AggregateTransaction.createCompleteを見るとaliceの署名だけで通りそうな気もします。しかし、実際にはマルチシグを行うためには Bobの署名も必要になります。その場合は `signTransactionWithCosignatories` を使用してbobの署名を行います。
 
 ## サンプルプログラム応用編
+
 少し複雑なトランザクションに挑戦してみましょう。
+
 ### マルチレベルマルチシグ
 
 - ソースコード
@@ -1075,13 +1076,13 @@ accountHttp.aggregateBondedTransactions(alice.publicAccount)
 )
 ```
 ここでも複雑なpipe処理を行っています。
-- mergeMap
+- **mergeMap**
   - transactionの配列をストリーム化
-- filter
+- **filter**
   - Bobが未署名のトランザクションのみ通す
-- map
+- **map**
   - Bobによる署名
-- mergeMap
+- **mergeMap*
   - 署名結果をアナウンス結果をストリーム化
 
 
@@ -1093,6 +1094,7 @@ accountHttp.aggregateBondedTransactions(alice.publicAccount)
   - 303_atomic_swap.html
 
 #### モデリング
+
 ```
 (10PublicXEM)AlicePublic.SecretLock=>{secret:aliceSecret}
 listener(AlicePublicSecretLock.unconfirmed){
@@ -1242,20 +1244,25 @@ accountHttpPrivate.unconfirmedTransactions(alicePrivate.publicAccount)
     })
 )
 ```
-Aliceがプライベートチェーン上でBobの資産を受け取るために使った _ .proof が鍵になります。
+Aliceがプライベートチェーン上でBobの資産を受け取るために使った _.proof が鍵になります。
 proof値はunconfirmedですでにばれているので、Aliceが取ろうとした瞬間Bobにも回収する権利が与えられているのがわかります。
 
 
 ## 社会実装のヒント
+
+例外のない規則はありません。実社会で運用されるルールにブロックチェーンを適用させるためにはちょっとしたコツが必要です。
+
 ### 所有
 
-実社会において、資産やリソースは譲渡・共有・貸与されるものであり、その実施には代表者や代理人によって行われることがよくあります。つまり、組織が持つ資産とそれを操作する個人がもつ権限を明確に分離する必要があります。NEMではマルチシグを用いることでそれらの関係を上手にモデリングすることができます。ここでいう所有とは実行権限を持つトークンを所有するのではなく、実行権限を持つアカウントを所有するという意味です。
+実社会において、資産やリソースは譲渡・共有・貸与されるものであり、その実施には代表者や代理人によって行われることが通常です。つまり、組織が持つ資産とそれを操作する個人がもつ権限を明確に分離する必要があります。NEMではマルチシグを用いることでそれらの関係を上手にモデリングすることができます。
 
-#### サンプルプログラム
 - ソースコード
   - 401_handover_multisig.html
 
 #### 動作概要
+Aliceアカウントに資産を持たせ、Bobの所有からCarolの所有へと譲渡させます。
+
+###### 処理の流れ
 - モザイク「item」を生成しAliceに割り当てます
 - Aliceをマルチシグ化し、Bobを連署アカウントに指定します
 - Bobはitemを所有するAliceをCarolに譲渡し、CarolはBobに代金を支払います
@@ -1279,9 +1286,10 @@ complete[
 Alice<-(1-of-1){Carol}
 ```
 
-#### ポイント
+###### ポイント
 - Aliceを資産としてマルチシグ化、Bobを権限保持者として連署アカウント指定することでBobがAliceを所有しているとみなします。
 - 実社会での権限の構成変更が発生した場合はマルチシグを操作することで秘密鍵を受け渡しすることなく所有関係を変更できます。
+
 
 #### (準備)モザイク「item」を所有するAliceをマルチシグ化し、Bobを連署アカウントに指定
 ```js
@@ -1336,32 +1344,45 @@ const aggregateTx = nem.AggregateTransaction.createBonded(
 
 ### 認証
 
-ブロックチェーン技術を使えば、過去に登録したものと同じ秘密鍵を所有しているかを秘密鍵を見せずに証明することができます。ただし、このままでは実社会に適用することはできません。認証には有効期限などサービス提供側のルールで過去の登録を消したい場合もあれば、退会などユーザ側の都合で登録を消す必要もありどちらにも対応しておく必要があります。また、実社会では登録された情報の有効期限は有限であり、一度証明された署名データを流用されてしまう場合も考えられます。また、できるだけ手数料をかけずにブロックチェーンを活用する必要があります。
+ブロックチェーン技術を使えば、過去に登録したものと同じ秘密鍵を所有しているかを秘密鍵を見せずに証明することができます。ただし、このままでは実社会に適用することはできません。認証には有効期限などサービス提供側のルールで過去の登録を消したい場合もあれば、退会などユーザ側の都合で登録を消す必要もありどちらにも対応できるようにしておく必要があります。また、一度証明された署名データを流用されてしまう場合も考えられます。これらこのとをネットワーク手数料をかけずにブロックチェーンを活用する方法を検討します。
 
 - ソースコード
   - 402_auth.html
 
 #### 動作概要
-Aliceが組織所有のアカウントとします。AliceがCarolをユーザとして認定(登録)し、その後、Carolの申請に対して認証を行います。
+サービス提供者はAliceとBobを所有し、ユーザ(carol)はBobから承認を受けることで登録されます。AliceはBobの有効性（有効期限など）を制御します。ユーザはログインの度に登録時のトランザクション値を署名することで認証を行います。ログイン時にサービス提供者はBobの有効性とCarolの署名、直近のブロックハッシュから導き出されたワンタイムトークンを確認することで認証の是非を行います。万が一Carolが鍵を紛失した場合、Bobから有効モザイクを返却させることでユーザーの登録情報を無効化することができます。
 
-- 認定
-  - AliceがBobに認定権を付与するためのトークンを送信
-  - BobがCarolを認定するためにトランザクション送信
+- 承認
+  - AliceがBobに承認権を付与するためのトークンを送信
+  - BobがCarolを承認するためにトランザクション送信
 - 申請
-  - Carolが認定された当時のトランザクションを署名し、現在のブロックハッシュ値とともに認証申請
+  - Carolが承認された当時のトランザクションを署名し、現在のブロックハッシュ値とともに認証申請
 - 認証
-  - BobにAliceからの認定権が存在することを確認
-  - Carolの署名を検証し、当時のトランザクションの受信者と同じアカウントであることを確認
-  - 認証申請時のブロックハッシュ値と現在のブロックハッシュ値が等しいことを確認
+  - BobにAliceからの承認権が存在することを確認
+  - Carolの署名を検証し、承認当時のトランザクションの受信者と同じアカウントであることを確認
+  - 認証申請時のブロックハッシュ値と現在のブロックハッシュ値が等しいことを確認（使用したハッシュ値は一回のみ有効）
 
 #### モデリング
 ```
-認定
+承認
 (1ValidToken){Alice=>Bob}
-(0XEM){Bob=>Carol}
+(0XEM){Bob.transfer{txhash:authTx}=>Carol}
 
 認証
-Carol.sign{message:"authTx" , hash:lastBlockHash}
+
+listener(
+    Carol.sign{
+        message:authTx , 
+        hash:lastBlockHash
+     }
+)
+{
+    //認証チェック
+    authTx.recipient == Carol
+    (ValidToken)authTx.signer > 0
+    listener.newBlock.hash == lastBlockHash
+}
+
 ```
 #### ポイント
 - Aliceではなく認定権を付与されたBobがCarolを認定します。Bobから認定権をはく奪すればCarolは無効にできます。
@@ -1370,6 +1391,7 @@ Carol.sign{message:"authTx" , hash:lastBlockHash}
 - 
 
 #### AliceがBobに認定権付与モザイクを送る
+
 ```js
 const sendSealFromAliceToBobTx = nem.TransferTransaction.create(
     nem.Deadline.create(),
@@ -1384,6 +1406,7 @@ const sendSealFromAliceToBobTx = nem.TransferTransaction.create(
 ```
 
 #### BobがCarolに認定トランザクションを送る
+
 ```js
 const sendAuthFromBobToCarolTx = nem.TransferTransaction.create(
     nem.Deadline.create(),
@@ -1396,6 +1419,7 @@ const sendAuthFromBobToCarolTx = nem.TransferTransaction.create(
 認定権を持つBobが送信することでCarolが認定されます。AliceとBobの秘密鍵はシステム運用側で把握しておく必要があります。
 
 #### Carolの署名を検証する
+
 ```js
 const authTx = $('#authtx').val();
 const signed = carol.signData(authTx);
@@ -1481,6 +1505,7 @@ txHttp.getTransaction(authTx)
 - 最後のAliceの署名が承認されてはじめてトランザクションとして取り込まれ追跡可能となります。
 
 #### モデリング
+
 ```
 complete[
     (1safety){Alice.transfer=>(0safety)Bob},
@@ -1492,6 +1517,7 @@ complete[
 所有safetyモザイク量が0のBobに対し数量1をAliceから送信するトランザクションを作成します。同時に所有量が0のCarolに対しBobから送信するトランザクションを作成します。順序が正しくないとこのトランザクションはネットワーク上で承認されません。
 
 #### トランザクション作成
+
 ```js
 const aggregateTx = nem.AggregateTransaction.createComplete(
     nem.Deadline.create(),
@@ -1508,6 +1534,7 @@ $('#aliceSignedTxHash').val(aliceSignedTx.hash);
 ```
 
 #### オフラインを想定した環境でBobが署名
+
 ```js
 const bobSignedTx = nem.CosignatureTransaction.signTransactionPayload(
   bob, $('#aliceSignedTx').val(), 
@@ -1519,6 +1546,7 @@ $('#bobSignedTxSigner').val(bobSignedTx.signer);
 署名に必要なパラメータはHTML上からテキストで取得します。これはオフラインであっても、別環境であってもテキストさえ受け渡しできれば署名処理が可能なことを意味します。IoT技術など、常にオンラインであることが保証できない場合も連署アカウントは署名を行うことができます。
 
 #### 署名を集めてトランザクションを再作成
+
 ```js
 const cosignSignedTxs = [
     new nem.CosignatureSignedTransaction(
