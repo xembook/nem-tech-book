@@ -1,4 +1,4 @@
-# nem-tech-book
+# 次世代NEMではじめるブロックチェーンアプリケーション
 第３章に記載されている内容の訂正情報と補足説明です。
 
 ## 補足説明
@@ -10,3 +10,8 @@
 https://catapult-test.opening-line.jp:3001
 #### 蛇口（faucet）
 https://ol-catapult-faucet.herokuapp.com/
+
+#### 3.3 開発環境の準備
+
+- ブラウザを使ったデバッグ手法
+- https://xembook.github.io/nem-tech-book/101_debug.html
