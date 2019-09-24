@@ -18,7 +18,9 @@ https://catapult-test.opening-line.jp:3001
 #### 蛇口（faucet）
 https://ol-catapult-faucet.herokuapp.com/
 
+### デモプログラム
 #### 3.3 開発環境の準備
 
 - ブラウザを使ったデバッグ手法
-- https://xembook.github.io/nem-tech-book/101_debug.html
+  - https://xembook.github.io/nem-tech-book/101_debug.html
+  
