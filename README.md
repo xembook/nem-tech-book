@@ -13,9 +13,9 @@ page.217
 以下のノードと蛇口を利用して動作確認することができます。
 (現在、下記テストネットが利用できません。復旧次第、ここでお伝えします。)
 
-#### ノード
+##### ノード
 https://catapult-test.opening-line.jp:3001
-#### 蛇口（faucet）
+##### 蛇口（faucet）
 https://ol-catapult-faucet.herokuapp.com/
 
 ### デモプログラム
