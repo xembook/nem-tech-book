@@ -17,6 +17,8 @@ page.217
 
 #### ノード
 https://jp5.nemesis.land:3001/
+- GENERATION_HASH 9F1979BEBA29C47E59B40393ABB516801A353CFC0C18BC241FEDE41939C907E7
+
 
 #### 蛇口（faucet） 
 http://nfwallet.z31.web.core.windows.net/login
