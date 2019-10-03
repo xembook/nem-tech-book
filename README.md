@@ -5,6 +5,12 @@
 
 ##### 現在nem2-sdk最新バージョンの0.13.2に随時対応中です。動作の確認が取れたものから下記「デモプログラム」のリストに対応済みと付記していきます。
 
+#### 3.4 サンプルプログラム基礎編
+##### 監視
+- blockHttp.getBlockReceiptsで取得できるstatementへのアクセス方法が変わりました。
+- blockHttp.getBlockTransactionsで取得できるtransaction.recipientアドレスへのアクセス方法が変わりました。
+
+#### 著者紹介 
 page.217 
 - 誤：XEMBookはリリース以降200万プレビューに迫るアクセスを記録。
 - 正：XEMBookはリリース以降200万プレビューを超えるアクセスを記録。
