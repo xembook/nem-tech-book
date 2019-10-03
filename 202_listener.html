@@ -34,11 +34,11 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" 
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.1.js"></script>
+<script src="nem2-sdk-0.13.3.js"></script>
 <script>$(function() {
 const nem = require("/node_modules/nem2-sdk");
 
-const NODE = 'https://catapult-test.opening-line.jp:3001';
+const NODE = 'https://jp5.nemesis.land:3001/';
 const blockHttp = new nem.BlockHttp(NODE);
 const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
@@ -65,7 +65,7 @@ listener.open().then(() => {
                 for(let mosaic of transaction.mosaics){
                     $("#table").append("<tr>" 
                         +"<td>"+ _.height.compact() + "</td>"
-                        +"<td>"+ transaction.recipient.address + "</td>"
+                        +"<td>"+ transaction.recipientAddress.address + "</td>"
                         +"<td>"+ mosaic.id.toHex() + "</td>"
                         +"<td>"+ mosaic.amount.compact() + "</td>"
                         + "</tr>"
@@ -77,20 +77,15 @@ listener.open().then(() => {
         blockHttp.getBlockReceipts(_.height.compact())
         .subscribe((receipts) => {
             console.log("--receipt--");
+            console.log(receipts);
             for(let statement of receipts.transactionStatements){
-                for(let receipt of statement.receipts){
-                    console.log(receipt);
-                }
+                console.log(statement);
             }
             for(let statement of receipts.addressResolutionStatements){
-                for(let receipt of statement.receipts){
-                    console.log(receipt);
-                }
+                console.log(statement);
             }
             for(let statement of receipts.mosaicResolutionStatements){
-                for(let receipt of statement.receipts){
-                    console.log(receipt);
-                }
+                console.log(statement);
             }
         })
     },
