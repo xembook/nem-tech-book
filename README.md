@@ -14,12 +14,14 @@ page.217
 ### 接続情報について
 
 以下のノードと蛇口を利用して動作確認することができます。
-(現在、下記テストネットが利用できません。復旧次第、ここでお伝えします。)
 
 #### ノード
-https://catapult-test.opening-line.jp:3001
-#### 蛇口（faucet）
-https://ol-catapult-faucet.herokuapp.com/
+https://jp5.nemesis.land:3001/
+
+#### 蛇口（faucet） 
+http://nfwallet.z31.web.core.windows.net/login
+※蛇口は現在停止中のようですので、テストウォレットからサンプルプログラムのアカウントに必要量を送金してください。
+
 
 ### デモプログラム
 #### 3.3 開発環境の準備
