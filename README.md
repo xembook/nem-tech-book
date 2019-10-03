@@ -28,6 +28,11 @@ http://nfwallet.z31.web.core.windows.net/login
 ### デモプログラム
 #### 3.3 開発環境の準備
 
-- ブラウザを使ったデバッグ手法(0.13.2対応済み)
+- ブラウザを使ったデバッグ手法(0.13.3対応済み)
   - https://xembook.github.io/nem-tech-book/101_debug.html
+
+#### 3.4 サンプルプログラム基礎編
+
+- 監視(0.13.3対応済み)
+  - https://xembook.github.io/nem-tech-book/202_listener.html
   
