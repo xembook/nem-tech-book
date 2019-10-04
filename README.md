@@ -44,9 +44,10 @@ http://nfwallet.z31.web.core.windows.net/login
   - https://xembook.github.io/nem-tech-book/101_debug.html
 
 #### 3.4 サンプルプログラム基礎編
-
-- 監視(0.13.3対応済み)
-  - https://xembook.github.io/nem-tech-book/202_listener.html
+- サンプルプログラム
   - 入金必要額 0.1XEM以上
   - 実行時必要手数料 0.1XEM以下
+　　
+- 監視(0.13.3対応済み)
+  - https://xembook.github.io/nem-tech-book/202_listener.html
   
