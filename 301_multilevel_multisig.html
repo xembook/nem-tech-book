@@ -9,7 +9,8 @@
     crossorigin="anonymous">
 </head>
     <div class="container">
-        <h1>sample</h1>
+        <h1>3.5 サンプルプログラム応用編</h1>
+		<h3>マルチレベルマルチシグ</h3>
 
         <!-- div block1 -->
         <h3>deposit to</h3>
@@ -63,14 +64,14 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.1.js"></script>
+<script src="nem2-sdk-0.13.3.js"></script>
 <script>$(function() {
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 
-const NODE = 'https://catapult-test.opening-line.jp:3001';
-const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
+const NODE = 'https://jp5.nemesis.land:3001/';
+const GENERATION_HASH = "9F1979BEBA29C47E59B40393ABB516801A353CFC0C18BC241FEDE41939C907E7";
 const txHttp = new nem.TransactionHttp(NODE);
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
@@ -107,10 +108,10 @@ listener.open().then(() => {
     );
 });
 
-const addType = nem.MultisigCosignatoryModificationType.Add;
-const removeType = nem.MultisigCosignatoryModificationType.Remove;
+const addType = nem.CosignatoryModificationAction.Add;
+const removeType = nem.CosignatoryModificationAction.Remove;
 
-const ellenOrFrankMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+const ellenOrFrankMultisigTx = nem.MultisigAccountModificationTransaction.create(
     nem.Deadline.create(),
     1,1,
     [
@@ -122,7 +123,7 @@ const ellenOrFrankMultisigTx = nem.ModifyMultisigAccountTransaction.create(
 
 function process(){
 
-    const bobAndDaveAndCarolMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+    const bobAndDaveAndCarolMultisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         2,2,
         [
@@ -140,7 +141,9 @@ function process(){
             bobAndDaveAndCarolMultisigTx.toAggregate(alice.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
-        []
+        [],
+        nem.UInt64.fromUint(100000)
+
     );
 
     const signedTx =  alice.signTransactionWithCosignatories(
@@ -171,7 +174,7 @@ function process(){
 
 function process3(){
 
-    const switchDaveToMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+    const switchDaveToMultisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         0,0,
         [
@@ -188,7 +191,8 @@ function process3(){
             switchDaveToMultisigTx.toAggregate(alice.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
-        []
+        [],
+        nem.UInt64.fromUint(100000)
     );
 
     const signedTx4 =  dave2.signTransactionWithCosignatories(
