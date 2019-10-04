@@ -45,6 +45,7 @@ http://nfwallet.z31.web.core.windows.net/login
 
 #### 3.4 サンプルプログラム基礎編
 - サンプルテンプレート(0.13.3対応済み)
+  - https://xembook.github.io/nem-tech-book/201_sample_template.html
   - 入金必要額 0.1XEM以上
   - 実行時必要手数料 0.1XEM以下
 　　
