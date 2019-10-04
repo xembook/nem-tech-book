@@ -98,13 +98,15 @@ function process(){
         nem.Deadline.create(),
         alice.address,
         [
-			new nem.Mosaic(
-				new nem.NamespaceId('nem.xem'),
-				nem.UInt64.fromUint(0)
-			)
-		],
+            new nem.Mosaic(
+                new nem.NamespaceId('nem.xem'),
+                nem.UInt64.fromUint(0)
+            )
+        ],
         nem.PlainMessage.create('Hello World!'),
-        nem.NetworkType.MIJIN_TEST
+        nem.NetworkType.MIJIN_TEST,
+        nem.UInt64.fromUint(100000)
+
     );
 
 
