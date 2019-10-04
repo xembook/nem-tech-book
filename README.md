@@ -5,6 +5,12 @@
 
 ##### 現在nem2-sdk最新バージョンの0.13.3に随時対応中です。動作の確認が取れたものから下記「デモプログラム」のリストに対応済みと付記していきます。
 
+#### 全般
+- ネットワーク手数料に使用されるモザイクがcat.currencyからnem.xemに変更になりました。
+  - NetworkCurrencyMosaic は現在 "cat.currency" を指すため使用できません。
+- トランザクションに手数料指定が必須になりました。
+  - 補足説明にてサンプルを動かすための入金必要額(min値)と実行時必要手数料(max値)を明記します。
+
 #### 3.4 サンプルプログラム基礎編
 ##### 監視
 - blockHttp.getBlockReceiptsで取得できるstatementへのアクセス方法が変わりました。
@@ -41,4 +47,6 @@ http://nfwallet.z31.web.core.windows.net/login
 
 - 監視(0.13.3対応済み)
   - https://xembook.github.io/nem-tech-book/202_listener.html
+  - 入金必要額 0.1XEM以上
+  - 実行時必要手数料 0.1XEM以下
   
