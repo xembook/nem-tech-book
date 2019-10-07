@@ -54,15 +54,17 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" 
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.3.js"></script>
+<script src="nem2-sdk-0.13.4.js"></script>
 <script>
 
-const NODE = 'https://jp5.nemesis.land:3001/';
-const GENERATION_HASH = "9F1979BEBA29C47E59B40393ABB516801A353CFC0C18BC241FEDE41939C907E7";
+const NODE = 'https://fushicho.48gh23s.xyz:3001';
+//const NODE = 'https://jp5.nemesis.land:3001/';
+const GENERATION_HASH = "9A7949B3ED05DE9C771B8BEB16226E1CEBCA4C50428F27445796C8B4D9B0A9D6";
 
 const nem = require("/node_modules/nem2-sdk");
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+console.log(alice.publicKey);
 $('#address').text(alice.address.address);
 
 var isInit = true;
@@ -99,7 +101,8 @@ function process(){
         alice.address,
         [
             new nem.Mosaic(
-                new nem.NamespaceId('nem.xem'),
+//                new nem.NamespaceId('nem.xem'),
+                new nem.MosaicId('26441EAFBAE569AB'),
                 nem.UInt64.fromUint(0)
             )
         ],
