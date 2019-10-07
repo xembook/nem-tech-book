@@ -9,7 +9,8 @@
     crossorigin="anonymous">
 </head>
     <div class="container">
-        <h1>sample</h1>
+        <h1>3.4 サンプルプログラム基礎編</h1>
+        <h3>アグリゲートトランザクション（マルチシグ組成）</h3>
 
         <!-- div block1 -->
         <h3>deposit to</h3>
@@ -48,12 +49,14 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.1.js"></script>
+<script src="nem2-sdk-0.13.4.js"></script>
 <script>$(function() {
 const nem = require("/node_modules/nem2-sdk");
 
-const NODE = 'https://catapult-test.opening-line.jp:3001';
-const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
+const NODE = 'https://fushicho.48gh23s.xyz:3001';
+//const NODE = 'https://jp5.nemesis.land:3001/';
+const GENERATION_HASH = "9A7949B3ED05DE9C771B8BEB16226E1CEBCA4C50428F27445796C8B4D9B0A9D6";
+
 const txHttp = new nem.TransactionHttp(NODE);
 const nsHttp = new nem.NamespaceHttp(NODE);
 
@@ -92,7 +95,8 @@ listener.open().then(() => {
 function process(){
 
     //ネームスペース作成
-    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
+//    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
+    const namespaceTx = nem.NamespaceRegistrationTransaction.createRootNamespace(
         nem.Deadline.create(),
         "xembook",
         nem.UInt64.fromUint(1),
@@ -102,19 +106,20 @@ function process(){
     //アカウントとネームスペースのリンク
     const accountAliasTx = nem.AliasTransaction.createForAddress(
         nem.Deadline.create(),
-        nem.AliasActionType.Link,
+//        nem.AliasActionType.Link,
+        nem.AliasAction.Link,
         namespaceTx.namespaceId,
         alice.address,
         nem.NetworkType.MIJIN_TEST
     );
 
     //マルチシグ化
-    const multisigTx = nem.ModifyMultisigAccountTransaction.create(
+    const multisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         1,1,
         [
             new nem.MultisigCosignatoryModification(
-                nem.MultisigCosignatoryModificationType.Add,
+                nem.CosignatoryModificationAction.Add,
                 bob,
             )
         ],
@@ -129,7 +134,9 @@ function process(){
             multisigTx.toAggregate(alice.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
-        []
+        [],
+        nem.UInt64.fromUint(100000)
+
     );
 
     const signedTx =  aggregateTx.signTransactionWithCosignatories(

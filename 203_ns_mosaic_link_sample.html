@@ -9,8 +9,8 @@
     crossorigin="anonymous">
 </head>
     <div class="container">
-        <h1>sample</h1>
-
+        <h1>3.4 サンプルプログラム基礎編</h1>
+        <h3>アグリゲートトランザクション（モザイク⽣成） </h3>
         <!-- div block1 -->
         <h3>deposit to</h3>
         <div id="address"></div>
@@ -49,7 +49,7 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.3.js"></script>
+<script src="nem2-sdk-0.13.4.js"></script>
 <script>$(function() {
 
 const NODE = 'https://fushicho.48gh23s.xyz:3001';
@@ -112,9 +112,9 @@ function process(){
 //            divisibility: 0,
 //            duration: nem.UInt64.fromUint(1)
 //        }),
-		nem.MosaicFlags.create(true, true, true),
-		0,
-		nem.UInt64.fromUint(0),
+        nem.MosaicFlags.create(true, true, true),
+        0,
+        nem.UInt64.fromUint(0),
         nem.NetworkType.MIJIN_TEST
     );
 
@@ -122,7 +122,7 @@ function process(){
     const mosaicChangeTx = nem.MosaicSupplyChangeTransaction.create(
         nem.Deadline.create(),
         mosaicDefTx.mosaicId,
-		nem.MosaicSupplyChangeAction.Increase,
+        nem.MosaicSupplyChangeAction.Increase,
 //        nem.MosaicSupplyType.Increase,
         nem.UInt64.fromUint(1000000),
         nem.NetworkType.MIJIN_TEST
@@ -147,7 +147,7 @@ function process(){
             mosaicAliasTx.toAggregate(alice.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
-		[],
+        [],
         nem.UInt64.fromUint(100000)
     );
     console.log(aggregateTx);
