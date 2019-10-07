@@ -51,7 +51,11 @@ http://nfwallet.z31.web.core.windows.net/login
 　　
 - 監視(0.13.4対応済み:接続先 fushicho.48gh23s.xyz)
   - https://xembook.github.io/nem-tech-book/202_listener.html
+
+- アグリゲートトランザクション（モザイク⽣成）(0.13.4対応済み:接続先 fushicho.48gh23s.xyz)
+  - https://xembook.github.io/nem-tech-book/203_ns_mosaic_link_sample.html
   
+    
 #### 3.5 サンプルプログラム応用編
 - マルチレベルマルチシグ(0.13.3対応済み)
   - https://xembook.github.io/nem-tech-book/301_multilevel_multisig.html
