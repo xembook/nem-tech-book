@@ -49,11 +49,12 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.1.js"></script>
+<script src="nem2-sdk-0.13.3.js"></script>
 <script>$(function() {
 
-const NODE = 'https://catapult-test.opening-line.jp:3001';
-const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
+const NODE = 'https://fushicho.48gh23s.xyz:3001';
+//const NODE = 'https://jp5.nemesis.land:3001/';
+const GENERATION_HASH = "9A7949B3ED05DE9C771B8BEB16226E1CEBCA4C50428F27445796C8B4D9B0A9D6";
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
@@ -91,7 +92,8 @@ listener.open().then(() => {
 function process(){
 
     //ネームスペース作成
-    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
+//    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
+    const namespaceTx = nem.NamespaceRegistrationTransaction.createRootNamespace(
         nem.Deadline.create(),
         "xembook",
         nem.UInt64.fromUint(1),
@@ -104,12 +106,15 @@ function process(){
         nem.Deadline.create(),
         nonce,
         nem.MosaicId.createFromNonce(nonce, alice.publicAccount),
-        nem.MosaicProperties.create({
-            supplyMutable: true,
-            transferable: true,
-            divisibility: 0,
-            duration: nem.UInt64.fromUint(1)
-        }),
+//        nem.MosaicProperties.create({
+//            supplyMutable: true,
+//            transferable: true,
+//            divisibility: 0,
+//            duration: nem.UInt64.fromUint(1)
+//        }),
+		nem.MosaicFlags.create(true, true, true),
+		0,
+		nem.UInt64.fromUint(0),
         nem.NetworkType.MIJIN_TEST
     );
 
@@ -117,7 +122,8 @@ function process(){
     const mosaicChangeTx = nem.MosaicSupplyChangeTransaction.create(
         nem.Deadline.create(),
         mosaicDefTx.mosaicId,
-        nem.MosaicSupplyType.Increase,
+		nem.MosaicSupplyChangeAction.Increase,
+//        nem.MosaicSupplyType.Increase,
         nem.UInt64.fromUint(1000000),
         nem.NetworkType.MIJIN_TEST
     );
@@ -125,7 +131,8 @@ function process(){
     //モザイクとネームスペースのリンク
     const mosaicAliasTx = nem.AliasTransaction.createForMosaic(
         nem.Deadline.create(),
-        nem.AliasActionType.Link,
+//        nem.AliasActionType.Link,
+        nem.AliasAction.Link,
         namespaceTx.namespaceId,
         mosaicDefTx.mosaicId,
         nem.NetworkType.MIJIN_TEST
@@ -140,7 +147,8 @@ function process(){
             mosaicAliasTx.toAggregate(alice.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
-        []
+		[],
+        nem.UInt64.fromUint(100000)
     );
     console.log(aggregateTx);
     const signedTx = alice.sign(aggregateTx,GENERATION_HASH);
@@ -161,8 +169,9 @@ function process(){
 
             nsHttp.getNamespace(new nem.NamespaceId('xembook'))
             .subscribe(_ => {
-                const hexMosaic = (new nem.UInt64(_.alias.mosaicId)).toHex();
-                $('#mosaic ul').append(strLi(NODE,'/mosaic/' + hexMosaic ,hexMosaic));
+
+//                const hexMosaic = (new nem.UInt64(_.alias.mosaicId)).toHex();
+                $('#mosaic ul').append(strLi(NODE,'/mosaic/' + _.alias.mosaicId ,_.alias.mosaicId));
 
                 for(let ns of _.levels){
                     const hexNs = ns.id.toHex();
