@@ -10,6 +10,11 @@
   - NetworkCurrencyMosaic は現在 "cat.currency" を指すため使用できません。
 - トランザクションに手数料指定が必須になりました。
   - 補足説明にてサンプルを動かすための入金必要額(min値)と実行時必要手数料(max値)を明記します。
+- WebSocketのタイムアウト対策ロジックを追加します。
+
+```js
+setInterval(function(){listener.newBlock(), 10000);
+```
 
 #### 3.4 サンプルプログラム基礎編
 ##### 監視
