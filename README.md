@@ -42,24 +42,24 @@ https://planethouki.github.io/nem/faucet/fushicho.html
 ### デモプログラム
 #### 3.3 開発環境の準備
 
-- ブラウザを使ったデバッグ手法(0.14.0対応済み:接続先 fushicho.48gh23s.xyz)
+- ブラウザを使ったデバッグ手法(0.14.0対応済み)
   - https://xembook.github.io/nem-tech-book/101_debug.html
 
 #### 3.4 サンプルプログラム基礎編
-- サンプルテンプレート(0.14.0対応済み:接続先 fushicho.48gh23s.xyz)
+- サンプルテンプレート(0.14.0対応済み)
   - https://xembook.github.io/nem-tech-book/201_sample_template.html
   - 入金必要額 0.1XEM以上
   - 実行時必要手数料 0.1XEM以下
 　　
-- 監視(0.14.0対応済み:接続先 fushicho.48gh23s.xyz)
+- 監視(0.14.0対応済み)
   - https://xembook.github.io/nem-tech-book/202_listener.html
 
-- アグリゲートトランザクション（モザイク⽣成）(0.14.0対応済み:接続先 fushicho.48gh23s.xyz)
+- アグリゲートトランザクション（モザイク⽣成）(0.14.0対応済み)
   - https://xembook.github.io/nem-tech-book/203_ns_mosaic_link_sample.html
   
     
 #### 3.5 サンプルプログラム応用編
-- マルチレベルマルチシグ(0.13.3対応済み)
+- マルチレベルマルチシグ(0.14.0対応済み)
   - https://xembook.github.io/nem-tech-book/301_multilevel_multisig.html
   
   
