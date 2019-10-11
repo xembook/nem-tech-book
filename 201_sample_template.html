@@ -54,7 +54,7 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" 
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.4.js"></script>
+<script src="nem2-sdk-0.14.0.js"></script>
 <script>
 
 const NODE = 'https://fushicho.48gh23s.xyz:3001';
@@ -72,7 +72,7 @@ const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
 listener.open().then(() => {
 
-	setInterval(function(){listener.newBlock(), 10000);
+    setInterval(function(){listener.newBlock()}, 30000);
 
     listener
     .unconfirmedAdded(alice.address)

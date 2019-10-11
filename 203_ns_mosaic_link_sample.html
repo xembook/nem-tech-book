@@ -49,7 +49,7 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.4.js"></script>
+<script src="nem2-sdk-0.14.0.js"></script>
 <script>$(function() {
 
 const NODE = 'https://fushicho.48gh23s.xyz:3001';
@@ -69,6 +69,9 @@ var isInit = true;
 const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
 listener.open().then(() => {
+
+    setInterval(function(){listener.newBlock()}, 30000);
+
 
     listener
     .unconfirmedAdded(alice.address)
@@ -171,7 +174,7 @@ function process(){
             .subscribe(_ => {
 
 //                const hexMosaic = (new nem.UInt64(_.alias.mosaicId)).toHex();
-                $('#mosaic ul').append(strLi(NODE,'/mosaic/' + _.alias.mosaicId ,_.alias.mosaicId));
+                $('#mosaic ul').append(strLi(NODE,'/mosaic/' + _.alias.mosaicId.toHex() ,_.alias.mosaicId.toHex()));
 
                 for(let ns of _.levels){
                     const hexNs = ns.id.toHex();
