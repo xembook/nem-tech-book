@@ -64,7 +64,7 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.4.js"></script>
+<script src="nem2-sdk-0.14.0.js"></script>
 <script>$(function() {
 
 const nem = require("/node_modules/nem2-sdk");
@@ -89,6 +89,8 @@ const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
 
 listener.open().then(() => {
+
+    setInterval(function(){listener.newBlock()}, 30000);
 
     listener
     .unconfirmedAdded(alice.address)
@@ -124,6 +126,20 @@ const ellenOrFrankMultisigTx = nem.MultisigAccountModificationTransaction.create
 
 function process(){
 
+    const tx = nem.TransferTransaction.create(
+        nem.Deadline.create(),
+        dave2.address,
+        [
+            new nem.Mosaic(
+                new nem.MosaicId('26441EAFBAE569AB'),
+                nem.UInt64.fromUint(5000000)
+            )
+        ],
+        nem.PlainMessage.create('for fee'),
+        nem.NetworkType.MIJIN_TEST,
+        nem.UInt64.fromUint(1000000)
+    );
+
     const bobAndDaveAndCarolMultisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         2,2,
@@ -138,6 +154,7 @@ function process(){
     const aggregateTx = nem.AggregateTransaction.createComplete(
         nem.Deadline.create(),
         [
+			tx.toAggregate(alice.publicAccount),
             ellenOrFrankMultisigTx.toAggregate(dave.publicAccount),
             bobAndDaveAndCarolMultisigTx.toAggregate(alice.publicAccount),
         ],
@@ -175,6 +192,8 @@ function process(){
 
 function process3(){
 
+
+
     const switchDaveToMultisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         0,0,
@@ -193,8 +212,11 @@ function process3(){
         ],
         nem.NetworkType.MIJIN_TEST,
         [],
-        nem.UInt64.fromUint(100000)
+        nem.UInt64.fromUint(4000000)
     );
+
+
+
 
     const signedTx4 =  dave2.signTransactionWithCosignatories(
         aggregateTx4,
