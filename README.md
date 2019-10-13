@@ -62,4 +62,6 @@ https://planethouki.github.io/nem/faucet/fushicho.html
 - マルチレベルマルチシグ(0.14.0対応済み)
   - https://xembook.github.io/nem-tech-book/301_multilevel_multisig.html
   
+- 保留型アグリゲートトランザクション(0.14.0対応済み)
+  - https://xembook.github.io/nem-tech-book/302_bonded_multisig.html
   
