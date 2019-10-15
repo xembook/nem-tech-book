@@ -3,7 +3,7 @@
 
 ## 訂正
 
-##### 現在nem2-sdk最新バージョンの0.14.0(fushicho)に随時対応中です。動作の確認が取れたものから下記「デモプログラム」のリストに対応済みと付記していきます。
+##### 現在nem2-sdk最新バージョンの0.14.1(fushicho)に随時対応中です。動作の確認が取れたものから下記「デモプログラム」のリストに対応済みと付記していきます。
 
 #### 全般
 - ネットワーク手数料に使用されるモザイクがcat.currencyからnem.xemに変更になりました。
@@ -33,20 +33,20 @@ page.217
 以下のノードと蛇口を利用して動作確認することができます。
 
 #### ノード
-https://fushicho.48gh23s.xyz:3001
-- GENERATION_HASH 9A7949B3ED05DE9C771B8BEB16226E1CEBCA4C50428F27445796C8B4D9B0A9D6
+https://jp5.nemesis.land:3001/
+- GENERATION_HASH 17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB
 
 #### 蛇口（faucet） 
-https://planethouki.github.io/nem/faucet/fushicho.html
+http://nf-catapult-testnet.herokuapp.com
 
 ### デモプログラム
 #### 3.3 開発環境の準備
 
-- ブラウザを使ったデバッグ手法(0.14.0対応済み)
+- ブラウザを使ったデバッグ手法(0.14.1対応済み)
   - https://xembook.github.io/nem-tech-book/101_debug.html
 
 #### 3.4 サンプルプログラム基礎編
-- サンプルテンプレート(0.14.0対応済み)
+- サンプルテンプレート(0.14.1対応済み)
   - https://xembook.github.io/nem-tech-book/201_sample_template.html
   - 入金必要額 0.1XEM以上
   - 実行時必要手数料 0.1XEM以下
