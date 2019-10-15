@@ -13,7 +13,7 @@
 - WebSocketのタイムアウト対策ロジックを追加します。
 
 ```js
-setInterval(function(){listener.newBlock()}, 10000);
+setInterval(function(){listener.newBlock()}, 30000);
 ```
 
 #### 3.4 サンプルプログラム基礎編
