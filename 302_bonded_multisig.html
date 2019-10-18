@@ -10,7 +10,7 @@
 </head>
     <div class="container">
 		<h1>3.5 サンプルプログラム応用編</h1>
-        <h3>保留型アグリゲートトランザクション</h3>
+        <h3>保留型アグリゲートトランザクション</h3>
 
         <!-- div block1 -->
         <h3>deposit to</h3>
@@ -63,16 +63,16 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.14.0.js"></script>
+<script src="nem2-sdk-0.14.1.js"></script>
 <script>$(function() {
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 
 
-const NODE = 'https://fushicho.48gh23s.xyz:3001';
-//const NODE = 'https://jp5.nemesis.land:3001/';
-const GENERATION_HASH = "9A7949B3ED05DE9C771B8BEB16226E1CEBCA4C50428F27445796C8B4D9B0A9D6";
+//const NODE = 'https://fushicho.48gh23s.xyz:3001';
+const NODE = 'https://jp5.nemesis.land:3001/';
+const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 const transactionHttp = new nem.TransactionHttp(NODE);
 const accountHttp = new nem.AccountHttp(NODE);
 
@@ -141,7 +141,10 @@ function process(){
 
     const lockTx = nem.HashLockTransaction.create(
         nem.Deadline.create(),
-        nem.NetworkCurrencyMosaic.createRelative(10),
+        new nem.Mosaic(
+            new nem.MosaicId('308F144790CD7BC4'),
+            nem.UInt64.fromUint(10000000)
+        ),
         nem.UInt64.fromUint(480),
         signedTx,
         nem.NetworkType.MIJIN_TEST,

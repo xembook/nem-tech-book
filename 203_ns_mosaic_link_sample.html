@@ -53,8 +53,7 @@
 <script>$(function() {
 
 //const NODE = 'https://fushicho.48gh23s.xyz:3001';
-//const NODE = 'https://jp5.nemesis.land:3001';
-const NODE = 'http://47.107.245.217:3000';
+const NODE = 'https://jp5.nemesis.land:3001';
 
 const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 
@@ -68,8 +67,7 @@ const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 $('#address').text(alice.address.address);
 
 var isInit = true;
-//const wsEndpoint = NODE.replace('https', 'wss');
-const wsEndpoint = NODE.replace('http', 'ws');
+const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
 listener.open().then(() => {
 
@@ -101,8 +99,8 @@ function process(){
 //    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
     const namespaceTx = nem.NamespaceRegistrationTransaction.createRootNamespace(
         nem.Deadline.create(),
-        "xembook6",
-        nem.UInt64.fromUint(60),
+        "xembook7",
+        nem.UInt64.fromUint(5),
         nem.NetworkType.MIJIN_TEST
     );
 
