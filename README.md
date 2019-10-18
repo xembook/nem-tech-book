@@ -64,4 +64,9 @@ http://nf-catapult-testnet.herokuapp.com
   
 - 保留型アグリゲートトランザクション(0.14.0対応済み)
   - https://xembook.github.io/nem-tech-book/302_bonded_multisig.html
-  
+
+#### 3.6 社会実装のヒント
+- トレーサビリティ(0.14.1対応済み)
+  - https://xembook.github.io/nem-tech-book/403_aggregate_comp_payload.html
+
+本書ではsafetyトークンを送っていますが、サンプルプログラムでは簡略化のためxemを送っています。
