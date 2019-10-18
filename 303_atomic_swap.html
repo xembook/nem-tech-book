@@ -9,7 +9,8 @@
     crossorigin="anonymous">
 </head>
     <div class="container">
-        <h1>sample</h1>
+		<h1>3.5 サンプルプログラム応用編</h1>
+        <h3>アトミックスワップ</h3>
 
         <!-- div block1 -->
         <h3>deposit to</h3>
@@ -83,7 +84,7 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.1.js"></script>
+<script src="nem2-sdk-0.14.1.js"></script>
 <script>$(function() {
 
 const nem = require("/node_modules/nem2-sdk");
@@ -97,19 +98,21 @@ const bobPrivate  = nem.Account.createFromPrivateKey('BB68B933E188D9800A987E3DB0
 const bobPublic = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST); //空
 $('#address').text(alicePublic.address.address);
 
-const NODE_PUBLIC = "https://catapult-test.opening-line.jp:3001";
-const GEN_HASH_PUBLIC = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
+const NODE_PUBLIC = "https://jp5.nemesis.land:3001/";
+const GEN_HASH_PUBLIC = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 const txHttpPublic  = new nem.TransactionHttp(NODE_PUBLIC);
 const accountHttpPublic = new nem.AccountHttp(NODE_PUBLIC);
 
-const NODE_PRIVATE = "http://13.231.159.197:3000";
-const GEN_HASH_PRIVATE = "FC0A097C9A8ADA831255440873328D68B7561D25D9132B083CC29B7D563A3D32";
+const NODE_PRIVATE = "http://fushicho.48gh23s.xyz:3000";
+const GEN_HASH_PRIVATE = "9A7949B3ED05DE9C771B8BEB16226E1CEBCA4C50428F27445796C8B4D9B0A9D6";
 const txHttpPrivate = new nem.TransactionHttp(NODE_PRIVATE);
 const accountHttpPrivate = new nem.AccountHttp(NODE_PRIVATE);
 
-const hash = sha3_256.create();
 const random = nem.Crypto.randomBytes(10);
+const proof = random.toString('hex');
+const hash = sha3_256.create();
 const aliceSecret = hash.update(random).hex().toUpperCase();
+
 console.log(aliceSecret);
 
 const wsEndpointPublic = NODE_PUBLIC.replace('https', 'wss');
@@ -148,12 +151,16 @@ function process(){
     //TX1 public alice->Lock(bob)
     const lockTxPublic = nem.SecretLockTransaction.create(
         nem.Deadline.create(),
-        nem.NetworkCurrencyMosaic.createRelative(1),
+        new nem.Mosaic(
+            new nem.MosaicId('308F144790CD7BC4'),
+            nem.UInt64.fromUint(10000000)
+        ),
         nem.UInt64.fromUint(96 * 3600 / 15),
         nem.HashType.Op_Sha3_256,
         aliceSecret,
         bobPublic.address,
-        nem.NetworkType.MIJIN_TEST
+        nem.NetworkType.MIJIN_TEST,
+		nem.UInt64.fromUint(100000)
     );
 
     const lockTxPublicSigned = alicePublic.sign(lockTxPublic, GEN_HASH_PUBLIC);
@@ -179,13 +186,14 @@ function process(){
 
 function process3(){
 
-    accountHttpPublic.unconfirmedTransactions(alicePublic.publicAccount)
+    accountHttpPublic.unconfirmedTransactions(alicePublic.address)
     .pipe(
         rxjs.mergeMap(_ => {
             console.log(_);
             return _;
         }),
         rxjs.filter((tx) => {
+			console.log(tx);	
             return tx.transactionInfo !== undefined && tx.type === nem.TransactionType.SECRET_LOCK 
         }),
         rxjs.map(_ => {
@@ -193,19 +201,24 @@ function process3(){
             console.log(_);
             const lockTxPrivate = nem.SecretLockTransaction.create(
                 nem.Deadline.create(),
-                nem.NetworkCurrencyMosaic.createRelative(1),
+		        new nem.Mosaic(
+		            new nem.MosaicId('308F144790CD7BC4'),
+		            nem.UInt64.fromUint(10000000)
+		        ),
                 nem.UInt64.fromUint(84 * 3600 / 15),
                 nem.HashType.Op_Sha3_256,
                 _.secret,
                 alicePrivate.address,
-                nem.NetworkType.MIJIN_TEST
+                nem.NetworkType.MIJIN_TEST,
+				nem.UInt64.fromUint(100000)
+
             );
 
             console.log(lockTxPrivate);
             const lockTxPrivateSigned = bobPrivate.sign(lockTxPrivate, GEN_HASH_PRIVATE);
 
-            const hash4 = lockTxPrivateSigned.hash;
-            $('#signedTx4').val(lockTxPrivateSigned.payload);
+            const hash4 = lockTxPrivateSigned.transactionInfo.hash;
+            $('#signedTx4').val(lockTxPrivateSigned.signature);
             $('#status4 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hash4 + '/status' ,hash4 + '/status'));
             $('#confirmed5 ul').append(strLi(NODE_PRIVATE,'/transaction/' + hash4 ,hash4 ));
 
