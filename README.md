@@ -21,6 +21,10 @@ setInterval(function(){listener.newBlock()}, 30000);
 - blockHttp.getBlockReceiptsで取得できるstatementへのアクセス方法が変わりました。
 - blockHttp.getBlockTransactionsで取得できるtransaction.recipientアドレスへのアクセス方法が変わりました。
 
+#### 3.5 サンプルプログラム応用編
+##### アトミックスワップ
+現在、nem2-sdkのライブラリにバグがあるため実行できません。
+
 #### 著者紹介 
 page.217 
 - 誤：XEMBookはリリース以降200万プレビューに迫るアクセスを記録。
