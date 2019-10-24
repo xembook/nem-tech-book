@@ -83,6 +83,11 @@ const transactionHttp = new nem.TransactionHttp(NODE);
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const carol = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+
+console.log(alice.publicAccount);
+console.log(bob.publicAccount);
+console.log(carol.publicAccount);
+
 $('#address').text(alice.address.address);
 
 const wsEndpoint = NODE.replace('https', 'wss');
@@ -117,11 +122,40 @@ listener.open().then(() => {
 
 function process(){
 
+    //AliceからCarolへ、手数料用のXEMを事前に渡しておく
+    const transferTx = nem.TransferTransaction.create(
+        nem.Deadline.create(),
+        carol.address,
+        [
+            new nem.Mosaic(
+                new nem.MosaicId('308F144790CD7BC4'),
+                nem.UInt64.fromUint(1000000)
+            )
+		],
+        nem.PlainMessage.create(''),
+        nem.NetworkType.MIJIN_TEST
+    );
+
+    //AliceからBobへ、手数料用のXEMを事前に渡しておく
+    const transferTx2 = nem.TransferTransaction.create(
+        nem.Deadline.create(),
+        bob.address,
+        [
+            new nem.Mosaic(
+                new nem.MosaicId('308F144790CD7BC4'),
+                nem.UInt64.fromUint(1000000)
+            )
+		],
+        nem.PlainMessage.create(''),
+        nem.NetworkType.MIJIN_TEST
+    );
+
+
     //ネームスペース作成
     const namespaceTx = nem.NamespaceRegistrationTransaction.createRootNamespace(
         nem.Deadline.create(),
-        "item2",
-        nem.UInt64.fromUint(5),
+        "item" + alice.address.address.toLowerCase(),
+        nem.UInt64.fromUint(60),
         nem.NetworkType.MIJIN_TEST
     );
 
@@ -183,6 +217,8 @@ function process(){
     const aggregateTx = nem.AggregateTransaction.createComplete(
         nem.Deadline.create(),
         [
+            transferTx.toAggregate(alice.publicAccount),
+            transferTx2.toAggregate(alice.publicAccount),
             namespaceTx.toAggregate(alice.publicAccount),
             mosaicDefTx.toAggregate(alice.publicAccount),
             mosaicChangeTx.toAggregate(alice.publicAccount),
@@ -249,7 +285,12 @@ function process3(){
     const transferTx = nem.TransferTransaction.create(
         nem.Deadline.create(),
         bob.address,
-        [nem.NetworkCurrencyMosaic.createRelative(0)],
+        [
+	        new nem.Mosaic(
+	            new nem.MosaicId('308F144790CD7BC4'),
+	            nem.UInt64.fromUint(100000)
+	        )
+		],
         nem.PlainMessage.create('Thank you for sending alice.'),
         nem.NetworkType.MIJIN_TEST
     );
@@ -283,7 +324,12 @@ function process3(){
 
     const lockTx = nem.HashLockTransaction.create(
         nem.Deadline.create(),
-        nem.NetworkCurrencyMosaic.createRelative(10),
+//        nem.NetworkCurrencyMosaic.createRelative(10)
+        new nem.Mosaic(
+            new nem.MosaicId('308F144790CD7BC4'),
+            nem.UInt64.fromUint(10000000)
+        )
+		,
         nem.UInt64.fromUint(480),
         signedTx,
         nem.NetworkType.MIJIN_TEST);
