@@ -70,6 +70,10 @@ http://nf-catapult-testnet.herokuapp.com
   - https://xembook.github.io/nem-tech-book/302_bonded_multisig.html
 
 #### 3.6 社会実装のヒント
+
+- 所有(0.14.3対応済み)
+  - https://xembook.github.io/nem-tech-book/401_handover_multisig.html
+
 - トレーサビリティ(0.14.1対応済み)
   - https://xembook.github.io/nem-tech-book/403_aggregate_comp_payload.html
 
