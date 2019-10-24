@@ -69,11 +69,11 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.13.1.js"></script>
+<script src="nem2-sdk-0.14.3.js"></script>
 <script>$(function() {
 
-const NODE = 'https://catapult-test.opening-line.jp:3001';
-const GENERATION_HASH = "453052FDC4EB23BF0D7280C103F7797133A633B68A81986165B76FCE248AB235";
+const NODE = 'https://jp5.nemesis.land:3001/';
+const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
@@ -90,6 +90,8 @@ const listener = new nem.Listener(wsEndpoint, WebSocket);
 var isInit = true;
 
 listener.open().then(() => {
+
+	setInterval(function(){listener.newBlock()}, 30000);
 
     listener
     .unconfirmedAdded(alice.address)
@@ -116,10 +118,10 @@ listener.open().then(() => {
 function process(){
 
     //ネームスペース作成
-    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
+    const namespaceTx = nem.NamespaceRegistrationTransaction.createRootNamespace(
         nem.Deadline.create(),
-        "item",
-        nem.UInt64.fromUint(1),
+        "item2",
+        nem.UInt64.fromUint(5),
         nem.NetworkType.MIJIN_TEST
     );
 
@@ -129,12 +131,15 @@ function process(){
         nem.Deadline.create(),
         nonce,
         nem.MosaicId.createFromNonce(nonce, alice.publicAccount),
-        nem.MosaicProperties.create({
-            supplyMutable: true,
-            transferable: true,
-            divisibility: 0,
-            duration: nem.UInt64.fromUint(1)
-        }),
+//        nem.MosaicProperties.create({
+//            supplyMutable: true,
+//            transferable: true,
+//            divisibility: 0,
+//            duration: nem.UInt64.fromUint(1)
+//        }),
+		nem.MosaicFlags.create(true, true, true),
+		0,
+        nem.UInt64.fromUint(0),
         nem.NetworkType.MIJIN_TEST
     );
 
@@ -142,7 +147,8 @@ function process(){
     const mosaicChangeTx = nem.MosaicSupplyChangeTransaction.create(
         nem.Deadline.create(),
         mosaicDefTx.mosaicId,
-        nem.MosaicSupplyType.Increase,
+//        nem.MosaicSupplyType.Increase,
+		nem.MosaicSupplyChangeAction.Increase,
         nem.UInt64.fromUint(1000000),
         nem.NetworkType.MIJIN_TEST
     );
@@ -150,19 +156,25 @@ function process(){
     //モザイクとネームスペースのリンク
     const mosaicAliasTx = nem.AliasTransaction.createForMosaic(
         nem.Deadline.create(),
-        nem.AliasActionType.Link,
+//        nem.AliasActionType.Link,
+		nem.AliasAction.Link,
+
         namespaceTx.namespaceId,
         mosaicDefTx.mosaicId,
         nem.NetworkType.MIJIN_TEST
     );
 
     //マルチシグ化
-    const multisigTx = nem.ModifyMultisigAccountTransaction.create(
+
+//const multisigTx = nem.ModifyMultisigAccountTransaction.create(
+	const multisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         1,1,
         [
             new nem.MultisigCosignatoryModification(
-                nem.MultisigCosignatoryModificationType.Add, bob,
+//				nem.MultisigCosignatoryModificationType.Add, bob,
+				nem.CosignatoryModificationAction.Add, bob,
+
             )
         ],
         nem.NetworkType.MIJIN_TEST
@@ -177,7 +189,9 @@ function process(){
             mosaicAliasTx.toAggregate(alice.publicAccount),
             multisigTx.toAggregate(alice.publicAccount),
         ],
-        nem.NetworkType.MIJIN_TEST
+        nem.NetworkType.MIJIN_TEST,
+		[],
+        nem.UInt64.fromUint(100000)
     );
 
     const signedTx =  alice.signTransactionWithCosignatories(
@@ -214,16 +228,16 @@ function process(){
 
 function process3(){
     //譲渡
-    const modifyMultisigTx = nem.ModifyMultisigAccountTransaction.create(
+    const modifyMultisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         0,0,
         [
             new nem.MultisigCosignatoryModification(
-                nem.MultisigCosignatoryModificationType.Add,
+                nem.CosignatoryModificationAction.Add,
                 carol,
             ),
             new nem.MultisigCosignatoryModification(
-                nem.MultisigCosignatoryModificationType.Remove,
+                nem.CosignatoryModificationAction.Remove,
                 bob,
             ),
 
@@ -246,7 +260,9 @@ function process3(){
             modifyMultisigTx.toAggregate(alice.publicAccount),
             transferTx.toAggregate(carol.publicAccount),
         ],
-        nem.NetworkType.MIJIN_TEST
+        nem.NetworkType.MIJIN_TEST,
+		[],
+        nem.UInt64.fromUint(100000)
     );
 
     const signedTx =  bob.signTransactionWithCosignatories(aggregateTx, [carol],GENERATION_HASH);
@@ -277,7 +293,9 @@ function process3(){
         [
             lockTx.toAggregate(alice.publicAccount),
         ],
-        nem.NetworkType.MIJIN_TEST
+        nem.NetworkType.MIJIN_TEST,
+		[],
+        nem.UInt64.fromUint(100000)
     );
 
     const lockSignedTx = bob.sign(aggregateLockTx, GENERATION_HASH);
