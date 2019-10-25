@@ -74,6 +74,9 @@ http://nf-catapult-testnet.herokuapp.com
 - 所有(0.14.3対応済み)
   - https://xembook.github.io/nem-tech-book/401_handover_multisig.html
 
+- 認証(0.14.3対応済み)
+  - https://xembook.github.io/nem-tech-book/402_auth.html
+
 - トレーサビリティ(0.14.1対応済み)
   - https://xembook.github.io/nem-tech-book/403_aggregate_comp_payload.html
 
