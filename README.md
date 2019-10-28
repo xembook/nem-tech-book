@@ -22,11 +22,11 @@ setInterval(function(){listener.newBlock()}, 30000);
 - blockHttp.getBlockTransactionsで取得できるtransaction.recipientアドレスへのアクセス方法が変わりました。
 
 ##### アグリゲートトランザクション（モザイク⽣成）
-RegisterNamespaceTransaction -> NamespaceRegistrationTransaction
-MosaicProperties.create -> MosaicId.createFromNonce
-MosaicSupplyType -> MosaicSupplyChangeAction
-AliasActionType -> AliasAction
-(new nem.UInt64(_.alias.mosaicId)).toHex() -> _.alias.mosaicId.toHex()
+- RegisterNamespaceTransaction -> NamespaceRegistrationTransaction
+- MosaicProperties.create -> MosaicId.createFromNonce
+- MosaicSupplyType -> MosaicSupplyChangeAction
+- AliasActionType -> AliasAction
+- (new nem.UInt64(_.alias.mosaicId)).toHex() -> _.alias.mosaicId.toHex()
 
 
 #### 3.5 サンプルプログラム応用編
