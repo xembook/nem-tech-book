@@ -73,7 +73,7 @@
 <script src="nem2-sdk-0.14.3.js"></script>
 <script>$(function() {
 
-const NODE = 'https://jp5.nemesis.land:3001/';
+const NODE = 'https://jp5.nemesis.land:3001';
 const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 
 const nem = require("/node_modules/nem2-sdk");
@@ -97,7 +97,7 @@ var isInit = true;
 
 listener.open().then(() => {
 
-	setInterval(function(){listener.newBlock()}, 30000);
+    setInterval(function(){listener.newBlock()}, 30000);
 
     listener
     .unconfirmedAdded(alice.address)
@@ -132,7 +132,7 @@ function process(){
                 new nem.MosaicId('308F144790CD7BC4'),
                 nem.UInt64.fromUint(1000000)
             )
-		],
+        ],
         nem.PlainMessage.create(''),
         nem.NetworkType.MIJIN_TEST
     );
@@ -146,11 +146,10 @@ function process(){
                 new nem.MosaicId('308F144790CD7BC4'),
                 nem.UInt64.fromUint(1000000)
             )
-		],
+        ],
         nem.PlainMessage.create(''),
         nem.NetworkType.MIJIN_TEST
     );
-
 
     //ネームスペース作成
     const namespaceTx = nem.NamespaceRegistrationTransaction.createRootNamespace(
@@ -166,14 +165,8 @@ function process(){
         nem.Deadline.create(),
         nonce,
         nem.MosaicId.createFromNonce(nonce, alice.publicAccount),
-//        nem.MosaicProperties.create({
-//            supplyMutable: true,
-//            transferable: true,
-//            divisibility: 0,
-//            duration: nem.UInt64.fromUint(1)
-//        }),
-		nem.MosaicFlags.create(true, true, true),
-		0,
+        nem.MosaicFlags.create(true, true, true),
+        0,
         nem.UInt64.fromUint(0),
         nem.NetworkType.MIJIN_TEST
     );
@@ -182,8 +175,7 @@ function process(){
     const mosaicChangeTx = nem.MosaicSupplyChangeTransaction.create(
         nem.Deadline.create(),
         mosaicDefTx.mosaicId,
-//        nem.MosaicSupplyType.Increase,
-		nem.MosaicSupplyChangeAction.Increase,
+        nem.MosaicSupplyChangeAction.Increase,
         nem.UInt64.fromUint(1000000),
         nem.NetworkType.MIJIN_TEST
     );
@@ -191,25 +183,19 @@ function process(){
     //モザイクとネームスペースのリンク
     const mosaicAliasTx = nem.AliasTransaction.createForMosaic(
         nem.Deadline.create(),
-//        nem.AliasActionType.Link,
-		nem.AliasAction.Link,
-
+        nem.AliasAction.Link,
         namespaceTx.namespaceId,
         mosaicDefTx.mosaicId,
         nem.NetworkType.MIJIN_TEST
     );
 
     //マルチシグ化
-
-//const multisigTx = nem.ModifyMultisigAccountTransaction.create(
-	const multisigTx = nem.MultisigAccountModificationTransaction.create(
+    const multisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         1,1,
         [
             new nem.MultisigCosignatoryModification(
-//				nem.MultisigCosignatoryModificationType.Add, bob,
-				nem.CosignatoryModificationAction.Add, bob,
-
+                nem.CosignatoryModificationAction.Add, bob,
             )
         ],
         nem.NetworkType.MIJIN_TEST
@@ -227,7 +213,7 @@ function process(){
             multisigTx.toAggregate(alice.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
-		[],
+        [],
         nem.UInt64.fromUint(100000)
     );
 
@@ -242,7 +228,6 @@ function process(){
 
     showInfo(NODE,signedTx,alice.publicAccount);
 
-
     listener
     .confirmed(alice.address)
     .pipe(
@@ -253,14 +238,10 @@ function process(){
 
             $('#wait2').remove();
             $('#result3').collapse('show');
-
         },
         err => console.error(err)
     );
-
-
     console.log(signedTx);
-
 }
 
 function process3(){
@@ -277,7 +258,6 @@ function process3(){
                 nem.CosignatoryModificationAction.Remove,
                 bob,
             ),
-
         ],
         nem.NetworkType.MIJIN_TEST
     );
@@ -287,11 +267,11 @@ function process3(){
         nem.Deadline.create(),
         bob.address,
         [
-	        new nem.Mosaic(
-	            new nem.MosaicId('308F144790CD7BC4'),
-	            nem.UInt64.fromUint(100000)
-	        )
-		],
+            new nem.Mosaic(
+                new nem.MosaicId('308F144790CD7BC4'),
+                nem.UInt64.fromUint(100000)
+            )
+        ],
         nem.PlainMessage.create('Thank you for sending alice.'),
         nem.NetworkType.MIJIN_TEST
     );
@@ -303,7 +283,7 @@ function process3(){
             transferTx.toAggregate(carol.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
-		[],
+        [],
         nem.UInt64.fromUint(100000)
     );
 
@@ -321,16 +301,13 @@ function process3(){
     $('#account5 ul').append(strLi(NODE,'/account/' + pubkey ,address ));
     $('#account5 ul').append(strLi(NODE,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
 
-
-
     const lockTx = nem.HashLockTransaction.create(
         nem.Deadline.create(),
-//        nem.NetworkCurrencyMosaic.createRelative(10)
         new nem.Mosaic(
             new nem.MosaicId('308F144790CD7BC4'),
             nem.UInt64.fromUint(10000000)
         )
-		,
+        ,
         nem.UInt64.fromUint(480),
         signedTx,
         nem.NetworkType.MIJIN_TEST);
@@ -341,7 +318,7 @@ function process3(){
             lockTx.toAggregate(alice.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
-		[],
+        [],
         nem.UInt64.fromUint(100000)
     );
 
@@ -386,16 +363,11 @@ function process3(){
 
                 $('#wait4').remove();
                 $('#result5').collapse('show');
-
             },
             err => console.error(err)
         );
-
     }, err => console.error(err));
-
-
 }
-
 
 function showInfo(node,signedTx,account){
 

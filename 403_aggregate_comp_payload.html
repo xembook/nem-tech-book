@@ -10,7 +10,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>sample</h1>
+        <h1>3.6 社会実装のヒント</h1>
+        <h3>トレーサビリティ</h3>
 
         <!-- div block1 -->
         <h3>deposit to</h3>
@@ -48,9 +49,7 @@
         <div class="collapse" id="result5">
             <h3>confirmed</h3><div id="confirmed"><ul></ul></div>
             <h3>account</h3><div id="account"><ul></ul></div>
-
         </div>
-
     </div>
 
 <script
@@ -68,13 +67,13 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.14.1.js"></script>
+<script src="nem2-sdk-0.14.3.js"></script>
 <script>$(function() {
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 
-const NODE = 'https://jp5.nemesis.land:3001/';
+const NODE = 'https://jp5.nemesis.land:3001';
 const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
@@ -114,22 +113,17 @@ listener.open().then(() => {
 
 function process(){
 
-//    const sendAmount = nem.NetworkCurrencyMosaic.createRelative(10);
-//    const backAmount = nem.NetworkCurrencyMosaic.createRelative(1);
-
     const sendAmount = 
-            new nem.Mosaic(
-//                new nem.NamespaceId('nem.xem'),
-                new nem.MosaicId('308F144790CD7BC4'),
-                nem.UInt64.fromUint(10000000)
-            )
+        new nem.Mosaic(
+            new nem.MosaicId('308F144790CD7BC4'),
+            nem.UInt64.fromUint(10000000)
+        )
 
     const send2Amount = 
-            new nem.Mosaic(
-//                new nem.NamespaceId('nem.xem'),
-                new nem.MosaicId('308F144790CD7BC4'),
-                nem.UInt64.fromUint(1000000)
-            )
+        new nem.Mosaic(
+            new nem.MosaicId('308F144790CD7BC4'),
+            nem.UInt64.fromUint(1000000)
+        )
 
     const aliceTx = nem.TransferTransaction.create(nem.Deadline.create(), bob.address, [sendAmount],   nem.PlainMessage.create('alice to bob'), nem.NetworkType.MIJIN_TEST);
     const bobTx   = nem.TransferTransaction.create(nem.Deadline.create(), carol.address, [send2Amount], nem.PlainMessage.create('bob to carol'), nem.NetworkType.MIJIN_TEST);
@@ -150,9 +144,6 @@ function process(){
     const aliceSignedTx = aggregateTransaction.signWith(alice, GENERATION_HASH);
     $('#aliceSignedTx').val(aliceSignedTx.payload);
     $('#aliceSignedTxHash').val(aliceSignedTx.hash);
-
-//    showInfo(NODE,aliceSignedTx,bob);
-
 }
 
 function process2(){
@@ -163,11 +154,9 @@ function process2(){
     $('#bobSignedTxSigner').val(bobSignedTx.signerPublicKey);
 
     console.log(bobSignedTx);
-
 }
 
 function process3(){
-
 
     //Alice側でまとめてTx再作成→アナウンス
     const cosignSignedTxs = [
@@ -205,24 +194,9 @@ function process3(){
     .subscribe(_ => {
         $('#wait4').remove();
         $('#result5').collapse('show');
-
         },
         err => console.error(err)
     );
-}
-
-function showInfo(node,signedTx,account){
-
-    const pubkey = account.publicKey ;
-    const address = account.address.address ;
-    const hash = signedTx.hash
-
-    $('#signedTx').val(signedTx.payload);
-    $('#authtx').val(signedTx.hash);
-    $('#status ul').append(strLi(node,'/transaction/' + hash + '/status' ,hash + '/status'));
-    $('#confirmed ul').append(strLi(node,'/transaction/' + hash ,hash ));
-    $('#account ul').append(strLi(node,'/account/' + pubkey ,address ));
-    $('#account ul').append(strLi(node,'/account/' + pubkey + '/transactions' ,address + '/transactions'));
 }
 
 function strLi(node,href,text){
@@ -252,8 +226,6 @@ $("#button3").click(
         return false;
     }
 );
-
-
 
 });</script>
 </body>

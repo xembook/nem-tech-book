@@ -8,7 +8,7 @@
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
     crossorigin="anonymous">
 
-<script src="nem2-sdk-0.14.1.js"></script>
+<script src="nem2-sdk-0.14.3.js"></script>
 <script>
 const nem = require("/node_modules/nem2-sdk");
 console.log(nem);
@@ -38,6 +38,50 @@ console.log(nem.UInt64.fromUint((new Date()).getTime() - nem.Deadline.timestampN
 console.log(nem.Address.createFromPublicKey("FF6E61F2A0440FB09CA7A530C0C64A275ADA3A13F60D1EC916D7F1543D7F0574", nem.NetworkType.MIJIN_TEST).address);
 console.log(nem.Address.createFromEncoded("9019CC9DFFB37ED9142E7937CA375FB65BF1349ED563503D67").address);
 console.log(nem.Convert.uint8ToHex(nem.RawAddress.stringToAddress("SAM4ZHP7WN7NSFBOPE34UN27WZN7CNE62VRVAPLH")));
+
+//ネームスペース
+ns = new nem.NamespaceId('nem.xem')
+console.log(ns);
+console.log(ns.id);
+console.log(ns.id.toString());
+console.log(ns.id.toHex());
+console.log(ns.id.toDTO());
+console.log(ns.id.toDTO().toString());
+
+const NODE = 'https://jp5.nemesis.land:3001';
+const nsHttp = new nem.NamespaceHttp(NODE);
+nsHttp.getNamespace(ns)
+.subscribe(_ => {
+
+	console.log("ネームスペース");
+	console.log(_.levels);
+
+	console.log("モザイク");
+	ms = _.alias.mosaicId;
+	console.log(ms.id);
+	console.log(ms.id.toString());
+	console.log(ms.id.toHex());
+	console.log(ms.id.toDTO());
+	console.log(ms.id.toDTO().toString());
+
+	const mosaicHttp = new nem.MosaicHttp(NODE);
+
+	mosaicHttp.getMosaicsNames([ms])
+	.subscribe(_ => {
+		console.log(_[0].names);
+	}, err => console.error(err));
+
+	mosaicHttp.getMosaics([ms])
+	.subscribe(__ => {
+
+		const accountHttp = new nem.AccountHttp(NODE);
+		accountHttp.getAccountsInfo([__[0].owner.address])
+		.subscribe(___ => {
+			console.log("アカウント");
+			console.log(___);
+		}, err => console.error(err));
+	}, err => console.error(err));
+}, err => console.error(err));
 
 </script>
 </head>

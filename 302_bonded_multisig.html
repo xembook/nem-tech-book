@@ -9,7 +9,7 @@
     crossorigin="anonymous">
 </head>
     <div class="container">
-		<h1>3.5 サンプルプログラム応用編</h1>
+        <h1>3.5 サンプルプログラム応用編</h1>
         <h3>保留型アグリゲートトランザクション</h3>
 
         <!-- div block1 -->
@@ -63,15 +63,14 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.14.1.js"></script>
+<script src="nem2-sdk-0.14.3.js"></script>
 <script>$(function() {
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 
 
-//const NODE = 'https://fushicho.48gh23s.xyz:3001';
-const NODE = 'https://jp5.nemesis.land:3001/';
+const NODE = 'https://jp5.nemesis.land:3001';
 const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 const transactionHttp = new nem.TransactionHttp(NODE);
 const accountHttp = new nem.AccountHttp(NODE);
@@ -85,7 +84,7 @@ const listener = new nem.Listener(wsEndpoint, WebSocket);
 var isInit = true;
 listener.open().then(() => {
 
-	setInterval(function(){listener.newBlock()}, 30000);
+    setInterval(function(){listener.newBlock()}, 30000);
 
     listener
     .unconfirmedAdded(alice.address)
@@ -126,7 +125,7 @@ function process(){
             multisigTx.toAggregate(alice.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
-		[],
+        [],
         nem.UInt64.fromUint(100000)
     );
 
@@ -148,8 +147,8 @@ function process(){
         nem.UInt64.fromUint(480),
         signedTx,
         nem.NetworkType.MIJIN_TEST,
-		nem.UInt64.fromUint(100000)
-	);
+        nem.UInt64.fromUint(100000)
+    );
 
     const lockSignedTx = alice.sign(lockTx, GENERATION_HASH);
 
@@ -167,11 +166,10 @@ function process(){
         rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === lockSignedTx.hash),
         rxjs.mergeMap(ignored => transactionHttp.announceAggregateBonded(signedTx))
     )
-    .subscribe(_ => {
-
+    .subscribe(
+        _ => {
             $('#wait2').remove();
             $('#result3').collapse('show');
-
         },
         err => console.error(err)
     );
@@ -181,17 +179,15 @@ function process(){
     .pipe(
         rxjs.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === signedTx.hash)
     )
-    .subscribe(_ => {
-        const hash5 = signedTx.hash;
-
-        $('#wait4').remove();
-        $('#result5').collapse('show');
-
+    .subscribe(
+        _ => {
+            const hash5 = signedTx.hash;
+            $('#wait4').remove();
+            $('#result5').collapse('show');
         },
         err => console.error(err)
     );
 }
-
 
 function process3(){
     accountHttp.aggregateBondedTransactions(alice.address)
@@ -213,9 +209,7 @@ function process3(){
     .subscribe(_ => {
         console.log(_);
         $('#result4').collapse('show');
-
-
-        },
+    },
         err => console.error(err)
     );
 }

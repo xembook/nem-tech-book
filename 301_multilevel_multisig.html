@@ -64,14 +64,13 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.14.1.js"></script>
+<script src="nem2-sdk-0.14.3.js"></script>
 <script>$(function() {
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 
-//const NODE = 'https://fushicho.48gh23s.xyz:3001';
-const NODE = 'https://jp5.nemesis.land:3001/';
+const NODE = 'https://jp5.nemesis.land:3001';
 const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 const txHttp = new nem.TransactionHttp(NODE);
 
@@ -154,14 +153,13 @@ function process(){
     const aggregateTx = nem.AggregateTransaction.createComplete(
         nem.Deadline.create(),
         [
-			tx.toAggregate(alice.publicAccount),
+            tx.toAggregate(alice.publicAccount),
             ellenOrFrankMultisigTx.toAggregate(dave.publicAccount),
             bobAndDaveAndCarolMultisigTx.toAggregate(alice.publicAccount),
         ],
         nem.NetworkType.MIJIN_TEST,
         [],
         nem.UInt64.fromUint(100000)
-
     );
 
     const signedTx =  alice.signTransactionWithCosignatories(
@@ -192,8 +190,6 @@ function process(){
 
 function process3(){
 
-
-
     const switchDaveToMultisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         0,0,
@@ -214,9 +210,6 @@ function process3(){
         [],
         nem.UInt64.fromUint(4000000)
     );
-
-
-
 
     const signedTx4 =  dave2.signTransactionWithCosignatories(
         aggregateTx4,

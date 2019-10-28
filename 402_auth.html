@@ -65,7 +65,7 @@
 <script src="nem2-sdk-0.14.3.js"></script>
 <script>$(function() {
 
-const NODE = 'https://jp5.nemesis.land:3001/';
+const NODE = 'https://jp5.nemesis.land:3001';
 const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 
 const nem = require("/node_modules/nem2-sdk");
@@ -86,7 +86,7 @@ const wsEndpoint = NODE.replace('https', 'wss');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
 listener.open().then(() => {
 
-	setInterval(function(){listener.newBlock()}, 30000);
+    setInterval(function(){listener.newBlock()}, 30000);
 
     listener
     .unconfirmedAdded(alice.address)
@@ -108,14 +108,14 @@ listener.open().then(() => {
                 chainHttp.getBlockchainHeight()
                 .pipe(
                     rxjs.mergeMap(_=>{
-						console.log(_);
+                        console.log(_);
                         return blockHttp.getBlockByHeight(_.compact());
                     })
                 )
                 .subscribe(
                     _ => {
-						console.log(_);
-                    	$('#blockhash').val(_.hash);
+                        console.log(_);
+                        $('#blockhash').val(_.hash);
                     }
                 );
 
@@ -124,19 +124,6 @@ listener.open().then(() => {
         },
         err => console.error(err)
     );
-
-/*
-    listener
-    .newBlock()
-    .subscribe(function(_){
-
-        console.log("==new block==");
-        console.log(_);
-        console.log(new Date(_.timestamp.compact() + Date.UTC(2016, 3, 1, 0, 0, 0, 0)));
-
-
-    });
-*/
 
 });
 
@@ -156,14 +143,8 @@ function process(){
         nem.Deadline.create(),
         nonce,
         nem.MosaicId.createFromNonce(nonce, alice.publicAccount),
-//        nem.MosaicProperties.create({
-//            supplyMutable: true,
-//            transferable: true,
-//            divisibility: 0,
-//            duration: nem.UInt64.fromUint(1)
-//        }),
-		nem.MosaicFlags.create(true, true, true),
-		0,
+        nem.MosaicFlags.create(true, true, true),
+        0,
         nem.UInt64.fromUint(0),
         nem.NetworkType.MIJIN_TEST
     );
@@ -172,8 +153,7 @@ function process(){
     const mosaicChangeTx = nem.MosaicSupplyChangeTransaction.create(
         nem.Deadline.create(),
         mosaicDefTx.mosaicId,
-//        nem.MosaicSupplyType.Increase,
-		nem.MosaicSupplyChangeAction.Increase,
+        nem.MosaicSupplyChangeAction.Increase,
         nem.UInt64.fromUint(1000000),
         nem.NetworkType.MIJIN_TEST
     );
@@ -181,13 +161,11 @@ function process(){
     //モザイクとネームスペースのリンク
     const mosaicAliasTx = nem.AliasTransaction.createForMosaic(
         nem.Deadline.create(),
-//        nem.AliasActionType.Link,
-		nem.AliasAction.Link,
+        nem.AliasAction.Link,
         namespaceTx.namespaceId,
         mosaicDefTx.mosaicId,
         nem.NetworkType.MIJIN_TEST
     );
-
 
    const sendSealFromAliceToBobTx = nem.TransferTransaction.create(
         nem.Deadline.create(),
@@ -207,13 +185,12 @@ function process(){
         nem.Deadline.create(),
         carol.address,
         [
-//			nem.NetworkCurrencyMosaic.createRelative(0)
             new nem.Mosaic(
                 new nem.MosaicId('308F144790CD7BC4'),
                 nem.UInt64.fromUint(0)
             )
 
-		],
+        ],
         nem.EmptyMessage,
         nem.NetworkType.MIJIN_TEST
     );
@@ -259,9 +236,6 @@ function process3(){
         const txHttp = new nem.TransactionHttp(NODE);
         const nsHttp = new nem.NamespaceHttp(NODE);
 
-
-
-
         txHttp.getTransaction(authTx)
         .pipe(
             rxjs.mergeMap(_ => _.innerTransactions),
@@ -275,26 +249,24 @@ function process3(){
                 return accountHttp.getAccountInfo(bob.publicAccount.address)
                 .pipe(
                     rxjs.mergeMap(info => {
-						return info.mosaics
-					
-					}),
+                        return info.mosaics
+                    
+                    }),
                 );
             }),
 
             rxjs.mergeMap(_ => {
 
-				console.log(_);
+                console.log(_);
                 return nsHttp.getNamespace(new nem.NamespaceId(NAMESPACE))
                 .pipe(
                     rxjs.filter(ns => {
-						return ns.alias.mosaicId.id.toHex() === _.id.id.toHex();
-//                      return _.id.id.toDTO().toString() ==  ns.alias.mosaicId.toString();
+                        return ns.alias.mosaicId.id.toHex() === _.id.id.toHex();
                     })
                 )
             }),
 
             rxjs.mergeMap(_ => {
-
                 return chainHttp.getBlockchainHeight()
                 .pipe(
                     rxjs.mergeMap(chain => {
@@ -314,7 +286,7 @@ function process3(){
             }),
         )
         .subscribe(_ => {
-			console.log(_);
+            console.log(_);
             $('#result4').collapse('show');
         });
     }

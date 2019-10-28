@@ -49,12 +49,11 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.14.1.js"></script>
+<script src="nem2-sdk-0.14.3.js"></script>
 <script>$(function() {
 const nem = require("/node_modules/nem2-sdk");
 
-//const NODE = 'https://fushicho.48gh23s.xyz:3001';
-const NODE = 'https://jp5.nemesis.land:3001/';
+const NODE = 'https://jp5.nemesis.land:3001';
 const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
 
 const txHttp = new nem.TransactionHttp(NODE);
@@ -63,6 +62,7 @@ const nsHttp = new nem.NamespaceHttp(NODE);
 const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
 $('#address').text(alice.address.address);
+const NAMESPACE = "available" + alice.address.address.toLowerCase();
 
 console.log(alice.address);
 console.log(alice.privateKey);
@@ -97,10 +97,9 @@ listener.open().then(() => {
 function process(){
 
     //ネームスペース作成
-//    const namespaceTx = nem.RegisterNamespaceTransaction.createRootNamespace(
     const namespaceTx = nem.NamespaceRegistrationTransaction.createRootNamespace(
         nem.Deadline.create(),
-        "xembook8",
+        NAMESPACE,
         nem.UInt64.fromUint(5),
         nem.NetworkType.MIJIN_TEST
     );
@@ -108,7 +107,6 @@ function process(){
     //アカウントとネームスペースのリンク
     const accountAliasTx = nem.AliasTransaction.createForAddress(
         nem.Deadline.create(),
-//        nem.AliasActionType.Link,
         nem.AliasAction.Link,
         namespaceTx.namespaceId,
         alice.address,
@@ -166,7 +164,7 @@ function process(){
             $('#wait2').remove();
             $('#result3').collapse('show');
 
-            nsHttp.getNamespace(new nem.NamespaceId('xembook'))
+            nsHttp.getNamespace(new nem.NamespaceId(NAMESPACE))
             .subscribe(_ => {
 
                 for(let ns of _.levels){
