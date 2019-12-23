@@ -4,178 +4,178 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
 <link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-	crossorigin="anonymous">
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous">
 </head>
-	<div class="container">
+    <div class="container">
 
-		<h1>アイテム交換クエスト</h1>
+        <h1>アイテム交換クエスト</h1>
 
-		<h4>アドレス</h4>
-		<span id="address"></span>　<button id="button1" class="btn btn-primary" type="button">蛇口</button>
-		<h4>属性</h4>
-		<div id="element"></div>
-		<h4>手数料残高</h4>
-		<div id="amount"></div>
-		<hr>
+        <h4>アドレス</h4>
+        <span id="address"></span>　<button id="button1" class="btn btn-primary" type="button">蛇口</button>
+        <h4>属性</h4>
+        <div id="element"></div>
+        <h4>手数料残高</h4>
+        <div id="amount"></div>
+        <hr>
 
-		<div>
+        <div>
 
-		<h4>名前</h4>
-		<div id="account_name"></div>
-		</div>
-		<hr>
-		<h4>アイテム一覧</h4>
+        <h4>名前</h4>
+        <div id="account_name"></div>
+        </div>
+        <hr>
+        <h4>アイテム一覧</h4>
 
-		<div>
-		<table id="table"  class="table">
-			<thead><tr>
-				<th>name</th>
-				<th>address</th>
-				<th>endHeight</th>
+        <div>
+        <table id="table"  class="table">
+            <thead><tr>
+                <th>name</th>
+                <th>address</th>
+                <th>endHeight</th>
 
-			</tr></thead>
-		<tbody></tbody>
-		</table>
-		</div>
+            </tr></thead>
+        <tbody></tbody>
+        </table>
+        </div>
 
-		<!-- div block1 -->
+        <!-- div block1 -->
 
-		<div class="collapse" id="result1">
+        <div class="collapse" id="result1">
             <div id="wait1" class="spinner-border text-primary" role="status">
               <span class="sr-only">承認中...</span>
             </div>
-		</div>
+        </div>
 
         <div class="collapse" id="result2">
             <button id="button2" class="btn btn-primary" type="button">冒険に出る</button>
         </div>
 </br>
-		<div id="app">
-		   <h5><span id="ityped"></span></h5>
-		</div>
-	</div>
+        <div id="app">
+           <h5><span id="ityped"></span></h5>
+        </div>
+    </div>
 
 <!-- モーダルの設定 -->
 <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
-	<div class="modal-content">
-		<div class="modal-header">
-		<h5 class="modal-title" id="exampleModalLabel2">ユーザアカウントとアイテムの登録</h5>
-		<button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
-			<span aria-hidden="true">&times;</span>
-		</button>
-		</div>
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel2">ユーザアカウントとアイテムの登録</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
 
-		<div class="modal-body">
+        <div class="modal-body">
 <div class="form-group">
-	<label for="text1">Name:</label>
-	<input type="text" id="aliceName" class="form-control">
+    <label for="text1">Name:</label>
+    <input type="text" id="aliceName" class="form-control">
 </div>
 <hr>
 <div class="form-group">
-	<label for="text1">Item1:</label>
-	<input type="text" id="item1" class="form-control">
+    <label for="text1">Item1:</label>
+    <input type="text" id="item1" class="form-control">
 </div>
 <div class="form-group">
-	<label for="text2">Item2:</label>
-	<input type="text" id="item2" class="form-control">
+    <label for="text2">Item2:</label>
+    <input type="text" id="item2" class="form-control">
 </div>
 
 
 </div>
-		<div class="modal-footer">
-		<button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-		<button type="button" class="btn btn-primary" data-dismiss="modal"	id="mosaic_confirm">OK</button>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal"  id="mosaic_confirm">OK</button>
 
-		</div><!-- /.modal-footer -->
-	</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
+        </div><!-- /.modal-footer -->
+    </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 
 <!-- モーダルの設定 -->
 <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-			<h5 class="modal-title" id="exampleModalLabel2">交換を希望するアイテム</h5>
-			<button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
-				<span aria-hidden="true">&times;</span>
-			</button>
-			</div>
-			<div class="modal-body">
-			<div class="form-group">
-				<label for="text1">交換相手の名前:</label>
-				<input type="text" id="exname" class="form-control">
-			</div>
-			<div class="form-group">
-				<label for="text1">取得したい相手のアイテム:</label>
-				<input type="text" id="exitem1" class="form-control">
-			</div>
-			<div class="form-group">
-				<label for="text1">失う自分のアイテム:</label>
-				<input type="text" id="alice_item" class="form-control">
-			</div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel2">交換を希望するアイテム</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <div class="form-group">
+                <label for="text1">交換相手の名前:</label>
+                <input type="text" id="exname" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="text1">取得したい相手のアイテム:</label>
+                <input type="text" id="exitem1" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="text1">失う自分のアイテム:</label>
+                <input type="text" id="alice_item" class="form-control">
+            </div>
 
-		</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal"	id="item_exchange">OK</button>
+        </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"  id="item_exchange">OK</button>
 
-			</div><!-- /.modal-footer -->
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
+            </div><!-- /.modal-footer -->
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 
 <!-- モーダルの設定 -->
 <div class="modal fade" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-			<h5 class="modal-title" id="exampleModalLabel2">交換の確認</h5>
-			<button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
-				<span aria-hidden="true">&times;</span>
-			</button>
-			</div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel2">交換の確認</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
 
-			<div class="modal-body">
-				<div class="form-group">
-				<label for="text4">交換相手:</label>
-				<input type="text" id="exuser" class="form-control">
-				</div>
-			<div class="form-group">
-				<label for="text4">取得するアイテム:</label>
-				<input type="text" id="getitem" class="form-control">
-			</div>
-			<div class="form-group">
-				<label for="text4">失うアイテム:</label>
-				<input type="text" id="lostitem" class="form-control">
-			</div>
-		</div>
+            <div class="modal-body">
+                <div class="form-group">
+                <label for="text4">交換相手:</label>
+                <input type="text" id="exuser" class="form-control">
+                </div>
+            <div class="form-group">
+                <label for="text4">取得するアイテム:</label>
+                <input type="text" id="getitem" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="text4">失うアイテム:</label>
+                <input type="text" id="lostitem" class="form-control">
+            </div>
+        </div>
 
 
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal"	id="ex_confirm">OK</button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"  id="ex_confirm">OK</button>
 
-			</div><!-- /.modal-footer -->
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
+            </div><!-- /.modal-footer -->
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 
 <script
-	src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-	integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-	crossorigin="anonymous">
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous">
 </script>
 <script
-	src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-	integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-	crossorigin="anonymous">
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous">
 </script>
 <script src="nem2-sdk-0.16.0.js"></script>
 <script src="https://unpkg.com/ityped@1.0.2"></script>
@@ -199,19 +199,19 @@ const multisigHttp = new nem.MultisigHttp(NODE)
 var elementName = ["火","水","木"];
 var outMsgs = [];
 var msgs = ["勇者はアルパカを連れて旅に出た。",
-		  "バイソンが魔王の居場所を教えてくれた。",
-		  "牛の群れに押し流されそうになった。",
-		  "ドラゴンが味方に加わった。",
-		  "魔王一族の破壊的攻撃から象を守った。",
-		  "不死鳥に導かれ魔王の住む山へ。",
-		  "魔王があらわれた！",
-		  "魔王の攻撃！",
-		  "さらりを身をかわし、反撃！",
-		  "勇者は魔王を倒した！",
+          "バイソンが魔王の居場所を教えてくれた。",
+          "牛の群れに押し流されそうになった。",
+          "ドラゴンが味方に加わった。",
+          "魔王一族の破壊的攻撃から象を守った。",
+          "不死鳥に導かれ魔王の住む山へ。",
+          "魔王があらわれた！",
+          "魔王の攻撃！",
+          "さらりを身をかわし、反撃！",
+          "勇者は魔王を倒した！",
 ];
 var loseMsgs = [
-"旅の記録はそこで途絶えている。。。",
-"おお勇者よ、死んでしまうとは情けない。"
+        "旅の記録はそこで途絶えている。。。",
+        "おお勇者よ、死んでしまうとは情けない。"
 
 ];
 var isInit = true;
@@ -219,32 +219,29 @@ var isInit = true;
 var cmd ="";
 if (1 < document.location.search.length) {
 
-	var query = document.location.search.substring(1);
-	var prms = query.split('&');
-	var item = new Object();
-	for (var i = 0; i < prms.length; i++) {
-		var elm   = prms[i].split('=');
-		var idx   = decodeURIComponent(elm[0]);
-		var val   = decodeURIComponent(elm[1]);
-		item[idx] = decodeURIComponent(val);
-	}
-	cmd = item["cmd"];
+    var query = document.location.search.substring(1);
+    var prms = query.split('&');
+    var item = new Object();
+    for (var i = 0; i < prms.length; i++) {
+        var elm   = prms[i].split('=');
+        var idx   = decodeURIComponent(elm[0]);
+        var val   = decodeURIComponent(elm[1]);
+        item[idx] = decodeURIComponent(val);
+    }
+    cmd = item["cmd"];
 }
 
 
 var attackPt = 0;
 var alice;
 if(localStorage.getItem('pk') == null || cmd == "reset"){
-	alice = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
-	localStorage.setItem('pk',alice.privateKey);
+    alice = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+    localStorage.setItem('pk',alice.privateKey);
 }else{
-	alice = nem.Account.createFromPrivateKey(localStorage.getItem('pk'), nem.NetworkType.TEST_NET);
-	isInit = false;
+    alice = nem.Account.createFromPrivateKey(localStorage.getItem('pk'), nem.NetworkType.TEST_NET);
+    isInit = false;
 
 }
-//25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E
-//alice = nem.Account.createFromPrivateKey('28522EA2658843CFF3E499243EEF71A56C6DED4B2EA3A0450AF3D25A75921306', nem.NetworkType.TEST_NET);
-//alice = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
 
 elem1 = alice.keyPair.publicKey[0];
 elem2 = alice.keyPair.publicKey[1];
@@ -258,17 +255,17 @@ aliceElem[2] = parseInt(elem3 / totalElem * 100,10)
 console.log(aliceElem)
 
 if(aliceElem[0] > aliceElem[1]){
-	if(aliceElem[0] > aliceElem[2]){
-		aliceBase = 0;
-	}else{
-		aliceBase = 2
-	}
+    if(aliceElem[0] > aliceElem[2]){
+        aliceBase = 0;
+    }else{
+        aliceBase = 2
+    }
 }else{
-	if(aliceElem[1] > aliceElem[2]){
-		aliceBase = 1;
-	}else{
-		aliceBase = 2
-	}
+    if(aliceElem[1] > aliceElem[2]){
+        aliceBase = 1;
+    }else{
+        aliceBase = 2
+    }
 }
 
 
@@ -288,15 +285,15 @@ const listener = new nem.Listener(wsEndpoint, WebSocket);
 
 
 function getAliceInfo(){
-	accountHttp.getAccountInfo(alice.address)
-	.subscribe(
-		function(_){
+    accountHttp.getAccountInfo(alice.address)
+    .subscribe(
+        function(_){
 
-				$('#amount').text(_.mosaics[0].amount.toString());
+                $('#amount').text(_.mosaics[0].amount.toString());
 
-		},
-		err => console.error(err)
-	);
+        },
+        err => console.error(err)
+    );
 }
 
 nsHttp.getAccountsNames([alice.address])
@@ -304,13 +301,13 @@ nsHttp.getAccountsNames([alice.address])
 )
 .subscribe(x => {
 
-	console.log(x[0]);
+    console.log(x[0]);
 
-	for (var i=0;i< x.length;i++){
+    for (var i=0;i< x.length;i++){
 
-		$("#account_name").text(x[i].names[0].name);
-		console.log(x[i]);
-	}
+        $("#account_name").text(x[i].names[0].name);
+        console.log(x[i]);
+    }
 
 
 
@@ -319,139 +316,139 @@ nsHttp.getAccountsNames([alice.address])
 
 multisigHttp.getMultisigAccountInfo(alice.address)
 .pipe(
-	ro.mergeMap(_=>{
-		console.log(_);
-		return	_.multisigAccounts
-	}),
-	ro.map(_=>_.address),
-	ro.toArray(),
-	ro.mergeMap(_ => {
+    ro.mergeMap(_=>{
+        console.log(_);
+        return  _.multisigAccounts
+    }),
+    ro.map(_=>_.address),
+    ro.toArray(),
+    ro.mergeMap(_ => {
 
-		return	r.zip(
-			nsHttp.getAccountsNames(_),
-			nsHttp.getNamespacesFromAccounts(_)
-		);
-	}),
+        return  r.zip(
+            nsHttp.getAccountsNames(_),
+            nsHttp.getNamespacesFromAccounts(_)
+        );
+    }),
 
 )
 .subscribe(x => {
-	var itemElem = [];
-	for (var i=0;i< x[0].length;i++){
-		var itemPubKey = nem.Convert.hexToUint8(x[1][i].owner.publicKey);
+    var itemElem = [];
+    for (var i=0;i< x[0].length;i++){
+        var itemPubKey = nem.Convert.hexToUint8(x[1][i].owner.publicKey);
 
-itemElem1 = itemPubKey[0];
-itemElem2 = itemPubKey[1];
-itemElem3 = itemPubKey[2];
-totalItemElem = itemElem1 + itemElem2 + itemElem3;
+        itemElem1 = itemPubKey[0];
+        itemElem2 = itemPubKey[1];
+        itemElem3 = itemPubKey[2];
+        totalItemElem = itemElem1 + itemElem2 + itemElem3;
 
-regElem1 = parseInt(elem1 / totalItemElem * 100,10)
-regElem2 = parseInt(elem2 / totalItemElem * 100,10)
-regElem3 = parseInt(elem3 / totalItemElem * 100,10)
-itemElem[i] = [regElem1,regElem2,regElem3];
-console.log(itemElem[i] )
+        regElem1 = parseInt(elem1 / totalItemElem * 100,10)
+        regElem2 = parseInt(elem2 / totalItemElem * 100,10)
+        regElem3 = parseInt(elem3 / totalItemElem * 100,10)
+        itemElem[i] = [regElem1,regElem2,regElem3];
+        console.log(itemElem[i] )
 
-		$("#table").append("<tr>"
-			+"<td>"+ x[0][i].names[0].name + "</td>"
-			+"<td>"+ x[0][i].address.address + "</td>"
-			+"<td>"+ x[1][i].endHeight.toString() + "</td>"
-			+"<td><button class='btn btn-primary exchange' type='button'>交換</button></td>"
-			+ "</tr>"
-		);
-		console.log(x[0][i]);
-	}
-	$('#result2').collapse('show');
+        $("#table").append("<tr>"
+            +"<td>"+ x[0][i].names[0].name + "</td>"
+            +"<td>"+ x[0][i].address.address + "</td>"
+            +"<td>"+ x[1][i].endHeight.toString() + "</td>"
+            +"<td><button class='btn btn-primary exchange' type='button'>交換</button></td>"
+            + "</tr>"
+        );
+        console.log(x[0][i]);
+    }
+    $('#result2').collapse('show');
 
-	aliceCounterBase = aliceBase + 1;
-	if(aliceCounterBase > 2){aliceCounterBase = 0}
-	attackPt = aliceElem[aliceBase] + itemElem[0][aliceBase] + itemElem[1][aliceBase] - itemElem[0][aliceCounterBase] - itemElem[1][aliceCounterBase]
-	console.log(attackPt);
+    aliceCounterBase = aliceBase + 1;
+    if(aliceCounterBase > 2){aliceCounterBase = 0}
+    attackPt = aliceElem[aliceBase] + itemElem[0][aliceBase] + itemElem[1][aliceBase] - itemElem[0][aliceCounterBase] - itemElem[1][aliceCounterBase]
+    console.log(attackPt);
 
 }, err => console.error(err));
 
 
-	accountHttp.getAccountPartialTransactions(alice.address)
-	.pipe(
+    accountHttp.getAccountPartialTransactions(alice.address)
+    .pipe(
 
-		ro.mergeMap(_ => {
-			console.log(_);
-			return _;
-		}),
-		ro.filter((_) => {
-			console.log(_);
-			return !_.signedByAccount(alice.publicAccount)
-		}),
-	)
-	.subscribe(_ =>{
-		console.log(">>Bonded<<");
-		console.log(_);
-		nsHttp.getAccountsNames([
-			_.innerTransactions[0].signer.address,
-			_.innerTransactions[1].signer.address,
-//			_.innerTransactions[0].publicKeyAdditions[0].address,
-			_.innerTransactions[0].publicKeyDeletions[0].address
-		])
-		.subscribe(
-			_=>{
+        ro.mergeMap(_ => {
+            console.log(_);
+            return _;
+        }),
+        ro.filter((_) => {
+            console.log(_);
+            return !_.signedByAccount(alice.publicAccount)
+        }),
+    )
+    .subscribe(_ =>{
+        console.log(">>Bonded<<");
+        console.log(_);
+        nsHttp.getAccountsNames([
+            _.innerTransactions[0].signer.address,
+            _.innerTransactions[1].signer.address,
+//          _.innerTransactions[0].publicKeyAdditions[0].address,
+            _.innerTransactions[0].publicKeyDeletions[0].address
+        ])
+        .subscribe(
+            _=>{
 
-				$("#exuser"  ).val(_[2].names[0].name);
-				$("#getitem" ).val(_[0].names[0].name);
-				$("#lostitem").val(_[1].names[0].name);
-				console.log(_);
-				$('#myModal4').modal('show');
-			}
-		)
-	}, err => console.error(err));
+                $("#exuser"  ).val(_[2].names[0].name);
+                $("#getitem" ).val(_[0].names[0].name);
+                $("#lostitem").val(_[1].names[0].name);
+                console.log(_);
+                $('#myModal4').modal('show');
+            }
+        )
+    }, err => console.error(err));
 
 
 listener.open().then(() => {
 
-	setInterval(function(){listener.newBlock()}, 30000);
+    setInterval(function(){listener.newBlock()}, 30000);
 
-	listener
-	.unconfirmedAdded(alice.address)
-	.subscribe(_=> {
-		$('#result1').collapse('show');
-	},
-		err => console.error(err)
-	);
+    listener
+    .unconfirmedAdded(alice.address)
+    .subscribe(_=> {
+        $('#result1').collapse('show');
+    },
+        err => console.error(err)
+    );
 
-	listener
-	.confirmed(alice.address)
-	.subscribe(
-		function(_){
-			if(isInit){
-				$('#myModal2').modal('show');
-				$('#result1').collapse('hide');
-				getAliceInfo();
-				isInit = false;
-			}
-		},
-		err => console.error(err)
-	);
+    listener
+    .confirmed(alice.address)
+    .subscribe(
+        function(_){
+            if(isInit){
+                $('#myModal2').modal('show');
+                $('#result1').collapse('hide');
+                getAliceInfo();
+                isInit = false;
+            }
+        },
+        err => console.error(err)
+    );
 
-	listener
-	.aggregateBondedAdded(alice.address)
-	.pipe(
-		ro.filter(_ => !_.signedByAccount(alice.publicAccount)),
-	)
-	.subscribe(_ =>{
-		console.log(">>Bonded<<");
-		nsHttp.getAccountsNames([
-			_.innerTransactions[0].signer.address,
-			_.innerTransactions[0].publicKeyAdditions[0].address,
-			_.innerTransactions[0].publicKeyDeletions[0].address
-		])
-		.subscribe(
-			_=>{
+    listener
+    .aggregateBondedAdded(alice.address)
+    .pipe(
+        ro.filter(_ => !_.signedByAccount(alice.publicAccount)),
+    )
+    .subscribe(_ =>{
+        console.log(">>Bonded<<");
+        nsHttp.getAccountsNames([
+            _.innerTransactions[0].signer.address,
+            _.innerTransactions[0].publicKeyAdditions[0].address,
+            _.innerTransactions[0].publicKeyDeletions[0].address
+        ])
+        .subscribe(
+            _=>{
 
-				$("#exuser"  ).val(_[2].names[0].name);
-				$("#getitem" ).val(_[0].names[0].name);
-				$("#lostitem").val(_[1].names[0].name);
-				console.log(_);
-				$('#myModal4').modal('show');
-			}
-		)
-	}, err => console.error(err));
+                $("#exuser"  ).val(_[2].names[0].name);
+                $("#getitem" ).val(_[0].names[0].name);
+                $("#lostitem").val(_[1].names[0].name);
+                console.log(_);
+                $('#myModal4').modal('show');
+            }
+        )
+    }, err => console.error(err));
 
 });
 
@@ -459,403 +456,396 @@ listener.open().then(() => {
 
 $("#ex_confirm").on("click",function(event){
 
-	var exhash;
+    var exhash;
 
-	accountHttp.getAccountPartialTransactions(alice.address)
-	.pipe(
-		ro.mergeMap(_ => {
-			console.log(_);
-			return _;
-		}),
-		ro.filter((_) => {
-			console.log(_);
-			return !_.signedByAccount(alice.publicAccount)
-		}),
-		ro.map(_ => {
-			return alice.signCosignatureTransaction(nem.CosignatureTransaction.create(_));
-		}),
-		ro.mergeMap(_ => {
-			exhash = _.parentHash;
-			console.log(_);
-			return txHttp.announceAggregateBondedCosignature(_);
-		})
-	)
-	.subscribe(_ => {
-		console.log(NODE + "/transaction/" + exhash +"/status");
-		console.log(_);
-	},
-		err => console.error(err)
-	);
+    accountHttp.getAccountPartialTransactions(alice.address)
+    .pipe(
+        ro.mergeMap(_ => {
+            console.log(_);
+            return _;
+        }),
+        ro.filter((_) => {
+            console.log(_);
+            return !_.signedByAccount(alice.publicAccount)
+        }),
+        ro.map(_ => {
+            return alice.signCosignatureTransaction(nem.CosignatureTransaction.create(_));
+        }),
+        ro.mergeMap(_ => {
+            exhash = _.parentHash;
+            console.log(_);
+            return txHttp.announceAggregateBondedCosignature(_);
+        })
+    )
+    .subscribe(_ => {
+        console.log(NODE + "/transaction/" + exhash +"/status");
+        console.log(_);
+    },
+        err => console.error(err)
+    );
 
-	listener
-	.confirmed(alice.address)
-	.pipe(
-		ro.filter(tx => tx.transactionInfo !== undefined && tx.transactionInfo.hash === exhash),
-		ro.mergeMap(_ => {
+    listener
+    .confirmed(alice.address)
+    .pipe(
+        ro.filter(tx => tx.transactionInfo !== undefined && tx.transactionInfo.hash === exhash),
+        ro.mergeMap(_ => {
 
-			return multisigHttp.getMultisigAccountInfo(alice.address)
-			.pipe(
-				ro.mergeMap(_=>{
-					console.log(_);
-					return	_.multisigAccounts
-				}),
-				ro.map(_=>_.address),
-				ro.toArray(),
-			)
-		}),
-		ro.mergeMap(_ => {
+            return multisigHttp.getMultisigAccountInfo(alice.address)
+            .pipe(
+                ro.mergeMap(_=>{
+                    console.log(_);
+                    return  _.multisigAccounts
+                }),
+                ro.map(_=>_.address),
+                ro.toArray(),
+            )
+        }),
+        ro.mergeMap(_ => {
 
-			return	r.zip(
-				nsHttp.getAccountsNames(_),
-				nsHttp.getNamespacesFromAccounts(_)
-			);
-		}),
-	)
-	.subscribe(
-		function(x){
-			$('#table').find('tbody tr').remove();
-			for (var i=0;i< x[0].length;i++){
+            return  r.zip(
+                nsHttp.getAccountsNames(_),
+                nsHttp.getNamespacesFromAccounts(_)
+            );
+        }),
+    )
+    .subscribe(
+        function(x){
+            $('#table').find('tbody tr').remove();
+            for (var i=0;i< x[0].length;i++){
 
-				$("#table").append("<tr>"
-					+"<td>"+ x[0][i].names[0].name + "</td>"
-					+"<td>"+ x[0][i].address.address + "</td>"
-					+"<td>"+ x[1][i].endHeight.toString() + "</td>"
-					+"<td><button class='btn btn-primary exchange' type='button'>交換</button></td>"
-					+ "</tr>"
-				);
-				console.log(x[0][i]);
-			}
-			$('#result1').collapse('hide');
-		},
-		err => console.error(err)
-	);
+                $("#table").append("<tr>"
+                    +"<td>"+ x[0][i].names[0].name + "</td>"
+                    +"<td>"+ x[0][i].address.address + "</td>"
+                    +"<td>"+ x[1][i].endHeight.toString() + "</td>"
+                    +"<td><button class='btn btn-primary exchange' type='button'>交換</button></td>"
+                    + "</tr>"
+                );
+                console.log(x[0][i]);
+            }
+            $('#result1').collapse('hide');
+        },
+        err => console.error(err)
+    );
 
 });
 
 function createTransferTx(item){
-	return nem.TransferTransaction.create(
-		nem.Deadline.create(),
-		item.address,
-		[
-			new nem.Mosaic(
-				new nem.MosaicId('75AF035421401EF0'),
-				nem.UInt64.fromUint(185000000)
-			)
-		],
-		nem.PlainMessage.create(''),
-		nem.NetworkType.TEST_NET
-	);
+    return nem.TransferTransaction.create(
+        nem.Deadline.create(),
+        item.address,
+        [
+            new nem.Mosaic(
+                new nem.MosaicId('75AF035421401EF0'),
+                nem.UInt64.fromUint(185000000)
+            )
+        ],
+        nem.PlainMessage.create(''),
+        nem.NetworkType.TEST_NET
+    );
 }
 
 function createRootNamespace(item,itemName){
-	return nem.NamespaceRegistrationTransaction.createRootNamespace(
-		nem.Deadline.create(),
-//		itemName + item.address.address.toLowerCase(),
-		itemName,
-		nem.UInt64.fromUint(180000),
-		nem.NetworkType.TEST_NET
-	);
+    return nem.NamespaceRegistrationTransaction.createRootNamespace(
+        nem.Deadline.create(),
+//      itemName + item.address.address.toLowerCase(),
+        itemName,
+        nem.UInt64.fromUint(180000),
+        nem.NetworkType.TEST_NET
+    );
 }
 
 function createForAddress(item,namespaceTx){
-	//アカウントとネームスペースのリンク
-	return nem.AliasTransaction.createForAddress(
-		nem.Deadline.create(),
-		nem.AliasAction.Link,
-		namespaceTx.namespaceId,
-		item.address,
-		nem.NetworkType.TEST_NET
-	);
+    //アカウントとネームスペースのリンク
+    return nem.AliasTransaction.createForAddress(
+        nem.Deadline.create(),
+        nem.AliasAction.Link,
+        namespaceTx.namespaceId,
+        item.address,
+        nem.NetworkType.TEST_NET
+    );
 }
 $("#item_exchange").on("click",function(event){
 
-	let bobItemName = $("#exitem1").val();	//相手のアイテム名
-	let bobName = $("#exname").val();	//相手の名前
+    let bobItemName = $("#exitem1").val();  //相手のアイテム名
+    let bobName = $("#exname").val();   //相手の名前
 
-	let aliceItemName = $("#alice_item").val();	//自分のアイテム名
+    let aliceItemName = $("#alice_item").val(); //自分のアイテム名
 
-	r.zip(
-		nsHttp.getLinkedAddress(new nem.NamespaceId(bobName))
-		.pipe(
-			ro.mergeMap( _=> {
-				console.log(_);
-				return accountHttp.getAccountInfo(_);
-			})
-		),
-		nsHttp.getLinkedAddress(new nem.NamespaceId(bobItemName))
-		.pipe(
-			ro.mergeMap( _=> {
-				console.log(_);
-				return accountHttp.getAccountInfo(_);
-			})
-		),
-		nsHttp.getLinkedAddress(new nem.NamespaceId(aliceItemName))
-		.pipe(
-			ro.mergeMap( _=> {
-				console.log(_);
-				return accountHttp.getAccountInfo(_);
-			})
-		)
-	)
-	.subscribe(_ => {
-		console.log(_);
+    r.zip(
+        nsHttp.getLinkedAddress(new nem.NamespaceId(bobName))
+        .pipe(
+            ro.mergeMap( _=> {
+                console.log(_);
+                return accountHttp.getAccountInfo(_);
+            })
+        ),
+        nsHttp.getLinkedAddress(new nem.NamespaceId(bobItemName))
+        .pipe(
+            ro.mergeMap( _=> {
+                console.log(_);
+                return accountHttp.getAccountInfo(_);
+            })
+        ),
+        nsHttp.getLinkedAddress(new nem.NamespaceId(aliceItemName))
+        .pipe(
+            ro.mergeMap( _=> {
+                console.log(_);
+                return accountHttp.getAccountInfo(_);
+            })
+        )
+    )
+    .subscribe(_ => {
+        console.log(_);
 
-		const item1ExchangeTx = nem.MultisigAccountModificationTransaction.create(
-			nem.Deadline.create(),
-			0,0,
-			[ _[0].publicAccount  ],
-			[ alice.publicAccount ],
-			nem.NetworkType.TEST_NET
-		);
+        const item1ExchangeTx = nem.MultisigAccountModificationTransaction.create(
+            nem.Deadline.create(),
+            0,0,
+            [ _[0].publicAccount  ],
+            [ alice.publicAccount ],
+            nem.NetworkType.TEST_NET
+        );
 
-		const item2ExchangeTx = nem.MultisigAccountModificationTransaction.create(
-			nem.Deadline.create(),
-			0,0,
-			[ alice.publicAccount ],
-			[ _[0].publicAccount ],
-			nem.NetworkType.TEST_NET
-		);
+        const item2ExchangeTx = nem.MultisigAccountModificationTransaction.create(
+            nem.Deadline.create(),
+            0,0,
+            [ alice.publicAccount ],
+            [ _[0].publicAccount ],
+            nem.NetworkType.TEST_NET
+        );
 
-		const aggregateTx = nem.AggregateTransaction.createBonded(
-			nem.Deadline.create(),
-			[
-				item1ExchangeTx.toAggregate(_[2].publicAccount),
-				item2ExchangeTx.toAggregate(_[1].publicAccount),
-			],
-			nem.NetworkType.TEST_NET,
-			[],
-			nem.UInt64.fromUint(1000000)
-		);
+        const aggregateTx = nem.AggregateTransaction.createBonded(
+            nem.Deadline.create(),
+            [
+                item1ExchangeTx.toAggregate(_[2].publicAccount),
+                item2ExchangeTx.toAggregate(_[1].publicAccount),
+            ],
+            nem.NetworkType.TEST_NET,
+            [],
+            nem.UInt64.fromUint(1000000)
+        );
 
-		const signedTx =  alice.sign(aggregateTx, GENERATION_HASH);
-		const lockTx = nem.HashLockTransaction.create(
-			nem.Deadline.create(),
-			new nem.Mosaic(
-				new nem.MosaicId('75AF035421401EF0'),
-				nem.UInt64.fromUint(10000000)
-			),
-			nem.UInt64.fromUint(480),
-			signedTx,
-			nem.NetworkType.TEST_NET,
-			nem.UInt64.fromUint(100000)
-		);
+        const signedTx =  alice.sign(aggregateTx, GENERATION_HASH);
+        const lockTx = nem.HashLockTransaction.create(
+            nem.Deadline.create(),
+            new nem.Mosaic(
+                new nem.MosaicId('75AF035421401EF0'),
+                nem.UInt64.fromUint(10000000)
+            ),
+            nem.UInt64.fromUint(480),
+            signedTx,
+            nem.NetworkType.TEST_NET,
+            nem.UInt64.fromUint(100000)
+        );
 
-		const lockSignedTx = alice.sign(lockTx, GENERATION_HASH);
+        const lockSignedTx = alice.sign(lockTx, GENERATION_HASH);
 
-		txHttp
-		.announce(lockSignedTx)
-		.subscribe(x => {
-			console.log("announce lockSignedTx")
-			console.log(NODE + "/transaction/" + lockSignedTx.hash +"/status");
+        txHttp
+        .announce(lockSignedTx)
+        .subscribe(x => {
+            console.log("announce lockSignedTx")
+            console.log(NODE + "/transaction/" + lockSignedTx.hash +"/status");
 
-		}, err => console.error(err));
+        }, err => console.error(err));
 
-		const aliceConfirmed = listener.confirmed(alice.address);
+        const aliceConfirmed = listener.confirmed(alice.address);
 
 
-		aliceConfirmed.pipe(
+        aliceConfirmed.pipe(
 
-			ro.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === lockSignedTx.hash),
-			ro.mergeMap(ignored => txHttp.announceAggregateBonded(signedTx))
-		)
-		.subscribe(
-			_ => {
-				console.log(_)
-				console.log(NODE + "/transaction/" + signedTx.hash +"/status");
-			},
-			err => console.error(err)
-		);
+            ro.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === lockSignedTx.hash),
+            ro.mergeMap(ignored => txHttp.announceAggregateBonded(signedTx))
+        )
+        .subscribe(
+            _ => {
+                console.log(_)
+                console.log(NODE + "/transaction/" + signedTx.hash +"/status");
+            },
+            err => console.error(err)
+        );
 
-		aliceConfirmed.pipe(
-			ro.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === signedTx.hash)
-		)
-		.subscribe(
-			_ => {
-				console.log(_)
-				console.log(NODE + "/transaction/" + signedTx.hash +"/status");
-			},
-			err => console.error(err)
-		);
-	})
+        aliceConfirmed.pipe(
+            ro.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === signedTx.hash)
+        )
+        .subscribe(
+            _ => {
+                console.log(_)
+                console.log(NODE + "/transaction/" + signedTx.hash +"/status");
+            },
+            err => console.error(err)
+        );
+    })
 });
 
 $("#mosaic_confirm").on("click",function(event){
-	let aliceName = $("#aliceName").val();
-	let item1Name = $("#item1").val();
-	let item2Name = $("#item2").val();
+    let aliceName = $("#aliceName").val();
+    let item1Name = $("#item1").val();
+    let item2Name = $("#item2").val();
 
-	const item1FeeTx = createTransferTx(item1);
-	const item2FeeTx = createTransferTx(item2);
+    const item1FeeTx = createTransferTx(item1);
+    const item2FeeTx = createTransferTx(item2);
 
-	const item1NamespaceTx = createRootNamespace(item1,item1Name);
-	const item1AccountAliasTx = createForAddress(item1,item1NamespaceTx);
+    const item1NamespaceTx = createRootNamespace(item1,item1Name);
+    const item1AccountAliasTx = createForAddress(item1,item1NamespaceTx);
 
-	const item2NamespaceTx = createRootNamespace(item2,item2Name);
-	const item2AccountAliasTx = createForAddress(item2,item2NamespaceTx);
+    const item2NamespaceTx = createRootNamespace(item2,item2Name);
+    const item2AccountAliasTx = createForAddress(item2,item2NamespaceTx);
 
-	const aliceNamespaceTx = createRootNamespace(alice,aliceName);
-	const aliceAccountAliasTx = createForAddress(alice,aliceNamespaceTx);
+    const aliceNamespaceTx = createRootNamespace(alice,aliceName);
+    const aliceAccountAliasTx = createForAddress(alice,aliceNamespaceTx);
 
-	const aliceMultisigTx = nem.MultisigAccountModificationTransaction.create(
-		nem.Deadline.create(),
-		1,1,[alice],[],nem.NetworkType.TEST_NET
-	);
+    const aliceMultisigTx = nem.MultisigAccountModificationTransaction.create(
+        nem.Deadline.create(),
+        1,1,[alice],[],nem.NetworkType.TEST_NET
+    );
 
-	const aggregateTx = nem.AggregateTransaction.createComplete(
-		nem.Deadline.create(),
-		[
-			item1FeeTx.toAggregate(alice.publicAccount),
-			item1NamespaceTx.toAggregate(item1.publicAccount),
-			item1AccountAliasTx.toAggregate(item1.publicAccount),
+    const aggregateTx = nem.AggregateTransaction.createComplete(
+        nem.Deadline.create(),
+        [
+            item1FeeTx.toAggregate(alice.publicAccount),
+            item1NamespaceTx.toAggregate(item1.publicAccount),
+            item1AccountAliasTx.toAggregate(item1.publicAccount),
 
-			item2FeeTx.toAggregate(alice.publicAccount),
-			item2NamespaceTx.toAggregate(item2.publicAccount),
-			item2AccountAliasTx.toAggregate(item2.publicAccount),
+            item2FeeTx.toAggregate(alice.publicAccount),
+            item2NamespaceTx.toAggregate(item2.publicAccount),
+            item2AccountAliasTx.toAggregate(item2.publicAccount),
 
-			aliceNamespaceTx.toAggregate(alice.publicAccount),
-			aliceAccountAliasTx.toAggregate(alice.publicAccount),
+            aliceNamespaceTx.toAggregate(alice.publicAccount),
+            aliceAccountAliasTx.toAggregate(alice.publicAccount),
 
-			aliceMultisigTx.toAggregate(item1.publicAccount),
-			aliceMultisigTx.toAggregate(item2.publicAccount),
+            aliceMultisigTx.toAggregate(item1.publicAccount),
+            aliceMultisigTx.toAggregate(item2.publicAccount),
 
-		],
-		nem.NetworkType.TEST_NET,
-		[],
-		nem.UInt64.fromUint(1000000)
+        ],
+        nem.NetworkType.TEST_NET,
+        [],
+        nem.UInt64.fromUint(1000000)
+    );
 
-	);
+    const signedTx =  alice.signTransactionWithCosignatories(
+        aggregateTx,
+        [item1,item2],
+        GENERATION_HASH,
+    );
 
-	const signedTx =  alice.signTransactionWithCosignatories(
-		aggregateTx,
-		[item1,item2],
-		GENERATION_HASH,
-	);
+    txHttp
+    .announce(signedTx)
+    .subscribe(x => {
 
-	txHttp
-	.announce(signedTx)
-	.subscribe(x => {
+        $('#result1').collapse('show');
 
-		$('#result1').collapse('show');
-
-
-
-		console.log(x);
-		console.log(signedTx.hash);
-		console.log(signedTx.payload);
-		console.log(NODE + "/transaction/" + signedTx.hash +"/status");
-	}, err => console.error(err));
+        console.log(x);
+        console.log(signedTx.hash);
+        console.log(signedTx.payload);
+        console.log(NODE + "/transaction/" + signedTx.hash +"/status");
+    }, err => console.error(err));
 
 
 
-	const confirmedListener =
-	listener
-	.confirmed(alice.address)
-	.pipe(
-		ro.filter((tx) => {
-			console.log(tx);
-			return tx.transactionInfo !== undefined && tx.transactionInfo.hash === signedTx.hash
-		}),
-	);
+    const confirmedListener =
+    listener
+    .confirmed(alice.address)
+    .pipe(
+        ro.filter((tx) => {
+            console.log(tx);
+            return tx.transactionInfo !== undefined && tx.transactionInfo.hash === signedTx.hash
+        }),
+    );
 
-	confirmedListener
-	.pipe(
-		ro.delay(1000),
-		ro.mergeMap(_ => {
+    confirmedListener
+    .pipe(
+        ro.delay(1000),
+        ro.mergeMap(_ => {
 
-			return r.zip(
-				nsHttp.getAccountsNames([alice.address]),
-				accountHttp.getAccountInfo(alice.address)
-			);
-		}),
-	)
-	.subscribe(x => {
+            return r.zip(
+                nsHttp.getAccountsNames([alice.address]),
+                accountHttp.getAccountInfo(alice.address)
+            );
+        }),
+    )
+    .subscribe(x => {
 
-			console.log(x);
+            console.log(x);
 
-			for (var i=0;i< x[0].length;i++){
+            for (var i=0;i< x[0].length;i++){
 
-				$("#account_name").text(x[0][i].names[0].name);
-				console.log(x[0][i]);
-			}
+                $("#account_name").text(x[0][i].names[0].name);
+                console.log(x[0][i]);
+            }
 
-			$('#result1').collapse('hide');
-			$('#result2').collapse('show');
+            $('#result1').collapse('hide');
+            $('#result2').collapse('show');
 
-	}, err => console.error(err));
+    }, err => console.error(err));
 
-	confirmedListener
-	.pipe(
-		ro.mergeMap(_ => {
+    confirmedListener
+    .pipe(
+        ro.mergeMap(_ => {
 
-			return multisigHttp.getMultisigAccountInfo(alice.address)
-			.pipe(
-				ro.mergeMap(_=>{
-					console.log(_);
-					return	_.multisigAccounts
-				}),
-				ro.map(_=>_.address),
-				ro.toArray(),
-			)
-		}),
-		ro.mergeMap(_ => {
+            return multisigHttp.getMultisigAccountInfo(alice.address)
+            .pipe(
+                ro.mergeMap(_=>{
+                    console.log(_);
+                    return  _.multisigAccounts
+                }),
+                ro.map(_=>_.address),
+                ro.toArray(),
+            )
+        }),
+        ro.mergeMap(_ => {
 
-			return	r.zip(
-				nsHttp.getAccountsNames(_),
-				nsHttp.getNamespacesFromAccounts(_)
-			);
-		}),
-	)
-	.subscribe(x => {
-		var itemElem = [];
-		for (var i=0;i< x[0].length;i++){
-			var itemPubKey = nem.Convert.hexToUint8(x[1][i].owner.publicKey);
+            return  r.zip(
+                nsHttp.getAccountsNames(_),
+                nsHttp.getNamespacesFromAccounts(_)
+            );
+        }),
+    )
+    .subscribe(x => {
+        var itemElem = [];
+        for (var i=0;i< x[0].length;i++){
+            var itemPubKey = nem.Convert.hexToUint8(x[1][i].owner.publicKey);
 
-itemElem1 = itemPubKey[0];
-itemElem2 = itemPubKey[1];
-itemElem3 = itemPubKey[2];
-totalItemElem = itemElem1 + itemElem2 + itemElem3;
+            itemElem1 = itemPubKey[0];
+            itemElem2 = itemPubKey[1];
+            itemElem3 = itemPubKey[2];
+            totalItemElem = itemElem1 + itemElem2 + itemElem3;
 
-regElem1 = parseInt(elem1 / totalItemElem * 100,10)
-regElem2 = parseInt(elem2 / totalItemElem * 100,10)
-regElem3 = parseInt(elem3 / totalItemElem * 100,10)
-itemElem[i] = [regElem1,regElem2,regElem3];
-console.log(itemElem[i] )
+            regElem1 = parseInt(elem1 / totalItemElem * 100,10)
+            regElem2 = parseInt(elem2 / totalItemElem * 100,10)
+            regElem3 = parseInt(elem3 / totalItemElem * 100,10)
+            itemElem[i] = [regElem1,regElem2,regElem3];
+            console.log(itemElem[i] )
 
-			$("#table").append("<tr>"
-				+"<td>"+ x[0][i].names[0].name + "</td>"
-				+"<td>"+ x[0][i].address.address + "</td>"
-				+"<td>"+ x[1][i].endHeight.toString() + "</td>"
-				+"<td><button class='btn btn-primary exchange' type='button'>交換</button></td>"
-				+ "</tr>"
-			);
-			console.log(x[0][i]);
-		}
+            $("#table").append("<tr>"
+                +"<td>"+ x[0][i].names[0].name + "</td>"
+                +"<td>"+ x[0][i].address.address + "</td>"
+                +"<td>"+ x[1][i].endHeight.toString() + "</td>"
+                +"<td><button class='btn btn-primary exchange' type='button'>交換</button></td>"
+                + "</tr>"
+            );
+            console.log(x[0][i]);
+        }
 
-		aliceCounterBase = aliceBase + 1;
-		if(aliceCounterBase > 2){aliceCounterBase = 0}
-		attackPt = aliceElem[aliceBase] + itemElem[0][aliceBase] + itemElem[1][aliceBase] - itemElem[0][aliceCounterBase] - itemElem[1][aliceCounterBase]
-		console.log(attackPt);
+        aliceCounterBase = aliceBase + 1;
+        if(aliceCounterBase > 2){aliceCounterBase = 0}
+        attackPt = aliceElem[aliceBase] + itemElem[0][aliceBase] + itemElem[1][aliceBase] - itemElem[0][aliceCounterBase] - itemElem[1][aliceCounterBase]
+        console.log(attackPt);
 
-	}, err => console.error(err));
+    }, err => console.error(err));
 
 });
 
 $(document).on("click",".exchange", function(event) {
 
-	console.log($(this).parent().prev().prev()[0].textContent);
-	$("#alice_item").val($(this).parent().prev().prev().prev()[0].textContent);
-	$('#myModal3').modal('show');
+    console.log($(this).parent().prev().prev()[0].textContent);
+    $("#alice_item").val($(this).parent().prev().prev().prev()[0].textContent);
+    $('#myModal3').modal('show');
 
-	return false;
+    return false;
 });
-
-function process(){}
-function process3(){}
-function strLi(node,href,text){}
 
 $("#button1").click(
     function(){
-		window.open(
+        window.open(
         "http://faucet-01.nemtech.network/?recipient=" + alice.address.address + "&amount=565",
         "_blank"
     );
@@ -865,21 +855,21 @@ $("#button1").click(
 
 $("#button2").click(
     function(){
-		$("#ityped").empty();
-		attackIndex = parseInt(attackPt / 180 * 10);
-		console.log(attackIndex);
-		attackMsgs = msgs.slice(0,attackIndex);
-		if(attackIndex < 10){
-			outMsgs = attackMsgs.concat(loseMsgs);
-		}else{
-			outMsgs = attackMsgs;
+        $("#ityped").empty();
+        attackIndex = parseInt(attackPt / 180 * 10);
+        console.log(attackIndex);
+        attackMsgs = msgs.slice(0,attackIndex);
+        if(attackIndex < 10){
+            outMsgs = attackMsgs.concat(loseMsgs);
+        }else{
+            outMsgs = attackMsgs;
 
-		}
-		ityped.init(document.querySelector("#ityped"), {
-		      loop: false,
-		      showCursor: true,
-		      strings: outMsgs
-		})
+        }
+        ityped.init(document.querySelector("#ityped"), {
+              loop: false,
+              showCursor: true,
+              strings: outMsgs
+        })
 
         return false;
     }
