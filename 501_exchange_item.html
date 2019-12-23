@@ -14,6 +14,8 @@
 
 		<h4>address</h4>
 		<span id="address"></span>　<button id="button1" class="btn btn-primary" type="button">蛇口</button>
+		<h4>element</h4>
+		<div id="element"></div>
 		<h4>amount</h4>
 		<div id="amount"></div>
 		<hr>
@@ -23,6 +25,9 @@
 		<h4>name</h4>
 		<div id="account_name"></div>
 		</div>
+		<hr>
+		<h4>item list</h4>
+
 		<div>
 		<table id="table"  class="table">
 			<thead><tr>
@@ -191,12 +196,14 @@ const txHttp = new nem.TransactionHttp(NODE);
 const accountHttp = new nem.AccountHttp(NODE);
 const nsHttp = new nem.NamespaceHttp(NODE);
 const multisigHttp = new nem.MultisigHttp(NODE)
+var elementName = ["火","水","木"];
+var outMsgs = [];
 var msgs = ["勇者はアルパカを連れて旅に出た。",
-		  "途中でバイソンに出会った。",
+		  "バイソンが魔王の居場所を教えてくれた。",
 		  "牛の群れに押し流されそうになった。",
 		  "ドラゴンが味方に加わった。",
-		  "破壊的修正から象を守った。",
-		  "不死鳥に導かれ魔王の住む山へ",
+		  "魔王一族の破壊的攻撃から象を守った。",
+		  "不死鳥に導かれ魔王の住む山へ。",
 		  "魔王があらわれた！",
 		  "魔王の攻撃！",
 		  "さらりを身をかわし、反撃！",
@@ -268,6 +275,7 @@ console.log(alice);
 const item1 = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
 const item2 = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
 $('#address').text(alice.address.address);
+$('#element').text(elementName[aliceBase]);
 
 console.log(item1.address.address);
 
@@ -288,6 +296,24 @@ function getAliceInfo(){
 		err => console.error(err)
 	);
 }
+
+nsHttp.getAccountsNames([alice.address])
+.pipe(
+)
+.subscribe(x => {
+
+	console.log(x[0]);
+
+	for (var i=0;i< x.length;i++){
+
+		$("#account_name").text(x[i].names[0].name);
+		console.log(x[i]);
+	}
+
+
+
+}, err => console.error(err));
+
 
 multisigHttp.getMultisigAccountInfo(alice.address)
 .pipe(
@@ -487,7 +513,8 @@ function createTransferTx(item){
 function createRootNamespace(item,itemName){
 	return nem.NamespaceRegistrationTransaction.createRootNamespace(
 		nem.Deadline.create(),
-		itemName + item.address.address.toLowerCase(),
+//		itemName + item.address.address.toLowerCase(),
+		itemName,
 		nem.UInt64.fromUint(180000),
 		nem.NetworkType.TEST_NET
 	);
@@ -802,11 +829,14 @@ $("#button1").click(
 $("#button2").click(
     function(){
 		$("#ityped").empty();
-		attackIndex = parseInt(attackPt / 120 * 7);
+		attackIndex = parseInt(attackPt / 180 * 10);
 		console.log(attackIndex);
 		attackMsgs = msgs.slice(0,attackIndex);
-		if(attackIndex < 5){
+		if(attackIndex < 10){
 			outMsgs = attackMsgs.concat(loseMsgs);
+		}else{
+			outMsgs = attackMsgs;
+
 		}
 		ityped.init(document.querySelector("#ityped"), {
 		      loop: false,
