@@ -12,21 +12,21 @@
 
 		<h1>アイテム交換クエスト</h1>
 
-		<h4>address</h4>
+		<h4>アドレス</h4>
 		<span id="address"></span>　<button id="button1" class="btn btn-primary" type="button">蛇口</button>
-		<h4>element</h4>
+		<h4>属性</h4>
 		<div id="element"></div>
-		<h4>amount</h4>
+		<h4>手数料残高</h4>
 		<div id="amount"></div>
 		<hr>
 
 		<div>
 
-		<h4>name</h4>
+		<h4>名前</h4>
 		<div id="account_name"></div>
 		</div>
 		<hr>
-		<h4>item list</h4>
+		<h4>アイテム一覧</h4>
 
 		<div>
 		<table id="table"  class="table">
@@ -107,15 +107,15 @@
 			</div>
 			<div class="modal-body">
 			<div class="form-group">
-				<label for="text1">Name:</label>
+				<label for="text1">交換相手の名前:</label>
 				<input type="text" id="exname" class="form-control">
 			</div>
 			<div class="form-group">
-				<label for="text1">Item1:</label>
+				<label for="text1">取得したい相手のアイテム:</label>
 				<input type="text" id="exitem1" class="form-control">
 			</div>
 			<div class="form-group">
-				<label for="text1">Your Item:</label>
+				<label for="text1">失う自分のアイテム:</label>
 				<input type="text" id="alice_item" class="form-control">
 			</div>
 
@@ -143,15 +143,15 @@
 
 			<div class="modal-body">
 				<div class="form-group">
-				<label for="text4">Name:</label>
+				<label for="text4">交換相手:</label>
 				<input type="text" id="exuser" class="form-control">
 				</div>
 			<div class="form-group">
-				<label for="text4">取得:</label>
+				<label for="text4">取得するアイテム:</label>
 				<input type="text" id="getitem" class="form-control">
 			</div>
 			<div class="form-group">
-				<label for="text4">失う:</label>
+				<label for="text4">失うアイテム:</label>
 				<input type="text" id="lostitem" class="form-control">
 			</div>
 		</div>
@@ -214,6 +214,7 @@ var loseMsgs = [
 "おお勇者よ、死んでしまうとは情けない。"
 
 ];
+var isInit = true;
 
 var cmd ="";
 if (1 < document.location.search.length) {
@@ -238,6 +239,8 @@ if(localStorage.getItem('pk') == null || cmd == "reset"){
 	localStorage.setItem('pk',alice.privateKey);
 }else{
 	alice = nem.Account.createFromPrivateKey(localStorage.getItem('pk'), nem.NetworkType.TEST_NET);
+	isInit = false;
+
 }
 //25B3F54217340F7061D02676C4B928ADB4395EB70A2A52D2A11E2F4AE011B03E
 //alice = nem.Account.createFromPrivateKey('28522EA2658843CFF3E499243EEF71A56C6DED4B2EA3A0450AF3D25A75921306', nem.NetworkType.TEST_NET);
@@ -279,7 +282,6 @@ $('#element').text(elementName[aliceBase]);
 
 console.log(item1.address.address);
 
-var isInit = true;
 //const wsEndpoint = NODE.replace('https', 'wss');
 const wsEndpoint = NODE.replace('http', 'ws');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
@@ -365,6 +367,40 @@ console.log(itemElem[i] )
 	console.log(attackPt);
 
 }, err => console.error(err));
+
+
+	accountHttp.getAccountPartialTransactions(alice.address)
+	.pipe(
+
+		ro.mergeMap(_ => {
+			console.log(_);
+			return _;
+		}),
+		ro.filter((_) => {
+			console.log(_);
+			return !_.signedByAccount(alice.publicAccount)
+		}),
+	)
+	.subscribe(_ =>{
+		console.log(">>Bonded<<");
+		console.log(_);
+		nsHttp.getAccountsNames([
+			_.innerTransactions[0].signer.address,
+			_.innerTransactions[1].signer.address,
+//			_.innerTransactions[0].publicKeyAdditions[0].address,
+			_.innerTransactions[0].publicKeyDeletions[0].address
+		])
+		.subscribe(
+			_=>{
+
+				$("#exuser"  ).val(_[2].names[0].name);
+				$("#getitem" ).val(_[0].names[0].name);
+				$("#lostitem").val(_[1].names[0].name);
+				console.log(_);
+				$('#myModal4').modal('show');
+			}
+		)
+	}, err => console.error(err));
 
 
 listener.open().then(() => {
@@ -489,6 +525,7 @@ $("#ex_confirm").on("click",function(event){
 				);
 				console.log(x[0][i]);
 			}
+			$('#result1').collapse('hide');
 		},
 		err => console.error(err)
 	);
