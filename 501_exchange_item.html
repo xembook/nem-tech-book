@@ -51,7 +51,7 @@
         <div class="collapse" id="result2">
             <button id="button2" class="btn btn-primary" type="button">冒険に出る</button>
         </div>
-</br>
+		</br>
         <div id="app">
            <h5><span id="ityped"></span></h5>
         </div>
@@ -100,26 +100,26 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel2">交換を希望するアイテム</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            </div>
-            <div class="modal-body">
-            <div class="form-group">
-                <label for="text1">交換相手の名前:</label>
-                <input type="text" id="exname" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="text1">取得したい相手のアイテム:</label>
-                <input type="text" id="exitem1" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="text1">失う自分のアイテム:</label>
-                <input type="text" id="alice_item" class="form-control">
-            </div>
+	            <h5 class="modal-title" id="exampleModalLabel2">交換を希望するアイテム</h5>
+	            <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+	                <span aria-hidden="true">&times;</span>
+	            </button>
+	            </div>
+	            <div class="modal-body">
+	            <div class="form-group">
+	                <label for="text1">交換相手の名前:</label>
+	                <input type="text" id="exname" class="form-control">
+	            </div>
+	            <div class="form-group">
+	                <label for="text1">取得したい相手のアイテム:</label>
+	                <input type="text" id="exitem1" class="form-control">
+	            </div>
+	            <div class="form-group">
+	                <label for="text1">失う自分のアイテム:</label>
+	                <input type="text" id="alice_item" class="form-control">
+	            </div>
 
-        </div>
+	        </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal"  id="item_exchange">OK</button>
@@ -135,26 +135,26 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel2">交換の確認</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            </div>
+	            <h5 class="modal-title" id="exampleModalLabel2">交換の確認</h5>
+	            <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+	                <span aria-hidden="true">&times;</span>
+	            </button>
+	            </div>
 
-            <div class="modal-body">
-                <div class="form-group">
-                <label for="text4">交換相手:</label>
-                <input type="text" id="exuser" class="form-control">
-                </div>
-            <div class="form-group">
-                <label for="text4">取得するアイテム:</label>
-                <input type="text" id="getitem" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="text4">失うアイテム:</label>
-                <input type="text" id="lostitem" class="form-control">
-            </div>
-        </div>
+	            <div class="modal-body">
+	                <div class="form-group">
+	                <label for="text4">交換相手:</label>
+	                <input type="text" id="exuser" class="form-control">
+	                </div>
+	            <div class="form-group">
+	                <label for="text4">取得するアイテム:</label>
+	                <input type="text" id="getitem" class="form-control">
+	            </div>
+	            <div class="form-group">
+	                <label for="text4">失うアイテム:</label>
+	                <input type="text" id="lostitem" class="form-control">
+	            </div>
+	        </div>
 
 
             <div class="modal-footer">
@@ -181,21 +181,18 @@
 <script src="https://unpkg.com/ityped@1.0.2"></script>
 <script>$(function() {
 
-
 const nem = require("/node_modules/nem2-sdk");
 const ro = require("/node_modules/rxjs/operators");
 const r = require("/node_modules/rxjs");
 
-//const NODE = 'http://54.250.117.26:3000';
-//const NODE = 'http://api-01.mt.us-west-2.nemtech.network:3000'
 const NODE = 'http://api-harvest-20.ap-northeast-1.nemtech.network:3000';
-
-
 const GENERATION_HASH = "CC42AAD7BD45E8C276741AB2524BC30F5529AF162AD12247EF9A98D6B54A385B";
+
 const txHttp = new nem.TransactionHttp(NODE);
-const accountHttp = new nem.AccountHttp(NODE);
 const nsHttp = new nem.NamespaceHttp(NODE);
+const accountHttp = new nem.AccountHttp(NODE);
 const multisigHttp = new nem.MultisigHttp(NODE)
+
 var elementName = ["火","水","木"];
 var outMsgs = [];
 var msgs = ["勇者はアルパカを連れて旅に出た。",
@@ -230,7 +227,6 @@ if (1 < document.location.search.length) {
     }
     cmd = item["cmd"];
 }
-
 
 var attackPt = 0;
 var alice;
@@ -268,10 +264,6 @@ if(aliceElem[0] > aliceElem[1]){
     }
 }
 
-
-
-
-console.log(alice);
 const item1 = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
 const item2 = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
 $('#address').text(alice.address.address);
@@ -290,7 +282,6 @@ function getAliceInfo(){
         function(_){
 
                 $('#amount').text(_.mosaics[0].amount.toString());
-
         },
         err => console.error(err)
     );
@@ -301,23 +292,16 @@ nsHttp.getAccountsNames([alice.address])
 )
 .subscribe(x => {
 
-    console.log(x[0]);
-
     for (var i=0;i< x.length;i++){
 
         $("#account_name").text(x[i].names[0].name);
-        console.log(x[i]);
     }
-
-
-
 }, err => console.error(err));
 
 
 multisigHttp.getMultisigAccountInfo(alice.address)
 .pipe(
     ro.mergeMap(_=>{
-        console.log(_);
         return  _.multisigAccounts
     }),
     ro.map(_=>_.address),
@@ -366,38 +350,32 @@ multisigHttp.getMultisigAccountInfo(alice.address)
 }, err => console.error(err));
 
 
-    accountHttp.getAccountPartialTransactions(alice.address)
-    .pipe(
+accountHttp.getAccountPartialTransactions(alice.address)
+.pipe(
 
-        ro.mergeMap(_ => {
-            console.log(_);
-            return _;
-        }),
-        ro.filter((_) => {
-            console.log(_);
-            return !_.signedByAccount(alice.publicAccount)
-        }),
+    ro.mergeMap(_ => {
+        return _;
+    }),
+    ro.filter((_) => {
+        return !_.signedByAccount(alice.publicAccount)
+    }),
+)
+.subscribe(_ =>{
+    nsHttp.getAccountsNames([
+        _.innerTransactions[0].signer.address,
+        _.innerTransactions[1].signer.address,
+        _.innerTransactions[0].publicKeyDeletions[0].address
+    ])
+    .subscribe(
+        _=>{
+
+            $("#exuser"  ).val(_[2].names[0].name);
+            $("#getitem" ).val(_[0].names[0].name);
+            $("#lostitem").val(_[1].names[0].name);
+            $('#myModal4').modal('show');
+        }
     )
-    .subscribe(_ =>{
-        console.log(">>Bonded<<");
-        console.log(_);
-        nsHttp.getAccountsNames([
-            _.innerTransactions[0].signer.address,
-            _.innerTransactions[1].signer.address,
-//          _.innerTransactions[0].publicKeyAdditions[0].address,
-            _.innerTransactions[0].publicKeyDeletions[0].address
-        ])
-        .subscribe(
-            _=>{
-
-                $("#exuser"  ).val(_[2].names[0].name);
-                $("#getitem" ).val(_[0].names[0].name);
-                $("#lostitem").val(_[1].names[0].name);
-                console.log(_);
-                $('#myModal4').modal('show');
-            }
-        )
-    }, err => console.error(err));
+}, err => console.error(err));
 
 
 listener.open().then(() => {
@@ -432,7 +410,6 @@ listener.open().then(() => {
         ro.filter(_ => !_.signedByAccount(alice.publicAccount)),
     )
     .subscribe(_ =>{
-        console.log(">>Bonded<<");
         nsHttp.getAccountsNames([
             _.innerTransactions[0].signer.address,
             _.innerTransactions[0].publicKeyAdditions[0].address,
@@ -444,15 +421,11 @@ listener.open().then(() => {
                 $("#exuser"  ).val(_[2].names[0].name);
                 $("#getitem" ).val(_[0].names[0].name);
                 $("#lostitem").val(_[1].names[0].name);
-                console.log(_);
                 $('#myModal4').modal('show');
             }
         )
     }, err => console.error(err));
-
 });
-
-
 
 $("#ex_confirm").on("click",function(event){
 
@@ -461,11 +434,9 @@ $("#ex_confirm").on("click",function(event){
     accountHttp.getAccountPartialTransactions(alice.address)
     .pipe(
         ro.mergeMap(_ => {
-            console.log(_);
             return _;
         }),
         ro.filter((_) => {
-            console.log(_);
             return !_.signedByAccount(alice.publicAccount)
         }),
         ro.map(_ => {
@@ -473,13 +444,10 @@ $("#ex_confirm").on("click",function(event){
         }),
         ro.mergeMap(_ => {
             exhash = _.parentHash;
-            console.log(_);
             return txHttp.announceAggregateBondedCosignature(_);
         })
     )
     .subscribe(_ => {
-        console.log(NODE + "/transaction/" + exhash +"/status");
-        console.log(_);
     },
         err => console.error(err)
     );
@@ -493,7 +461,6 @@ $("#ex_confirm").on("click",function(event){
             return multisigHttp.getMultisigAccountInfo(alice.address)
             .pipe(
                 ro.mergeMap(_=>{
-                    console.log(_);
                     return  _.multisigAccounts
                 }),
                 ro.map(_=>_.address),
@@ -520,7 +487,6 @@ $("#ex_confirm").on("click",function(event){
                     +"<td><button class='btn btn-primary exchange' type='button'>交換</button></td>"
                     + "</tr>"
                 );
-                console.log(x[0][i]);
             }
             $('#result1').collapse('hide');
         },
@@ -547,7 +513,6 @@ function createTransferTx(item){
 function createRootNamespace(item,itemName){
     return nem.NamespaceRegistrationTransaction.createRootNamespace(
         nem.Deadline.create(),
-//      itemName + item.address.address.toLowerCase(),
         itemName,
         nem.UInt64.fromUint(180000),
         nem.NetworkType.TEST_NET
@@ -575,27 +540,23 @@ $("#item_exchange").on("click",function(event){
         nsHttp.getLinkedAddress(new nem.NamespaceId(bobName))
         .pipe(
             ro.mergeMap( _=> {
-                console.log(_);
                 return accountHttp.getAccountInfo(_);
             })
         ),
         nsHttp.getLinkedAddress(new nem.NamespaceId(bobItemName))
         .pipe(
             ro.mergeMap( _=> {
-                console.log(_);
                 return accountHttp.getAccountInfo(_);
             })
         ),
         nsHttp.getLinkedAddress(new nem.NamespaceId(aliceItemName))
         .pipe(
             ro.mergeMap( _=> {
-                console.log(_);
                 return accountHttp.getAccountInfo(_);
             })
         )
     )
     .subscribe(_ => {
-        console.log(_);
 
         const item1ExchangeTx = nem.MultisigAccountModificationTransaction.create(
             nem.Deadline.create(),
@@ -642,23 +603,16 @@ $("#item_exchange").on("click",function(event){
         txHttp
         .announce(lockSignedTx)
         .subscribe(x => {
-            console.log("announce lockSignedTx")
-            console.log(NODE + "/transaction/" + lockSignedTx.hash +"/status");
-
         }, err => console.error(err));
 
         const aliceConfirmed = listener.confirmed(alice.address);
 
-
         aliceConfirmed.pipe(
-
             ro.filter((tx) => tx.transactionInfo !== undefined && tx.transactionInfo.hash === lockSignedTx.hash),
             ro.mergeMap(ignored => txHttp.announceAggregateBonded(signedTx))
         )
         .subscribe(
             _ => {
-                console.log(_)
-                console.log(NODE + "/transaction/" + signedTx.hash +"/status");
             },
             err => console.error(err)
         );
@@ -668,8 +622,6 @@ $("#item_exchange").on("click",function(event){
         )
         .subscribe(
             _ => {
-                console.log(_)
-                console.log(NODE + "/transaction/" + signedTx.hash +"/status");
             },
             err => console.error(err)
         );
@@ -733,9 +685,6 @@ $("#mosaic_confirm").on("click",function(event){
 
         $('#result1').collapse('show');
 
-        console.log(x);
-        console.log(signedTx.hash);
-        console.log(signedTx.payload);
         console.log(NODE + "/transaction/" + signedTx.hash +"/status");
     }, err => console.error(err));
 
@@ -764,16 +713,12 @@ $("#mosaic_confirm").on("click",function(event){
     )
     .subscribe(x => {
 
-            console.log(x);
+        for (var i=0;i< x[0].length;i++){
+            $("#account_name").text(x[0][i].names[0].name);
+        }
 
-            for (var i=0;i< x[0].length;i++){
-
-                $("#account_name").text(x[0][i].names[0].name);
-                console.log(x[0][i]);
-            }
-
-            $('#result1').collapse('hide');
-            $('#result2').collapse('show');
+        $('#result1').collapse('hide');
+        $('#result2').collapse('show');
 
     }, err => console.error(err));
 
@@ -784,7 +729,6 @@ $("#mosaic_confirm").on("click",function(event){
             return multisigHttp.getMultisigAccountInfo(alice.address)
             .pipe(
                 ro.mergeMap(_=>{
-                    console.log(_);
                     return  _.multisigAccounts
                 }),
                 ro.map(_=>_.address),
@@ -813,7 +757,6 @@ $("#mosaic_confirm").on("click",function(event){
             regElem2 = parseInt(elem2 / totalItemElem * 100,10)
             regElem3 = parseInt(elem3 / totalItemElem * 100,10)
             itemElem[i] = [regElem1,regElem2,regElem3];
-            console.log(itemElem[i] )
 
             $("#table").append("<tr>"
                 +"<td>"+ x[0][i].names[0].name + "</td>"
@@ -822,21 +765,17 @@ $("#mosaic_confirm").on("click",function(event){
                 +"<td><button class='btn btn-primary exchange' type='button'>交換</button></td>"
                 + "</tr>"
             );
-            console.log(x[0][i]);
         }
 
         aliceCounterBase = aliceBase + 1;
         if(aliceCounterBase > 2){aliceCounterBase = 0}
         attackPt = aliceElem[aliceBase] + itemElem[0][aliceBase] + itemElem[1][aliceBase] - itemElem[0][aliceCounterBase] - itemElem[1][aliceCounterBase]
-        console.log(attackPt);
 
     }, err => console.error(err));
-
 });
 
 $(document).on("click",".exchange", function(event) {
 
-    console.log($(this).parent().prev().prev()[0].textContent);
     $("#alice_item").val($(this).parent().prev().prev().prev()[0].textContent);
     $('#myModal3').modal('show');
 
@@ -856,16 +795,21 @@ $("#button1").click(
 $("#button2").click(
     function(){
         $("#ityped").empty();
-        attackIndex = parseInt(attackPt / 180 * 10);
-        console.log(attackIndex);
-        attackMsgs = msgs.slice(0,attackIndex);
-        if(attackIndex < 10){
-            outMsgs = attackMsgs.concat(loseMsgs);
-        }else{
-            outMsgs = attackMsgs;
 
+        attackIndex = parseInt(attackPt / 180 * 10);
+        attackMsgs = msgs.slice(0,attackIndex);
+
+        if(attackIndex < 10){
+
+            outMsgs = attackMsgs.concat(loseMsgs);
+
+        }else{
+
+            outMsgs = attackMsgs;
         }
+
         ityped.init(document.querySelector("#ityped"), {
+
               loop: false,
               showCursor: true,
               strings: outMsgs
