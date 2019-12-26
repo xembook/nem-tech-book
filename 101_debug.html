@@ -8,7 +8,7 @@
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
     crossorigin="anonymous">
 
-<script src="nem2-sdk-0.14.3.js"></script>
+<script src="nem2-sdk-0.16.1.js"></script>
 <script>
 const nem = require("/node_modules/nem2-sdk");
 console.log(nem);
@@ -48,8 +48,10 @@ console.log(ns.id.toHex());
 console.log(ns.id.toDTO());
 console.log(ns.id.toDTO().toString());
 
-const NODE = 'https://jp5.nemesis.land:3001';
+const NODE = 'http://api-harvest-20.ap-northeast-1.nemtech.network:3000';
 const nsHttp = new nem.NamespaceHttp(NODE);
+
+//ネームスペースから
 nsHttp.getNamespace(ns)
 .subscribe(_ => {
 
@@ -64,17 +66,22 @@ nsHttp.getNamespace(ns)
 	console.log(ms.id.toDTO());
 	console.log(ms.id.toDTO().toString());
 
+
 	const mosaicHttp = new nem.MosaicHttp(NODE);
 
-	mosaicHttp.getMosaicsNames([ms])
+	console.log("モザイクIDからネームスペースを取得");
+	nsHttp.getMosaicsNames([ms])
 	.subscribe(_ => {
 		console.log(_[0].names);
 	}, err => console.error(err));
 
+	console.log("モザイクIDから作成者アカウントを取得");
 	mosaicHttp.getMosaics([ms])
 	.subscribe(__ => {
 
 		const accountHttp = new nem.AccountHttp(NODE);
+
+		//作成者のアカウント情報を取得
 		accountHttp.getAccountsInfo([__[0].owner.address])
 		.subscribe(___ => {
 			console.log("アカウント");
