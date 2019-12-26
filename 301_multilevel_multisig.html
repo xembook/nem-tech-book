@@ -64,27 +64,27 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.14.3.js"></script>
+<script src="nem2-sdk-0.16.1.js"></script>
 <script>$(function() {
 
 const nem = require("/node_modules/nem2-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 
-const NODE = 'https://jp5.nemesis.land:3001';
-const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
+const NODE = 'http://api-harvest-20.ap-northeast-1.nemtech.network:3000';
+const GENERATION_HASH = "CC42AAD7BD45E8C276741AB2524BC30F5529AF162AD12247EF9A98D6B54A385B";
 const txHttp = new nem.TransactionHttp(NODE);
 
-const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const carol = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const dave = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const dave2 = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const ellen = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const frank = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const alice = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+const bob   = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+const carol = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+const dave = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+const dave2 = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+const ellen = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+const frank = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
 $('#address').text(alice.address.address);
 
 var isInit = true;
-const wsEndpoint = NODE.replace('https', 'wss');
+const wsEndpoint = NODE.replace('http', 'ws');
 const listener = new nem.Listener(wsEndpoint, WebSocket);
 
 listener.open().then(() => {
@@ -110,17 +110,10 @@ listener.open().then(() => {
     );
 });
 
-const addType = nem.CosignatoryModificationAction.Add;
-const removeType = nem.CosignatoryModificationAction.Remove;
 
 const ellenOrFrankMultisigTx = nem.MultisigAccountModificationTransaction.create(
     nem.Deadline.create(),
-    1,1,
-    [
-        new nem.MultisigCosignatoryModification(addType, ellen),
-        new nem.MultisigCosignatoryModification(addType, frank)
-    ],
-    nem.NetworkType.MIJIN_TEST
+    1,1,[ellen, frank],[],nem.NetworkType.TEST_NET
 );
 
 function process(){
@@ -130,24 +123,16 @@ function process(){
         dave2.address,
         [
             new nem.Mosaic(
-                new nem.MosaicId('308F144790CD7BC4'),
+                new nem.MosaicId('75AF035421401EF0'),
                 nem.UInt64.fromUint(5000000)
             )
         ],
         nem.PlainMessage.create('for fee'),
-        nem.NetworkType.MIJIN_TEST,
-        nem.UInt64.fromUint(100000)
+        nem.NetworkType.TEST_NET,
     );
 
     const bobAndDaveAndCarolMultisigTx = nem.MultisigAccountModificationTransaction.create(
-        nem.Deadline.create(),
-        2,2,
-        [
-            new nem.MultisigCosignatoryModification(addType, bob),
-            new nem.MultisigCosignatoryModification(addType, dave),
-            new nem.MultisigCosignatoryModification(addType, carol),
-        ],
-        nem.NetworkType.MIJIN_TEST
+        nem.Deadline.create(), 2,2,[bob ,dave,carol],[],nem.NetworkType.TEST_NET
     );
 
     const aggregateTx = nem.AggregateTransaction.createComplete(
@@ -157,9 +142,9 @@ function process(){
             ellenOrFrankMultisigTx.toAggregate(dave.publicAccount),
             bobAndDaveAndCarolMultisigTx.toAggregate(alice.publicAccount),
         ],
-        nem.NetworkType.MIJIN_TEST,
+        nem.NetworkType.TEST_NET,
         [],
-        nem.UInt64.fromUint(100000)
+        nem.UInt64.fromUint(1000000)
     );
 
     const signedTx =  alice.signTransactionWithCosignatories(
@@ -192,12 +177,7 @@ function process3(){
 
     const switchDaveToMultisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
-        0,0,
-        [
-            new nem.MultisigCosignatoryModification(addType, dave2),
-            new nem.MultisigCosignatoryModification(removeType, dave),
-        ],
-        nem.NetworkType.MIJIN_TEST
+        0,0, [dave2],[dave],nem.NetworkType.TEST_NET
     );
 
     const aggregateTx4 = nem.AggregateTransaction.createComplete(
@@ -206,7 +186,7 @@ function process3(){
             ellenOrFrankMultisigTx.toAggregate(dave2.publicAccount),
             switchDaveToMultisigTx.toAggregate(alice.publicAccount),
         ],
-        nem.NetworkType.MIJIN_TEST,
+        nem.NetworkType.TEST_NET,
         [],
         nem.UInt64.fromUint(4000000)
     );
