@@ -3,7 +3,7 @@
 
 ## 訂正
 
-##### 現在nem2-sdk最新バージョンの0.14.3(fushicho)に随時対応中です。動作の確認が取れたものから下記「デモプログラム」のリストに対応済みと付記していきます。
+##### 現在nem2-sdk最新バージョンの0.16.1(fushicho3)に随時対応中です。動作の確認が取れたものから下記「デモプログラム」のリストに対応済みと付記していきます。
 
 #### 全般
 - ネットワーク手数料に使用されるモザイクがcat.currencyからnem.xemに変更になりました。
@@ -51,10 +51,10 @@ page.217
 
 #### ノード
 https://jp5.nemesis.land:3001/
-- GENERATION_HASH 17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB
+- GENERATION_HASH CC42AAD7BD45E8C276741AB2524BC30F5529AF162AD12247EF9A98D6B54A385B
 
 #### 蛇口（faucet） 
-http://nf-catapult-testnet.herokuapp.com
+http://faucet-01.nemtech.network
 
 #### エラーコードについて
 - -2143092733（0x80430003）
@@ -63,27 +63,27 @@ http://nf-catapult-testnet.herokuapp.com
 ### デモプログラム
 #### 3.3 開発環境の準備
 
-- ブラウザを使ったデバッグ手法(0.14.3対応済み)
+- ブラウザを使ったデバッグ手法(0.16.1対応済み)
   - https://xembook.github.io/nem-tech-book/101_debug.html
 
 #### 3.4 サンプルプログラム基礎編
-- サンプルテンプレート(0.14.3対応済み)
+- サンプルテンプレート(0.16.1対応済み)
   - https://xembook.github.io/nem-tech-book/201_sample_template.html
   - 入金必要額 0.1XEM以上
   - 実行時必要手数料 0.1XEM以下
 　　
-- 監視(0.14.3対応済み)
+- 監視(0.16.1対応済み)
   - https://xembook.github.io/nem-tech-book/202_listener.html
 
-- アグリゲートトランザクション（モザイク⽣成）(0.14.3対応済み)
+- アグリゲートトランザクション（モザイク⽣成）(0.16.1対応済み)
   - https://xembook.github.io/nem-tech-book/203_ns_mosaic_link_sample.html
 
-- アグリゲートトランザクション（マルチシグ組成）(0.14.3対応済み)
+- アグリゲートトランザクション（マルチシグ組成）(0.16.1対応済み)
   - https://xembook.github.io/nem-tech-book/204_ns_account_link_multisig.html
 
     
 #### 3.5 サンプルプログラム応用編
-- マルチレベルマルチシグ(0.14.0対応済み)
+- マルチレベルマルチシグ(0.16.1対応済み)
   - https://xembook.github.io/nem-tech-book/301_multilevel_multisig.html
   
 - 保留型アグリゲートトランザクション(0.14.0対応済み)
