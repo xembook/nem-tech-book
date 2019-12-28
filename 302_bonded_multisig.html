@@ -63,7 +63,7 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.14.3.js"></script>
+<script src="nem2-sdk-0.16.1.js"></script>
 <script>$(function() {
 
 const nem = require("/node_modules/nem2-sdk");
@@ -71,12 +71,12 @@ const rxjs = require("/node_modules/rxjs/operators");
 
 
 const NODE = 'https://jp5.nemesis.land:3001';
-const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
+const GENERATION_HASH = "CC42AAD7BD45E8C276741AB2524BC30F5529AF162AD12247EF9A98D6B54A385B";
 const transactionHttp = new nem.TransactionHttp(NODE);
 const accountHttp = new nem.AccountHttp(NODE);
 
-const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const alice = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+const bob   = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
 $('#address').text(alice.address.address);
 
 const wsEndpoint = NODE.replace('https', 'wss');
@@ -111,12 +111,8 @@ function process(){
     const multisigTx = nem.MultisigAccountModificationTransaction.create(
         nem.Deadline.create(),
         1,1,
-        [
-            new nem.MultisigCosignatoryModification(
-                nem.CosignatoryModificationAction.Add, bob,
-            )
-        ],
-        nem.NetworkType.MIJIN_TEST
+        [bob],[],
+        nem.NetworkType.TEST_NET
     );
 
     const aggregateTx = nem.AggregateTransaction.createBonded(
@@ -124,7 +120,7 @@ function process(){
         [
             multisigTx.toAggregate(alice.publicAccount),
         ],
-        nem.NetworkType.MIJIN_TEST,
+        nem.NetworkType.TEST_NET,
         [],
         nem.UInt64.fromUint(100000)
     );
@@ -141,12 +137,12 @@ function process(){
     const lockTx = nem.HashLockTransaction.create(
         nem.Deadline.create(),
         new nem.Mosaic(
-            new nem.MosaicId('308F144790CD7BC4'),
+            new nem.MosaicId('75AF035421401EF0'),
             nem.UInt64.fromUint(10000000)
         ),
         nem.UInt64.fromUint(480),
         signedTx,
-        nem.NetworkType.MIJIN_TEST,
+        nem.NetworkType.TEST_NET,
         nem.UInt64.fromUint(100000)
     );
 
@@ -190,7 +186,7 @@ function process(){
 }
 
 function process3(){
-    accountHttp.aggregateBondedTransactions(alice.address)
+    accountHttp.getAccountPartialTransactions(alice.address)
     .pipe(
         rxjs.mergeMap(_ => _),
         rxjs.filter((_) => {
