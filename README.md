@@ -91,7 +91,7 @@ http://faucet-01.nemtech.network
 
 #### 3.6 社会実装のヒント
 
-- 所有(0.14.3対応済み)
+- 所有(0.16.1対応済み)
   - https://xembook.github.io/nem-tech-book/401_handover_multisig.html
 
 - 認証(0.14.3対応済み)
