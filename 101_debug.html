@@ -8,9 +8,9 @@
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
     crossorigin="anonymous">
 
-<script src="nem2-sdk-0.16.1.js"></script>
+<script src="symbol-sdk-0.17.3.js"></script>
 <script>
-const nem = require("/node_modules/nem2-sdk");
+const nem = require("/node_modules/symbol-sdk");
 console.log(nem);
 
 console.log(new nem.UInt64([27174,0]).compact());
@@ -48,7 +48,7 @@ console.log(ns.id.toHex());
 console.log(ns.id.toDTO());
 console.log(ns.id.toDTO().toString());
 
-const NODE = 'https://jp5.nemesis.land:3001';
+const NODE = 'https://sym-test.opening-line.jp:3001';
 const nsHttp = new nem.NamespaceHttp(NODE);
 
 //ネームスペースから
