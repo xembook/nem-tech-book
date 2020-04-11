@@ -15,7 +15,7 @@
 
         <!-- div block1 -->
         <h3>deposit to</h3>
-        <div id="address"></div>
+		<div><span id="address"></span>　<button id="button_faucet" class="btn btn-primary" type="button">蛇口</button></div>
         <div class="collapse" id="result1">
             <button id="button1" class="btn btn-primary" type="button" disabled>
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -67,18 +67,18 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
-<script src="nem2-sdk-0.14.3.js"></script>
+<script src="symbol-sdk-0.17.3.js"></script>
 <script>$(function() {
 
-const nem = require("/node_modules/nem2-sdk");
+const nem = require("/node_modules/symbol-sdk");
 const rxjs = require("/node_modules/rxjs/operators");
 
-const NODE = 'https://jp5.nemesis.land:3001';
-const GENERATION_HASH = "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB";
+const NODE = 'https://sym-test.opening-line.jp:3001';
+const GENERATION_HASH = "44D2225B8932C9A96DCB13508CBCDFFA9A9663BFBA2354FEEC8FCFCB7E19846C";
 
-const alice = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const bob   = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
-const carol = nem.Account.generateNewAccount(nem.NetworkType.MIJIN_TEST);
+const alice = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+const bob   = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
+const carol = nem.Account.generateNewAccount(nem.NetworkType.TEST_NET);
 $('#address').text(alice.address.address);
 
 const wsEndpoint = NODE.replace('https', 'wss');
@@ -113,20 +113,20 @@ listener.open().then(() => {
 
 function process(){
 
-    const sendAmount = 
+    const sendAmount =
         new nem.Mosaic(
-            new nem.MosaicId('308F144790CD7BC4'),
+            new nem.MosaicId('747B276C30626442'),
             nem.UInt64.fromUint(10000000)
         )
 
-    const send2Amount = 
+    const send2Amount =
         new nem.Mosaic(
-            new nem.MosaicId('308F144790CD7BC4'),
+            new nem.MosaicId('747B276C30626442'),
             nem.UInt64.fromUint(1000000)
         )
 
-    const aliceTx = nem.TransferTransaction.create(nem.Deadline.create(), bob.address, [sendAmount],   nem.PlainMessage.create('alice to bob'), nem.NetworkType.MIJIN_TEST);
-    const bobTx   = nem.TransferTransaction.create(nem.Deadline.create(), carol.address, [send2Amount], nem.PlainMessage.create('bob to carol'), nem.NetworkType.MIJIN_TEST);
+    const aliceTx = nem.TransferTransaction.create(nem.Deadline.create(), bob.address, [sendAmount],   nem.PlainMessage.create('alice to bob'), nem.NetworkType.TEST_NET);
+    const bobTx   = nem.TransferTransaction.create(nem.Deadline.create(), carol.address, [send2Amount], nem.PlainMessage.create('bob to carol'), nem.NetworkType.TEST_NET);
 
     //署名台帳作成
     const aggregateTransaction = nem.AggregateTransaction.createComplete(
@@ -135,7 +135,7 @@ function process(){
             aliceTx.toAggregate(alice.publicAccount),
             bobTx.toAggregate(bob.publicAccount)
         ],
-        nem.NetworkType.MIJIN_TEST,
+        nem.NetworkType.TEST_NET,
         [],
         nem.UInt64.fromUint(100000)
     );
@@ -227,6 +227,16 @@ $("#button3").click(
     }
 );
 
+
+$("#button_faucet").click(
+    function(){
+        window.open(
+        "http://faucet-01.symboldev.network/?recipient=" + alice.address.address + "&amount=200",
+        "_blank"
+    );
+        return false;
+    }
+);
 });</script>
 </body>
 </html>
